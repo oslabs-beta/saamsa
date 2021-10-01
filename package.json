@@ -16,7 +16,10 @@
     "url": "https://github.com/oslabs-beta/firstrepo/issues"
   },
   "homepage": "https://github.com/oslabs-beta/firstrepo#readme",
-  "dependencies": {
-    "eslint": "^7.32.0"
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.26.1"
   }
 }
