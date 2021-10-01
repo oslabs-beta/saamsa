@@ -1,0 +1,15 @@
+name: Testing
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  test_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: npm install
+      - name: Run ESLint
+        run: eslint . --ext .js, .jsx, .ts, .tsx
