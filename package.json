@@ -4,9 +4,10 @@
   "description": "this is testing",
   "main": "index.js",
   "scripts": {
-    "webpack": "tsc client/index.tsx --jsx react && webpack",
-    "start": "tsc index.ts && electron .",
+    "webpack": " tsc client/index.tsx --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack",
+    "start": "tsc index.ts --outDir ./dist/electron && electron ./dist/electron/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "both": "npm run webpack && npm run start",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
@@ -26,6 +27,7 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.61",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
     "@electron-forge/maker-zip": "^6.0.0-beta.61",
+    "@types/d3": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
     "electron": "^15.1.0",
@@ -36,10 +38,12 @@
   "dependencies": {
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-react": "^7.14.5",
+    "@types/d3-scale": "^4.0.1",
     "@types/react": "^17.0.27",
     "@types/react-dom": "^17.0.9",
     "babel-loader": "^8.2.2",
     "css-loader": "^6.3.0",
+    "d3": "^7.1.1",
     "electron-squirrel-startup": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
