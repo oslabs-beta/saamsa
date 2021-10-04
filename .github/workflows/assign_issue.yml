@@ -1,0 +1,14 @@
+name: Move assigned card
+on:
+  issues:
+    types:
+      - assigned
+jobs:
+  move-assigned-card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: alex-page/github-project-automation-plus@5bcba1c1c091a222584d10913e5c060d32c44044
+        with:
+          project: OSP
+          column: In Progress
+          repo-token: ${{ secrets.OSP_BOARD_SECRET }}
