@@ -1,0 +1,28 @@
+{
+  "name": "firstrepo",
+  "version": "1.0.0",
+  "description": "this is testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oslabs-beta/firstrepo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oslabs-beta/firstrepo/issues"
+  },
+  "homepage": "https://github.com/oslabs-beta/firstrepo#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.26.1"
+  },
+  "dependencies": {
+    "typescript": "^4.4.3"
+  }
+}

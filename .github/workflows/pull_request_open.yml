@@ -1,0 +1,14 @@
+on:
+  pull_request:
+    types: [opened]
+name: Pull Request opened
+jobs:
+  assignToProject:
+    name: Assign PR to Code Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign PR to Code Review
+        uses: technote-space/create-project-card-action@v1
+        with:
+          PROJECT: OSP
+          COLUMN: Review In Progress
