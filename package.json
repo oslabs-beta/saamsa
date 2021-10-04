@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "webpack": "tsc client/index.tsx --jsx react && webpack",
-    "start": "electron-forge start",
+    "start": "tsc index.ts && electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
     "make": "electron-forge make"
