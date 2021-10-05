@@ -13,7 +13,7 @@ function createWindow() {
   });
 
   win.loadFile('../../index.html');
-
+}
 
 app.whenReady().then(() => {
   createWindow();
@@ -23,8 +23,9 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
+
 //closes process if window closed and not on MacOS (keeps in dock for Mac though, as expected for Mac UX)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
 });
