@@ -15,7 +15,9 @@ type errorType = {
     message: {err: string}
 };
 
-app.use((err: Error , req: Request, res: Response, next: any) => {
+
+
+app.use((err, req, res, next) => {
     const defaultErr: errorType  = {
         log: 'Express error handler caught unknown middleware error',
         status: 500,
@@ -23,7 +25,8 @@ app.use((err: Error , req: Request, res: Response, next: any) => {
       };
       const errorObj = { ...defaultErr, ...err };
       console.log(errorObj.log);
-      return res.status(errorObj.status).json(errorObj.message);
+      res.status = errorObj.status;
+      return res.json(errorObj.message);
 })
 
 app.listen(3000, () => console.log('Listening on 3000'));

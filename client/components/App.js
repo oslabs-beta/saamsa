@@ -1,29 +1,7 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __importStar(require("react"));
-var LoginPage_1 = __importDefault(require("./LoginPage"));
+exports.__esModule = true;
+var React = require("react");
+var LoginPage_1 = require("./LoginPage");
 // class User { 
 //   constructor(){
 //   username: string,
@@ -50,10 +28,9 @@ var App = function () {
             fetch('/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(user),
+                body: JSON.stringify(user)
             })
-                .then((function (res) { return res.json(); }))
-                .catch(function (err) { return changeAttempt('Incorrect Username or password'); });
+                .then((function (res) { return res.json(); }))["catch"](function (err) { return changeAttempt('Incorrect Username or password'); });
         }
     };
     var signUp = function () {
@@ -75,22 +52,21 @@ var App = function () {
             fetch('/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(user),
+                body: JSON.stringify(user)
             })
                 .then(function (res) {
                 if (res.status == 200) {
                     changeLoginStatus(true);
                     changeUser(username);
                 }
-            })
-                .catch(function (err) { return console.log(err); });
+            })["catch"](function (err) { return console.log(err); });
         }
     };
     if (loginStatus === false) {
         return (React.createElement("div", null,
-            React.createElement(LoginPage_1.default, { loginButton: loginButton, signUp: signUp, loginAttempt: loginAttempt })));
+            React.createElement(LoginPage_1["default"], { loginButton: loginButton, signUp: signUp, loginAttempt: loginAttempt })));
     }
     //else if logged in, take to the main page
     return (React.createElement("div", null, "hello"));
 };
-exports.default = App;
+exports["default"] = App;

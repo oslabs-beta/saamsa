@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var electron_1 = require("electron");
 //so we need to compile down from ts to js upon loading app -> adding that to package.json
 function createWindow() {
@@ -7,7 +7,7 @@ function createWindow() {
     //can do this with import which automatically transpiles down to a require statement which is sooooooo nice
     var win = new electron_1.BrowserWindow({
         width: 800,
-        height: 600,
+        height: 600
     });
     win.loadFile('./index.html');
 }
