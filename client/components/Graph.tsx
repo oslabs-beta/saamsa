@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as d3 from 'd3';
+import axios from 'axios';
 interface Props {
   data: Array<{ time: number; value: number }>;
   // setData: ([{ time, value }]: { time: number; value: number }[]) => void;
@@ -8,7 +9,19 @@ interface Props {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
-const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
+const Graph = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
+  let intervalId: NodeJS.Timeout;
+  const connectAndInterval = () => {
+    intervalId = setInterval(() => {
+      axios({
+        method: 'GET',
+        url: 'localhost:3000/kafka',
+      });
+    }, 6000);
+  };
+  const clearInterval = () => {
+    window.clearInterval(intervalId);
+  };
   if (isLoggedIn) {
     const margin: { top: number; bottom: number; left: number; right: number } =
       {
@@ -83,8 +96,10 @@ const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
       <button onClick={() => setIsLoggedIn(!isLoggedIn)}>
         Press me to login :&#41;
       </button>
+      <button onClick={connectAndInterval}>Connect to Kafka</button>
+      <button onClick={clearInterval}>Disconnect From Kafka</button>
     </div>
   );
 };
 
-export default Holder;
+export default Graph;
