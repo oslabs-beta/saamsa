@@ -4,7 +4,7 @@
   "description": "this is testing",
   "main": "index.js",
   "scripts": {
-    "webpack": " tsc client/index.tsx --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack",
+    "webpack": " tsc client/index.tsx --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./client/server/server.ts --moduleResolution node --outDir ./dist/server",
     "start": "tsc index.ts --outDir ./dist/electron && electron ./dist/electron/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "both": "npm run webpack && npm run start",
@@ -45,6 +45,7 @@
     "css-loader": "^6.3.0",
     "d3": "^7.1.1",
     "electron-squirrel-startup": "^1.0.0",
+    "express": "^4.17.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "sass-loader": "^12.1.0",
