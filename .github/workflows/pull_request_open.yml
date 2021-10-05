@@ -11,4 +11,4 @@ jobs:
         uses: technote-space/create-project-card-action@v1
         with:
           PROJECT: OSP
-          COLUMN: Review In Progress
+          COLUMN: Review in progress
