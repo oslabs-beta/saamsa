@@ -1,5 +1,4 @@
 import { BrowserWindow, app } from 'electron';
-
 import { fork } from 'child_process';
 import * as path from 'path';
 
@@ -11,12 +10,11 @@ function createWindow() {
     width: 800,
     height: 600,
   });
-
   win.loadFile('../../index.html');
 }
+
 app.whenReady().then(() => {
   createWindow();
-
   const serverProcess = fork(path.resolve(__dirname, '../server/server.js'));
 
   app.on('activate', () => {
@@ -26,5 +24,6 @@ app.whenReady().then(() => {
   //closes process if window closed and not on MacOS (keeps in dock for Mac though, as expected for Mac UX)
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
+    serverProcess.kill(0);
   });
 });

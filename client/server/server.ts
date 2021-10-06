@@ -1,38 +1,55 @@
 import express from 'express';
 import * as kafka from 'kafkajs';
+import userController from './userController';
+import kafkaController from './kafkaController';
 const app = express();
-const instance = new kafka.Kafka({
-  clientId: 'testing2',
-  brokers: ['adams-mbp:9092'],
-});
-const consumerCache: { value: number; time: number }[] = [];
-const consumer = instance.consumer({ groupId: 'consumerTest' });
-consumer
-  .connect()
-  .then(() => {
-    consumer.subscribe({ topic: 'testing-topic', fromBeginning: true });
-  })
-  .then(() => {
-    consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        const splitArr = message!.value!.toString().split('@');
-        if (splitArr.length === 2) {
-          const value = Number(splitArr[0]);
-          const time = (Number(splitArr[1]) - 1633400000000) / 24 / 60;
-          consumerCache.push({ value, time });
-        }
-      },
-    });
-  })
-  .then(() => {
-    consumer.on(consumer.events.REQUEST_QUEUE_SIZE, (e) =>
-      console.log('anything')
-    );
-  });
-app.use(
-  '/kafka',
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(200).json(consumerCache);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//logging in
+app.post(
+  '/login',
+  userController.verifyUser,
+  (req: express.Request, res: express.Response) => {
+    res.status(200).json(res.locals.user);
   }
 );
+
+//signing up
+app.post(
+  '/signup',
+  userController.createUser,
+  (req: express.Request, res: express.Response) => {
+    res.status(200).send(res.locals.user);
+  }
+);
+
+app.use('/kafka/refresh', kafkaController.refresh);
+app.use('/kafka', kafkaController.getInitial);
+
+//type of error object
+type errorType = {
+  log: string;
+  status: number;
+  message: { err: string };
+};
+
+app.use(
+  (
+    err: express.ErrorRequestHandler,
+    req: express.Request,
+    res: express.Response
+  ) => {
+    const defaultErr: errorType = {
+      log: 'Express error handler caught unknown middleware error',
+      status: 500,
+      message: { err: 'An error occurred' },
+    };
+    const errorObj = { ...defaultErr, ...err };
+    console.log(errorObj.log);
+    return res.status(errorObj.status).json(errorObj.message);
+  }
+);
+
 app.listen(3000, () => console.log('listening on port 3000 :)'));
