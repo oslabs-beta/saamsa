@@ -17,6 +17,7 @@ const App = (): JSX.Element => {
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
         data={data}
+        setData={setData}
       />
     </div>
   );

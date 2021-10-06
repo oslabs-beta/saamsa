@@ -3,20 +3,30 @@ import * as d3 from 'd3';
 import axios from 'axios';
 interface Props {
   data: Array<{ time: number; value: number }>;
-  // setData: ([{ time, value }]: { time: number; value: number }[]) => void;
+  setData: ([{ time, value }]: { time: number; value: number }[]) => void;
   // not used currently but might use later
   isLoggedIn: boolean;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
-const Graph = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
+const Graph = ({
+  setData,
+  data,
+  setIsLoggedIn,
+  isLoggedIn,
+}: Props): JSX.Element => {
   let intervalId: NodeJS.Timeout;
   const connectAndInterval = () => {
     intervalId = setInterval(() => {
       axios({
         method: 'GET',
-        url: 'localhost:3000/kafka',
-      });
+        url: 'http://localhost:3000/kafka',
+      })
+        .then((response) => {
+          d3.select('svg').remove();
+          return response;
+        })
+        .then((response) => setData(response.data));
     }, 6000);
   };
   const clearInterval = () => {
@@ -30,8 +40,8 @@ const Graph = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
         left: 40,
         right: 40,
       };
-    const height = 200;
-    const width = 200;
+    const height = 600;
+    const width = 600;
     const dataTimeMin: number = data.reduce((acc, val) => {
       if (val.time < acc.time) return val;
       else return acc;
