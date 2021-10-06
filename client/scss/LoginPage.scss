@@ -1,0 +1,80 @@
+
+body { 
+    background-color: #eef1f2;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    margin: 0px;
+}
+
+.loginWrapper{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.heading{
+        font-size: 60px;
+        color: #571fac;
+        opacity: 1;
+        margin-bottom:40px;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#usernameAndPasswordWrapper{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+        margin-bottom: 20px;
+}
+#buttonsDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #forgotPassword {
+    color: #313A46;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
+    background-color: transparent;
+    border-color: transparent;
+  }
+  h2 {
+    margin-top: 30px;
+    color: #313A46;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
+  }
+  #loginBtn{
+    border-radius: 4px;
+    background-color: #571fac;
+    border: 0px solid transparent;
+    width: 70px;
+    height: 40px;
+    font-size: 15px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #e6ebee;
+  }
+#signUpArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #signUpBtn {
+    border-radius: 4px;
+    background-color: transparent;
+    border: 1px solid #571fac;
+    width: 70px;
+    height: 30px;
+    font-size: 15px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #571fac;
+  }
+  #signupBtn:hover {
+    cursor: pointer;
+  }
