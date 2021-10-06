@@ -18,11 +18,16 @@ consumer
         const splitArr = message!.value!.toString().split('@');
         if (splitArr.length === 2) {
           const value = Number(splitArr[0]);
-          const time = (Number(splitArr[1]) % 1633400000000) / 24 / 60;
+          const time = (Number(splitArr[1]) - 1633400000000) / 24 / 60;
           consumerCache.push({ value, time });
         }
       },
     });
+  })
+  .then(() => {
+    consumer.on(consumer.events.REQUEST_QUEUE_SIZE, (e) =>
+      console.log('anything')
+    );
   });
 app.use(
   '/kafka',
