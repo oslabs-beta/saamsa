@@ -10,34 +10,43 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-<<<<<<< HEAD
-/***/ "./client/components/App.js":
+/***/ "./dist/components/App.js":
+/*!********************************!*\
+  !*** ./dist/components/App.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var _LoginPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoginPage */ \"./dist/components/LoginPage.js\");\n/* harmony import */ var _Graph__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Graph */ \"./dist/components/Graph.js\");\n\n\n // class User { \n//   constructor(){\n//   username: string,\n//   password: string,\n//   }\n// }\n\nvar App = function App() {\n  var _a = react__WEBPACK_IMPORTED_MODULE_0__.useState(false),\n      loginStatus = _a[0],\n      changeLoginStatus = _a[1];\n\n  var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(null),\n      loginAttempt = _b[0],\n      changeAttempt = _b[1];\n\n  var _c = react__WEBPACK_IMPORTED_MODULE_0__.useState(),\n      currentUser = _c[0],\n      changeUser = _c[1];\n\n  var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState(),\n      rendering = _d[0],\n      setRendering = _d[1]; //graph rendering state -> \n\n\n  var _e = react__WEBPACK_IMPORTED_MODULE_0__.useState([{\n    time: 0,\n    value: 10\n  }, {\n    time: 1,\n    value: 50\n  }, {\n    time: 2,\n    value: 250\n  }, {\n    time: 3,\n    value: 1250\n  }, {\n    time: 4,\n    value: 6250\n  }]),\n      data = _e[0],\n      setData = _e[1]; //state to check if user is logged in. duplicate of loginstatus and should be removed --> \n\n\n  var _f = react__WEBPACK_IMPORTED_MODULE_0__.useState(false),\n      isLoggedIn = _f[0],\n      setIsLoggedIn = _f[1];\n\n  var loginButton = function loginButton() {\n    var username = document.querySelector('#username').value;\n    var password = document.querySelector('#password').value;\n\n    if (username == '' || password == '') {\n      var result = 'Please fill out the username and password fields to log in';\n      changeAttempt(result);\n    } else {\n      var user = {\n        username: username,\n        password: password\n      };\n      console.log(\"Hi, i am from the loginbutton method: \", user);\n      fetch('http://localhost:3000/login', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json'\n        },\n        body: JSON.stringify(user)\n      }).then(function (res) {\n        return res.json();\n      }).then(function (data) {\n        console.log(data);\n        changeLoginStatus(true);\n      })[\"catch\"](function (err) {\n        changeAttempt('Incorrect Username or password');\n        console.log(err);\n      });\n    }\n  };\n\n  var signUp = function signUp() {\n    var username = document.querySelector('#username').value;\n    var password = document.querySelector('#password').value;\n\n    if (username == '' || password == '') {\n      var result = 'Please fill out the username and password fields';\n      changeAttempt(result);\n    } else if (password.length < 6) {\n      var result = \"Please create a strong password longer than 6 characters\";\n      changeAttempt(result);\n    } else {\n      var user = {\n        username: username,\n        password: password\n      };\n      console.log(\"Hi, i am from the signup method: \", user);\n      console.log(user);\n      console.log(\"inside the signUp function just before fetch\");\n      fetch('http://localhost:3000/signup', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json'\n        },\n        body: JSON.stringify(user)\n      }).then(function (res) {\n        if (res.status == 200) {\n          changeLoginStatus(true);\n          changeUser(username);\n        }\n      })[\"catch\"](function (err) {\n        return console.log(err);\n      });\n      console.log(\"inside the signUp function after fetch\");\n    }\n  };\n\n  if (loginStatus === false) {\n    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_LoginPage__WEBPACK_IMPORTED_MODULE_1__[\"default\"], {\n      loginButton: loginButton,\n      signUp: signUp,\n      loginAttempt: loginAttempt\n    }));\n  } //else if logged in, return the graph page\n\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: 'mainContainer'\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Graph__WEBPACK_IMPORTED_MODULE_2__[\"default\"], {\n    isLoggedIn: isLoggedIn,\n    setIsLoggedIn: setIsLoggedIn,\n    data: data\n  }));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);\n\n//# sourceURL=webpack://firstrepo/./dist/components/App.js?");
+
+/***/ }),
+
+/***/ "./dist/components/Graph.js":
 /*!**********************************!*\
-  !*** ./client/components/App.js ***!
+  !*** ./dist/components/Graph.js ***!
   \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("\n\nexports.__esModule = true;\n\nvar React = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n\nvar LoginPage_1 = __webpack_require__(/*! ./LoginPage */ \"./client/components/LoginPage.js\"); // class User { \n//   constructor(){\n//   username: string,\n//   password: string,\n//   }\n// }\n\n\nvar App = function App() {\n  var _a = React.useState(false),\n      loginStatus = _a[0],\n      changeLoginStatus = _a[1];\n\n  var _b = React.useState(null),\n      loginAttempt = _b[0],\n      changeAttempt = _b[1];\n\n  var _c = React.useState(),\n      currentUser = _c[0],\n      changeUser = _c[1];\n\n  var _d = React.useState(),\n      rendering = _d[0],\n      setRendering = _d[1];\n\n  var loginButton = function loginButton() {\n    var username = document.querySelector('#username').value;\n    var password = document.querySelector('#password').value;\n\n    if (username == '' || password == '') {\n      var result = 'Please fill out the username and password fields to log in';\n      changeAttempt(result);\n    } else {\n      var user = {\n        username: username,\n        password: password\n      };\n      fetch('/login', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json'\n        },\n        body: JSON.stringify(user)\n      }).then(function (res) {\n        return res.json();\n      })[\"catch\"](function (err) {\n        return changeAttempt('Incorrect Username or password');\n      });\n    }\n  };\n\n  var signUp = function signUp() {\n    var username = document.querySelector('#username').value;\n    var password = document.querySelector('#password').value;\n\n    if (username == '' || password == '') {\n      var result = 'Please fill out the username and password fields';\n      changeAttempt(result);\n    } else if (password.length < 6) {\n      var result = \"Please create a strong password longer than 6 characters\";\n      changeAttempt(result);\n    } else {\n      var user = {\n        username: username,\n        password: password\n      };\n      fetch('/signup', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json'\n        },\n        body: JSON.stringify(user)\n      }).then(function (res) {\n        if (res.status == 200) {\n          changeLoginStatus(true);\n          changeUser(username);\n        }\n      })[\"catch\"](function (err) {\n        return console.log(err);\n      });\n    }\n  };\n\n  if (loginStatus === false) {\n    return React.createElement(\"div\", null, React.createElement(LoginPage_1[\"default\"], {\n      loginButton: loginButton,\n      signUp: signUp,\n      loginAttempt: loginAttempt\n    }));\n  } //else if logged in, take to the main page\n\n\n  return React.createElement(\"div\", null, \"hello\");\n};\n\nexports[\"default\"] = App;\n\n//# sourceURL=webpack://firstrepo/./client/components/App.js?");
-
-/***/ }),
-
-/***/ "./client/components/LoginPage.js":
-/*!****************************************!*\
-  !*** ./client/components/LoginPage.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-eval("\n\nexports.__esModule = true;\n/* eslint-disable @typescript-eslint/no-empty-function */\n\nvar React = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n\n__webpack_require__(/*! ../scss/LoginPage.scss */ \"./client/scss/LoginPage.scss\");\n\nvar LoginPage = function LoginPage(_a) {\n  var // loginStatus, \n  // changeLoginStatus, \n  loginAttempt = _a.loginAttempt,\n      // changeAttempt, \n  loginButton = _a.loginButton,\n      signUp = _a.signUp;\n  return React.createElement(\"div\", {\n    className: \"loginWrapper\"\n  }, React.createElement(\"div\", {\n    className: \"loginTitle\"\n  }, React.createElement(\"h1\", {\n    className: \"heading\"\n  }, \"Saamsa\")), React.createElement(\"div\", {\n    id: \"usernameAndPasswordWrapper\"\n  }, React.createElement(\"input\", {\n    name: \"username\",\n    placeholder: \"username\",\n    id: \"username\",\n    autoComplete: \"off\"\n  }), React.createElement(\"input\", {\n    name: \"password\",\n    placeholder: \"password\",\n    id: \"password\",\n    autoComplete: \"off\",\n    type: \"password\"\n  })), React.createElement(\"div\", {\n    id: \"buttonsDiv\"\n  }, React.createElement(\"button\", {\n    type: \"button\",\n    id: \"loginBtn\",\n    onClick: loginButton,\n    value: \"Log-In\"\n  }, \"Log In\"), React.createElement(\"button\", {\n    id: \"forgotPassword\"\n  }, \" Forgot password? \"), React.createElement(\"div\", {\n    id: \"loginAttemptMessage\"\n  }, loginAttempt)), React.createElement(\"div\", {\n    id: \"signUpArea\"\n  }, React.createElement(\"h2\", {\n    id: \"noAccount\"\n  }, \"Don't have an account? \"), React.createElement(\"button\", {\n    type: \"button\",\n    onClick: signUp,\n    id: \"signUpBtn\",\n    value: \"Sign-Up\"\n  }, \"Sign up\")));\n};\n\nexports[\"default\"] = LoginPage;\n\n//# sourceURL=webpack://firstrepo/./client/components/LoginPage.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ \"./node_modules/d3/src/index.js\");\n\n\n\nvar Holder = function Holder(_a) {\n  var data = _a.data,\n      setIsLoggedIn = _a.setIsLoggedIn,\n      isLoggedIn = _a.isLoggedIn;\n\n  if (isLoggedIn) {\n    var margin = {\n      top: 40,\n      bottom: 40,\n      left: 40,\n      right: 40\n    };\n    var height = 200;\n    var width = 200;\n    var dataTimeMin = data.reduce(function (acc, val) {\n      if (val.time < acc.time) return val;else return acc;\n    }).time;\n    var dataTimeMax = data.reduce(function (acc, val) {\n      if (val.time > acc.time) return val;else return acc;\n    }).time;\n    var dataValueMin = data.reduce(function (acc, val) {\n      if (val.value < acc.value) return val;else return acc;\n    }).value;\n    var dataValueMax = data.reduce(function (acc, val) {\n      if (val.value > acc.value) return val;else return acc;\n    }).value;\n    var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select('#mainContainer').append('svg');\n    var xScale_1 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([dataTimeMin, dataTimeMax]).range([0, width - margin.left - margin.right]);\n    var yScale_1 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([dataValueMax, dataValueMin]).range([0, height - margin.top - margin.bottom]);\n    var line = d3__WEBPACK_IMPORTED_MODULE_1__.line().defined(function (d) {\n      return d.value !== null;\n    }).curve(d3__WEBPACK_IMPORTED_MODULE_1__.curveCatmullRom.alpha(0.04)).x(function (d) {\n      return xScale_1(d.time);\n    }).y(function (d) {\n      return yScale_1(d.value);\n    });\n    svg.attr('width', width).attr('height', height).append('path').data(data).attr('transform', \"translate(\" + margin.left + \", \" + margin.bottom + \")\").attr('fill', 'none').attr('stroke', '#ccc').attr('class', 'line').attr('d', line(data));\n    var xAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(xScale_1);\n    var yAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(yScale_1);\n    svg.append('g').call(xAxis).attr('class', 'xAxis').attr('transform', \"translate(\" + margin.left + \",\" + (height - margin.bottom) + \")\");\n    svg.append('g').attr('class', 'yAxis').attr('transform', \"translate(\" + margin.left + \", \" + margin.top + \")\").call(yAxis);\n  } else {\n    d3__WEBPACK_IMPORTED_MODULE_1__.select('svg').remove();\n  }\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"h2\", null, \"Graph\"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    onClick: function onClick() {\n      return setIsLoggedIn(!isLoggedIn);\n    }\n  }, \"Press me to login :)\"));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Holder);\n\n//# sourceURL=webpack://firstrepo/./dist/components/Graph.js?");
 
 /***/ }),
 
-/***/ "./client/index.js":
-/*!*************************!*\
-  !*** ./client/index.js ***!
-  \*************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ "./dist/components/LoginPage.js":
+/*!**************************************!*\
+  !*** ./dist/components/LoginPage.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("\n\nexports.__esModule = true;\n\nvar React = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n\nvar react_dom_1 = __webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\");\n\nvar App_1 = __webpack_require__(/*! ./components/App */ \"./client/components/App.js\");\n\n(0, react_dom_1.render)(React.createElement(App_1[\"default\"], null), document.querySelector('#main'));\n\n//# sourceURL=webpack://firstrepo/./client/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var _client_scss_LoginPage_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../client/scss/LoginPage.scss */ \"./client/scss/LoginPage.scss\");\n/* eslint-disable @typescript-eslint/no-empty-function */\n\n\n\nvar LoginPage = function LoginPage(_a) {\n  var // loginStatus, \n  // changeLoginStatus, \n  loginAttempt = _a.loginAttempt,\n      // changeAttempt, \n  loginButton = _a.loginButton,\n      signUp = _a.signUp;\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    className: \"loginWrapper\"\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    className: \"loginTitle\"\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"h1\", {\n    className: \"heading\"\n  }, \"Saamsa\")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: \"usernameAndPasswordWrapper\"\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"input\", {\n    name: \"username\",\n    placeholder: \"username\",\n    id: \"username\",\n    autoComplete: \"off\"\n  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"input\", {\n    name: \"password\",\n    placeholder: \"password\",\n    id: \"password\",\n    autoComplete: \"off\",\n    type: \"password\"\n  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: \"buttonsDiv\"\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    type: \"button\",\n    id: \"loginBtn\",\n    onClick: loginButton,\n    value: \"Log-In\"\n  }, \"Log In\"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    id: \"forgotPassword\"\n  }, \" Forgot password? \"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: \"loginAttemptMessage\"\n  }, loginAttempt)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: \"signUpArea\"\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"h2\", {\n    id: \"noAccount\"\n  }, \"Don't have an account? \"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    type: \"button\",\n    onClick: signUp,\n    id: \"signUpBtn\",\n    value: \"Sign-Up\"\n  }, \"Sign up\")));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoginPage);\n\n//# sourceURL=webpack://firstrepo/./dist/components/LoginPage.js?");
+
+/***/ }),
+
+/***/ "./dist/index.js":
+/*!***********************!*\
+  !*** ./dist/index.js ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\");\n/* harmony import */ var _components_App__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/App */ \"./dist/components/App.js\");\n\n\n\n(0,react_dom__WEBPACK_IMPORTED_MODULE_1__.render)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_App__WEBPACK_IMPORTED_MODULE_2__[\"default\"], null), document.querySelector('#main'));\n\n//# sourceURL=webpack://firstrepo/./dist/index.js?");
 
 /***/ }),
 
@@ -47,7 +56,7 @@ eval("\n\nexports.__esModule = true;\n\nvar React = __webpack_require__(/*! reac
   \*****************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ \"./node_modules/css-loader/dist/runtime/noSourceMaps.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ \"./node_modules/css-loader/dist/runtime/api.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);\n// Imports\n\n\nvar ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));\n___CSS_LOADER_EXPORT___.push([module.id, \"@import url(https://fonts.googleapis.com/css2?family=Bitter:wght@600&display=swap);\"]);\n___CSS_LOADER_EXPORT___.push([module.id, \"@import url(https://fonts.googleapis.com/css2?family=Overpass:wght@600&family=Roboto+Mono:wght@100&display=swap);\"]);\n// Module\n___CSS_LOADER_EXPORT___.push([module.id, \"body {\\n  background-color: #eef1f2;\\n  background-repeat: no-repeat;\\n  background-position-x: center;\\n  margin: 0px; }\\n\\n.loginWrapper {\\n  margin-top: 40px;\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center; }\\n\\n.heading {\\n  font-size: 60px;\\n  color: #571fac;\\n  opacity: 1;\\n  margin-bottom: 40px;\\n  font-family: Bitter; }\\n\\n#usernameAndPasswordWrapper {\\n  display: flex;\\n  flex-direction: column;\\n  gap: 5px;\\n  align-items: center;\\n  margin-bottom: 20px; }\\n\\n#buttonsDiv {\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center;\\n  gap: 10px; }\\n\\n#forgotPassword {\\n  color: #313A46;\\n  font-family: Verdana, Geneva, Tahoma, sans-serif;\\n  font-size: 12px;\\n  background-color: transparent;\\n  border-color: transparent; }\\n\\nh2 {\\n  margin-top: 30px;\\n  color: #313A46;\\n  font-family: Verdana, Geneva, Tahoma, sans-serif;\\n  font-size: 12px; }\\n\\n#loginBtn {\\n  border-radius: 4px;\\n  background-color: #571fac;\\n  border: 0px solid transparent;\\n  width: 70px;\\n  height: 40px;\\n  font-size: 15px;\\n  font-family: Overpass;\\n  color: #e6ebee; }\\n\\n#signUpArea {\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center;\\n  gap: 10px; }\\n\\n#signUpBtn {\\n  border-radius: 4px;\\n  background-color: transparent;\\n  border: 1px solid #571fac;\\n  width: 70px;\\n  height: 30px;\\n  font-size: 15px;\\n  font-family: Overpass;\\n  color: #571fac; }\\n\\n#signupBtn:hover {\\n  cursor: pointer; }\\n\", \"\"]);\n// Exports\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);\n\n\n//# sourceURL=webpack://firstrepo/./client/scss/LoginPage.scss?./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ \"./node_modules/css-loader/dist/runtime/noSourceMaps.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ \"./node_modules/css-loader/dist/runtime/api.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);\n// Imports\n\n\nvar ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));\n// Module\n___CSS_LOADER_EXPORT___.push([module.id, \"body {\\n  background-color: #eef1f2;\\n  background-repeat: no-repeat;\\n  background-position-x: center;\\n  margin: 0px;\\n}\\n\\n.loginWrapper {\\n  margin-top: 40px;\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center;\\n}\\n\\n.heading {\\n  font-size: 60px;\\n  color: #571fac;\\n  opacity: 1;\\n  margin-bottom: 40px;\\n  font-family: \\\"Franklin Gothic Medium\\\", \\\"Arial Narrow\\\", Arial, sans-serif;\\n}\\n\\n#usernameAndPasswordWrapper {\\n  display: flex;\\n  flex-direction: column;\\n  gap: 5px;\\n  align-items: center;\\n  margin-bottom: 20px;\\n}\\n\\n#buttonsDiv {\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center;\\n  gap: 10px;\\n}\\n\\n#forgotPassword {\\n  color: #313A46;\\n  font-family: Verdana, Geneva, Tahoma, sans-serif;\\n  font-size: 12px;\\n  background-color: transparent;\\n  border-color: transparent;\\n}\\n\\nh2 {\\n  margin-top: 30px;\\n  color: #313A46;\\n  font-family: Verdana, Geneva, Tahoma, sans-serif;\\n  font-size: 12px;\\n}\\n\\n#loginBtn {\\n  border-radius: 4px;\\n  background-color: #571fac;\\n  border: 0px solid transparent;\\n  width: 70px;\\n  height: 40px;\\n  font-size: 15px;\\n  font-family: \\\"Franklin Gothic Medium\\\", \\\"Arial Narrow\\\", Arial, sans-serif;\\n  color: #e6ebee;\\n}\\n\\n#signUpArea {\\n  display: flex;\\n  flex-direction: column;\\n  align-items: center;\\n  gap: 10px;\\n}\\n\\n#signUpBtn {\\n  border-radius: 4px;\\n  background-color: transparent;\\n  border: 1px solid #571fac;\\n  width: 70px;\\n  height: 30px;\\n  font-size: 15px;\\n  font-family: \\\"Franklin Gothic Medium\\\", \\\"Arial Narrow\\\", Arial, sans-serif;\\n  color: #571fac;\\n}\\n\\n#signupBtn:hover {\\n  cursor: pointer;\\n}\", \"\"]);\n// Exports\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);\n\n\n//# sourceURL=webpack://firstrepo/./client/scss/LoginPage.scss?./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js");
 
 /***/ }),
 
@@ -68,35 +77,6 @@ eval("\n\n/*\n  MIT License http://www.opensource.org/licenses/mit-license.php\n
 /***/ ((module) => {
 
 eval("\n\nmodule.exports = function (i) {\n  return i[1];\n};\n\n//# sourceURL=webpack://firstrepo/./node_modules/css-loader/dist/runtime/noSourceMaps.js?");
-=======
-/***/ "./dist/components/App.js":
-/*!********************************!*\
-  !*** ./dist/components/App.js ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var _Graph__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Graph */ \"./dist/components/Graph.js\");\n\n\n\nvar App = function App() {\n  var _a = react__WEBPACK_IMPORTED_MODULE_0__.useState([{\n    time: 0,\n    value: 10\n  }, {\n    time: 1,\n    value: 50\n  }, {\n    time: 2,\n    value: 250\n  }, {\n    time: 3,\n    value: 1250\n  }, {\n    time: 4,\n    value: 6250\n  }]),\n      data = _a[0],\n      setData = _a[1];\n\n  var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(false),\n      isLoggedIn = _b[0],\n      setIsLoggedIn = _b[1];\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", {\n    id: 'mainContainer'\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Graph__WEBPACK_IMPORTED_MODULE_1__[\"default\"], {\n    isLoggedIn: isLoggedIn,\n    setIsLoggedIn: setIsLoggedIn,\n    data: data\n  }));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);\n\n//# sourceURL=webpack://firstrepo/./dist/components/App.js?");
-
-/***/ }),
-
-/***/ "./dist/components/Graph.js":
-/*!**********************************!*\
-  !*** ./dist/components/Graph.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ \"./node_modules/d3/src/index.js\");\n\n\n\nvar Holder = function Holder(_a) {\n  var data = _a.data,\n      setIsLoggedIn = _a.setIsLoggedIn,\n      isLoggedIn = _a.isLoggedIn;\n\n  if (isLoggedIn) {\n    var margin = {\n      top: 40,\n      bottom: 40,\n      left: 40,\n      right: 40\n    };\n    var height = 200;\n    var width = 200;\n    var dataTimeMin = data.reduce(function (acc, val) {\n      if (val.time < acc.time) return val;else return acc;\n    }).time;\n    var dataTimeMax = data.reduce(function (acc, val) {\n      if (val.time > acc.time) return val;else return acc;\n    }).time;\n    var dataValueMin = data.reduce(function (acc, val) {\n      if (val.value < acc.value) return val;else return acc;\n    }).value;\n    var dataValueMax = data.reduce(function (acc, val) {\n      if (val.value > acc.value) return val;else return acc;\n    }).value;\n    var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select('#mainContainer').append('svg');\n    var xScale_1 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([dataTimeMin, dataTimeMax]).range([0, width - margin.left - margin.right]);\n    var yScale_1 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([dataValueMax, dataValueMin]).range([0, height - margin.top - margin.bottom]);\n    var line = d3__WEBPACK_IMPORTED_MODULE_1__.line().defined(function (d) {\n      return d.value !== null;\n    }).curve(d3__WEBPACK_IMPORTED_MODULE_1__.curveCatmullRom.alpha(0.04)).x(function (d) {\n      return xScale_1(d.time);\n    }).y(function (d) {\n      return yScale_1(d.value);\n    });\n    svg.attr('width', width).attr('height', height).append('path').data(data).attr('transform', \"translate(\" + margin.left + \", \" + margin.bottom + \")\").attr('fill', 'none').attr('stroke', '#ccc').attr('class', 'line').attr('d', line(data));\n    var xAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(xScale_1);\n    var yAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(yScale_1);\n    svg.append('g').call(xAxis).attr('class', 'xAxis').attr('transform', \"translate(\" + margin.left + \",\" + (height - margin.bottom) + \")\");\n    svg.append('g').attr('class', 'yAxis').attr('transform', \"translate(\" + margin.left + \", \" + margin.top + \")\").call(yAxis);\n  } else {\n    d3__WEBPACK_IMPORTED_MODULE_1__.select('svg').remove();\n  }\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"h2\", null, \"Graph\"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    onClick: function onClick() {\n      return setIsLoggedIn(!isLoggedIn);\n    }\n  }, \"Press me to login :)\"));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Holder);\n\n//# sourceURL=webpack://firstrepo/./dist/components/Graph.js?");
-
-/***/ }),
-
-/***/ "./dist/index.js":
-/*!***********************!*\
-  !*** ./dist/index.js ***!
-  \***********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\");\n/* harmony import */ var _components_App__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/App */ \"./dist/components/App.js\");\n\n\n\n(0,react_dom__WEBPACK_IMPORTED_MODULE_1__.render)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_App__WEBPACK_IMPORTED_MODULE_2__[\"default\"], null), document.querySelector('#main'));\n\n//# sourceURL=webpack://firstrepo/./dist/index.js?");
->>>>>>> electron
 
 /***/ }),
 
@@ -190,7 +170,6 @@ eval("\n\nif (false) {} else {\n  module.exports = __webpack_require__(/*! ./cjs
 
 /***/ }),
 
-<<<<<<< HEAD
 /***/ "./client/scss/LoginPage.scss":
 /*!************************************!*\
   !*** ./client/scss/LoginPage.scss ***!
@@ -259,48 +238,8 @@ eval("\n\n/* istanbul ignore next  */\nfunction apply(styleElement, options, obj
 
 eval("\n\n/* istanbul ignore next  */\nfunction styleTagTransform(css, styleElement) {\n  if (styleElement.styleSheet) {\n    styleElement.styleSheet.cssText = css;\n  } else {\n    while (styleElement.firstChild) {\n      styleElement.removeChild(styleElement.firstChild);\n    }\n\n    styleElement.appendChild(document.createTextNode(css));\n  }\n}\n\nmodule.exports = styleTagTransform;\n\n//# sourceURL=webpack://firstrepo/./node_modules/style-loader/dist/runtime/styleTagTransform.js?");
 
-/***/ })
+/***/ }),
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-=======
 /***/ "./node_modules/d3-array/src/array.js":
 /*!********************************************!*\
   !*** ./node_modules/d3-array/src/array.js ***!
@@ -5945,7 +5884,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
+/******/ 			id: moduleId,
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
@@ -5958,7 +5897,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	}
 /******/ 	
 /************************************************************************/
->>>>>>> electron
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -5992,11 +5942,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-<<<<<<< HEAD
-/******/ 	var __webpack_exports__ = __webpack_require__("./client/index.js");
-=======
 /******/ 	var __webpack_exports__ = __webpack_require__("./dist/index.js");
->>>>>>> electron
 /******/ 	
 /******/ })()
 ;

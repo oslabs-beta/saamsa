@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import * as React from 'react';
 import { JsxEmit, JsxAttribute } from 'typescript';
-import '../scss/LoginPage.scss';
+import '../../client/scss/LoginPage.scss';
 
 type Props = {
     // loginStatus: boolean;
