@@ -25,9 +25,7 @@ mongoose.connect(MONGO_URI, {
     password: { type: String},
 });
 // the below method runs right before the document is saved on the db.
-userSchema.pre<Users>('save', function (this: Users, next: (err? : Error | undefined) => void) {
-  //make sure you dont hash the hash
-  
+userSchema.pre<Users>('save', function (this: Users, next: (err? : Error | undefined) => void) {  
   console.log("request body is ",express.request.body);
   console.log("The this password is ", this.password);
   bcrypt.hash(this.password, SALT_WORK_FACTOR, (err: Error, hash: string) => {
@@ -35,13 +33,6 @@ userSchema.pre<Users>('save', function (this: Users, next: (err? : Error | undef
       this.password = hash;
       return next();
   })
-
-    //-----//
-    // bcrypt.hash(this.password, SALT_WORK_FACTOR, (err: any, hash : string) => {
-    //   if (err) return next(err);
-    //   this.password = hash;
-    //   return next();
-    // })
   });
 
  const Users = model <Users>('users', userSchema);

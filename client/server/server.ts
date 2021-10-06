@@ -1,6 +1,5 @@
 import * as express from 'express';
 const path = require('path');
-// const cookieParser = require('cookie-parser');
 import userController from './userController';
 
 
