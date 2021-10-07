@@ -14,9 +14,11 @@ interface controller {
 }
 //holds messages from kafka consumer, currently globally scoped so refresh route has access to all consumercache
 //TODO finagle this so that its not a dirty global
-const consumerCache: { value: number; time: number }[] = [];
+const consumerCache: { value: number; time: number }[] = [
+  { value: 0, time: 0 },
+];
 for (let i = 0; i < 100; i++) {
-  consumerCache.push({ value: 0, time: i });
+  consumerCache.push({ value: 0, time: i + 1 });
 }
 
 const controller: controller = {
@@ -48,7 +50,11 @@ const controller: controller = {
             //     (a: { time: number }, b: { time: number }) => a.time - b.time
             //   );
             // }
-            consumerCache[e.partition].value++;
+            //just looking at partition, we see a small amount of preference for initial 2-3 partitions then it evens out, reassigning partitions  in the middle of a producer stream greatly throws off load balance though
+            consumerCache[e.partition + 1].value = Math.max(
+              Number(e.message.offset),
+              consumerCache[e.partition + 1].value
+            );
           },
         });
       })
