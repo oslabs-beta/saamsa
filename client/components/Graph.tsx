@@ -4,7 +4,6 @@ import axios from 'axios';
 interface Props {
   data: Array<{ time: number; value: number }>;
   setData: ([{ time, value }]: { time: number; value: number }[]) => void;
-  // not used currently but might use later
   loginStatus: boolean;
 }
 const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
@@ -66,7 +65,6 @@ const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
     const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> = d3
       .select('#mainContainer')
       .append('svg');
-    console.log(svg);
     const xScale = d3
       .scaleLinear()
       .domain([dataTimeMin, dataTimeMax])
@@ -107,8 +105,11 @@ const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
   return (
     <div>
       <h2>Graph</h2>
-      <button onClick={connectAndInterval}>Connect to Kafka</button>
+      <button id='connectButton' onClick={connectAndInterval}>
+        Connect to Kafka
+      </button>
       <button
+        id='disconnectButton'
         onClick={() =>
           clearInterval(
             Number(document.querySelector('#mainContainer')!.className)
