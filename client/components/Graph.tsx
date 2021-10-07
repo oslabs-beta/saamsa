@@ -1,15 +1,43 @@
 import * as React from 'react';
 import * as d3 from 'd3';
+import axios from 'axios';
 interface Props {
   data: Array<{ time: number; value: number }>;
-  // setData: ([{ time, value }]: { time: number; value: number }[]) => void;
+  setData: ([{ time, value }]: { time: number; value: number }[]) => void;
   // not used currently but might use later
-  isLoggedIn: boolean;
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
+  loginStatus: boolean;
 }
+const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
+  const connectAndInterval = () => {
+    axios({
+      method: 'GET',
+      url: 'http://localhost:3000/kafka',
+    })
+      .then((response) => {
+        setData(response.data);
+      })
+      .then(() => {
+        const intervalId = window.setInterval(() => {
+          axios({
+            method: 'GET',
+            url: 'http://localhost:3000/kafka/refresh',
+          })
+            .then((response) => {
+              d3.select('svg').remove();
+              return response;
+            })
+            .then((response) => {
+              setData(response.data);
+            });
+        }, 6000);
+        d3.select('#mainContainer').attr('class', `${intervalId}`);
+      });
+  };
 
-const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
-  if (isLoggedIn) {
+  const clearInterval = (num: number) => {
+    window.clearInterval(num);
+  };
+  if (loginStatus) {
     const margin: { top: number; bottom: number; left: number; right: number } =
       {
         top: 40,
@@ -17,8 +45,8 @@ const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
         left: 40,
         right: 40,
       };
-    const height = 200;
-    const width = 200;
+    const height = 600;
+    const width = 600;
     const dataTimeMin: number = data.reduce((acc, val) => {
       if (val.time < acc.time) return val;
       else return acc;
@@ -35,9 +63,10 @@ const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
       if (val.value > acc.value) return val;
       else return acc;
     }).value;
-    const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any> = d3
+    const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> = d3
       .select('#mainContainer')
       .append('svg');
+    console.log(svg);
     const xScale = d3
       .scaleLinear()
       .domain([dataTimeMin, dataTimeMax])
@@ -47,7 +76,7 @@ const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
       .domain([dataValueMax, dataValueMin])
       .range([0, height - margin.top - margin.bottom]);
     const line = d3
-      .line<any>()
+      .line<typeof data[0]>()
       .defined((d) => d.value !== null)
       .curve(d3.curveCatmullRom.alpha(0.04))
       .x((d) => xScale(d.time))
@@ -74,17 +103,22 @@ const Holder = ({ data, setIsLoggedIn, isLoggedIn }: Props): JSX.Element => {
       .attr('class', 'yAxis')
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
       .call(yAxis);
-  } else {
-    d3.select('svg').remove();
   }
   return (
     <div>
       <h2>Graph</h2>
-      <button onClick={() => setIsLoggedIn(!isLoggedIn)}>
-        Press me to login :&#41;
+      <button onClick={connectAndInterval}>Connect to Kafka</button>
+      <button
+        onClick={() =>
+          clearInterval(
+            Number(document.querySelector('#mainContainer')!.className)
+          )
+        }
+      >
+        Disconnect From Kafka
       </button>
     </div>
   );
 };
 
-export default Holder;
+export default Graph;
