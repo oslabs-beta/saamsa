@@ -15,6 +15,9 @@ interface controller {
 //holds messages from kafka consumer, currently globally scoped so refresh route has access to all consumercache
 //TODO finagle this so that its not a dirty global
 const consumerCache: { value: number; time: number }[] = [];
+for (let i = 0; i < 100; i++) {
+  consumerCache.push({ value: 0, time: i });
+}
 
 const controller: controller = {
   getInitial: function (req, res) {
@@ -34,40 +37,27 @@ const controller: controller = {
         consumer.run({
           eachMessage: async (e) => {
             //e has partition on it!!!!!
-            const { message } = e;
-            const splitArr = message!.value!.toString().split('@');
-            if (splitArr.length === 2) {
-              const value = Number(splitArr[0]);
-              const time = Number(splitArr[1]) - 163300000;
-              consumerCache.push({ value, time });
-              //just for this implementation of line graph, not needed for count-based-figures/maps
-              consumerCache.sort(
-                (a: { time: number }, b: { time: number }) => a.time - b.time
-              );
-            }
+            // const { message } = e;
+            // const splitArr = message!.value!.toString().split('@');
+            // if (splitArr.length === 2) {
+            //   const value = Number(splitArr[0]);
+            //   const time = Number(splitArr[1]) - 163300000;
+            //   consumerCache.push({ value, time });
+            //   //just for this implementation of line graph, not needed for count-based-figures/maps
+            //   consumerCache.sort(
+            //     (a: { time: number }, b: { time: number }) => a.time - b.time
+            //   );
+            // }
+            consumerCache[e.partition].value++;
           },
         });
       })
       .then(() => {
-        if (consumerCache.length) {
-          res.status(200).json(consumerCache);
-        } else {
-          res.status(200).json([
-            { time: 0, value: 0 },
-            { time: 1, value: 1 },
-          ]);
-        }
+        res.status(200).json(consumerCache);
       });
   },
   refresh: function (req, res) {
-    if (consumerCache.length) {
-      res.status(200).json(consumerCache);
-    } else {
-      res.status(200).json([
-        { value: 0, time: 0 },
-        { value: 1, time: 1 },
-      ]);
-    }
+    res.status(200).json(consumerCache);
   },
 };
 

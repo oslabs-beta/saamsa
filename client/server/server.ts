@@ -1,5 +1,4 @@
 import express from 'express';
-import * as kafka from 'kafkajs';
 import userController from './userController';
 import kafkaController from './kafkaController';
 const app = express();
