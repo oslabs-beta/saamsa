@@ -3,10 +3,12 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 
 const App = (): JSX.Element => {
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
   const [rendering, setRendering] = React.useState<boolean>(true);
+  const [topic, setTopic] = React.useState<string>('');
+  const [bootstrap, setBootstrap] = React.useState<string>('');
   //graph rendering state ->
   const [data, setData] = React.useState([
     { time: 0, value: 0 },
@@ -28,7 +30,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('http://localhost:3000/login', {
+      fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -63,7 +65,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('http://localhost:3000/signup', {
+      fetch('http://localhost:3001/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -95,7 +97,15 @@ const App = (): JSX.Element => {
     //else if logged in, return the graph page
     return (
       <div id='mainContainer'>
-        <Graph loginStatus={loginStatus} data={data} setData={setData} />
+        <Graph
+          loginStatus={loginStatus}
+          data={data}
+          setData={setData}
+          bootstrap={bootstrap}
+          topic={topic}
+          setBootstrap={setBootstrap}
+          setTopic={setTopic}
+        />
       </div>
     );
   } else {
