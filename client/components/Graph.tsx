@@ -4,34 +4,60 @@ import axios from 'axios';
 interface Props {
   data: Array<{ time: number; value: number }>;
   setData: ([{ time, value }]: { time: number; value: number }[]) => void;
-  // not used currently but might use later
+  bootstrap: string;
+  setBootstrap: (str: string) => void;
+  topic: string;
+  setTopic: (str: string) => void;
   loginStatus: boolean;
 }
-const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
+const Graph = ({
+  setData,
+  data,
+  loginStatus,
+  setBootstrap,
+  setTopic,
+  topic,
+  bootstrap,
+}: Props): JSX.Element => {
+  const changeParams = () => {
+    const bootstrap: HTMLInputElement =
+      document.querySelector('#bootstrapInput')!;
+    const topic: HTMLInputElement = document.querySelector('#topicInput')!;
+    setBootstrap(bootstrap.value);
+    setTopic(topic.value);
+  };
   const connectAndInterval = () => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:3000/kafka',
-    })
-      // .then((response) => {
-      //   setData(response.data);
-      // })
-      .then(() => {
-        const intervalId = window.setInterval(() => {
-          axios({
-            method: 'GET',
-            url: 'http://localhost:3000/kafka/refresh',
-          })
-            .then((response) => {
-              d3.select('svg').remove();
-              return response;
+    if (document.querySelector('#mainContainer')!.className) {
+      clearInterval(
+        Number(document.querySelector('#mainContainer')!.className)
+      );
+    }
+    if (bootstrap.length && topic.length) {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:3001/kafka',
+        data: { bootstrap, topic },
+      })
+        // .then((response) => {
+        //   setData(response.data);
+        // })
+        .then(() => {
+          const intervalId = window.setInterval(() => {
+            axios({
+              method: 'GET',
+              url: 'http://localhost:3001/kafka/refresh',
             })
-            .then((response) => {
-              setData(response.data);
-            });
-        }, 3000);
-        d3.select('#mainContainer').attr('class', `${intervalId}`);
-      });
+              .then((response) => {
+                d3.select('svg').remove();
+                return response;
+              })
+              .then((response) => {
+                setData(response.data);
+              });
+          }, 3000);
+          d3.select('#mainContainer').attr('class', `${intervalId}`);
+        });
+    }
   };
 
   const clearInterval = (num: number) => {
@@ -111,12 +137,17 @@ const Graph = ({ setData, data, loginStatus }: Props): JSX.Element => {
         <button
           onClick={() =>
             clearInterval(
-              Number(document.querySelector('#mainContainer')!.className)
+              Number(document.querySelector('#mainContainer')?.className)
             )
           }
         >
           Disconnect From Kafka
         </button>
+        <label htmlFor='bootstrapInput'>Bootstrap Server Location:</label>
+        <input id='bootstrapInput' type='text'></input>
+        <label htmlFor='topicInput'>Topic Name:</label>
+        <input id='topicInput' type='text'></input>
+        <button onClick={changeParams}>Submit</button>
       </div>
     );
   } else {
