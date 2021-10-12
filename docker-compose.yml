@@ -1,0 +1,13 @@
+version: '3'
+services:
+  saamsa:
+    image: 'saamsa'
+    container_name: 'saamsa'
+    ports:
+      - '3001:3001'
+
+    dynamodb:
+      image: 'amazon/dynamodb:latest'
+      container_name: 'dynamodb'
+      ports:
+        - '8000:8000'

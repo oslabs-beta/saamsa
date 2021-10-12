@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
 interface Props {
-  data: Array<{ time: number; value: number }>;
+  data: { time: number; value: number }[];
   setData: ([{ time, value }]: { time: number; value: number }[]) => void;
   bootstrap: string;
   setBootstrap: (str: string) => void;
