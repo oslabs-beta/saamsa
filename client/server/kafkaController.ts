@@ -59,7 +59,7 @@ const controller: controller = {
             consumerCache[e.partition + 1].value = Math.max(
               Number(e.message.offset),
               consumerCache[e.partition + 1].value
-            );
+            ); 
           },
         });
       })

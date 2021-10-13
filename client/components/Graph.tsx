@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+import '../../client/scss/Graph.scss';
 interface Props {
   data: { time: number; value: number }[];
   setData: ([{ time, value }]: { time: number; value: number }[]) => void;
@@ -27,7 +28,7 @@ const Graph = ({
     setTopic(topic.value);
   };
   const connectAndInterval = () => {
-    if (document.querySelector('#mainContainer')!.className) {
+    if (document.querySelector('#mainContainer')!.className) {   
       clearInterval(
         Number(document.querySelector('#mainContainer')!.className)
       );
@@ -42,7 +43,7 @@ const Graph = ({
         //   setData(response.data);
         // })
         .then(() => {
-          const intervalId = window.setInterval(() => {
+          const intervalId = window.setInterval(() => { 
             axios({
               method: 'GET',
               url: 'http://localhost:3001/kafka/refresh',
@@ -72,19 +73,19 @@ const Graph = ({
   };
   const height = 600;
   const width = 600;
-  const dataTimeMin: number = data.reduce((acc, val) => {
+  const dataTimeMin: number = data.reduce((acc, val) => { //returns min time from data
     if (val.time < acc.time) return val;
     else return acc;
   }).time;
-  const dataTimeMax: number = data.reduce((acc, val) => {
+  const dataTimeMax: number = data.reduce((acc, val) => { //returns max time from data
     if (val.time > acc.time) return val;
     else return acc;
   }).time;
-  const dataValueMin: number = data.reduce((acc, val) => {
+  const dataValueMin: number = data.reduce((acc, val) => { //returns min value from data
     if (val.value < acc.value) return val;
     else return acc;
   }).value;
-  const dataValueMax: number = data.reduce((acc, val) => {
+  const dataValueMax: number = data.reduce((acc, val) => { //returns max value from data
     if (val.value > acc.value) return val;
     else return acc;
   }).value;
@@ -122,12 +123,27 @@ const Graph = ({
     .append('g')
     .call(xAxis)
     .attr('class', 'xAxis')
-    .attr('transform', `translate(${margin.left},${height - margin.bottom})`);
+    .attr('transform', `translate(${margin.left},${height - margin.bottom})`)
+    //adding label
+    .append('text')
+    .attr('class','axis-label')
+    .text('Number of partitions')
+    .attr('x', width-140)
+    .attr('y', 20) // Relative to the x axis.
+
   svg
     .append('g')
     .attr('class', 'yAxis')
     .attr('transform', `translate(${margin.left}, ${margin.top})`)
-    .call(yAxis);
+    .call(yAxis)
+    //adding label
+    .append('text')
+    .attr('class', 'axis-label')
+    .text('Offsets for each partition')
+   .attr('transform', 'rotate(-90)')
+    .attr('x', -75)
+    .attr('y', -20) // Relative to the y axis.
+
   React.useEffect(() => setData([{ value: 0, time: 0 }]), []);
   if (loginStatus) {
     return (
@@ -137,7 +153,7 @@ const Graph = ({
         <button
           onClick={() =>
             clearInterval(
-              Number(document.querySelector('#mainContainer')?.className)
+              Number(document.querySelector('#mainContainer')?.className) 
             )
           }
         >
