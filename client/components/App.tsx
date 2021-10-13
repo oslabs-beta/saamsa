@@ -1,19 +1,20 @@
 import * as React from 'react';
 import LoginPage from './LoginPage';
 import Graph from './Graph';
-
+import Selector from './Selector';
 const App = (): JSX.Element => {
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
-  const [rendering, setRendering] = React.useState<boolean>(true);
+  const [rendering, setRendering] = React.useState<boolean>(false);
   const [topic, setTopic] = React.useState<string>('');
+  const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
+  const [serverList, setServerList] = React.useState<string[]>([]);
   //graph rendering state ->
-  const [data, setData] = React.useState([
-    { time: 0, value: 0 },
-    { time: 1, value: 1 },
-  ]);
+  const [data, setData] = React.useState<
+    Array<{ time: number; value: number }>
+  >([]);
   const loginButton = () => {
     const username: string | null = (
       document.querySelector('#username') as HTMLInputElement
@@ -93,24 +94,35 @@ const App = (): JSX.Element => {
           />
         </div>
       );
+    } else if (loginStatus === true) {
+      return (
+        <div id='mainContainer'>
+          <Selector
+            setData={setData}
+            setTopic={setTopic}
+            bootstrap={bootstrap}
+            setBootstrap={setBootstrap}
+            topicList={topicList}
+            setTopicList={setTopicList}
+            serverList={serverList}
+            setServerList={setServerList}
+          />
+          {!!topic.length && (
+            <Graph
+              loginStatus={loginStatus}
+              data={data}
+              setData={setData}
+              bootstrap={bootstrap}
+              topic={topic}
+              setBootstrap={setBootstrap}
+              setTopic={setTopic}
+            />
+          )}
+        </div>
+      );
     }
-    //else if logged in, return the graph page
-    return (
-      <div id='mainContainer'>
-        <Graph
-          loginStatus={loginStatus}
-          data={data}
-          setData={setData}
-          bootstrap={bootstrap}
-          topic={topic}
-          setBootstrap={setBootstrap}
-          setTopic={setTopic}
-        />
-      </div>
-    );
-  } else {
-    return <div>Loading, please wait!</div>;
   }
+  return <div>Loading, please wait!</div>;
 };
 
 export default App;
