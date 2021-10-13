@@ -1,21 +1,7 @@
-import { Schema, model, connect, ConnectOptions } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import * as express from 'express';
-
-const MONGO_URI =
-  'mongodb+srv://dbUser:codesmith@cluster0.drsef.mongodb.net/saamsa?retryWrites=true&w=majority';
-
-const SALT_WORK_FACTOR = 10;
 const bcrypt = require('bcryptjs');
-
-connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  dbName: 'saamsa',
-} as ConnectOptions)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err: Error) =>
-    console.log(`Error found inside the mongoose connect method: ${err}`)
-  );
+const SALT_WORK_FACTOR = 10;
 
 interface Users {
   username: string;
