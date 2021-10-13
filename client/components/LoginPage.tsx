@@ -57,7 +57,7 @@ const LoginPage = ({
       </div>
 
       <div id='signUpArea'>
-        <h2 id='noAccount'>Don&apos;t have an account? </h2>
+        <h2 id='noAccount'>Don&apos;t have an account?</h2>
         <button type='button' onClick={signUp} id='signUpBtn' value='Sign-Up'>
           Sign up
         </button>
