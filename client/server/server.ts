@@ -1,6 +1,7 @@
 import express from 'express';
 import userController from './userController';
-import kafkaController from './kafkaController';
+import kafkaRouter from './kafkaRouter';
+
 const app = express();
 
 app.use(express.json());
@@ -23,9 +24,7 @@ app.post(
     res.status(200).send(res.locals.user);
   }
 );
-
-app.use('/kafka/refresh', kafkaController.refresh);
-app.use('/kafka', kafkaController.getInitial);
+app.use('/kafka', kafkaRouter);
 
 //type of error object
 type errorType = {
@@ -33,7 +32,11 @@ type errorType = {
   status: number;
   message: { err: string };
 };
-
+//404 global handler
+app.use('*', (req, res) => {
+  res.sendStatus(404);
+});
+//generic error handler, can we make this better?
 app.use(
   (
     err: express.ErrorRequestHandler,
