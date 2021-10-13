@@ -89,28 +89,6 @@ const controller: controller = {
           .fetchTopicOffsets(el)
           .then((result) => (offsets[el] = result));
       })
-    //   .then(() => {
-    //     consumer.run({
-    //       eachMessage: async (e) => {
-    //         //e has partition on it!!!!!
-    //         // const { message } = e;
-    //         // const splitArr = message!.value!.toString().split('@');
-    //         // if (splitArr.length === 2) {
-    //         //   const value = Number(splitArr[0]);
-    //         //   const time = Number(splitArr[1]) - 163300000;
-    //         //   consumerCache.push({ value, time });
-    //         //   //just for this implementation of line graph, not needed for count-based-figures/maps
-    //         //   consumerCache.sort(
-    //         //     (a: { time: number }, b: { time: number }) => a.time - b.time
-    //         //   );
-    //         // }
-    //         //just looking at partition, we see a small amount of preference for initial 2-3 partitions then it evens out, reassigning partitions  in the middle of a producer stream greatly throws off load balance though
-    //         consumerCache[e.partition + 1].value = Math.max(
-    //           Number(e.message.offset),
-    //           consumerCache[e.partition + 1].value
-    //         ); 
-    //       },
-    // )
     ).then(() => {
       //getting max number of partitions for entire broker (must have for SQL, as table columns cannot be altered after creating)
       //so each topic will have the same number of partitions in SQL db, but null values in sqldb indicate the partition does not exist on that topic in kafka
