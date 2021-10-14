@@ -26,20 +26,21 @@ function createServer(): express.Application {
   );
 
   app.use('/kafka/refresh', kafkaController.refresh);
-  app.use('/kafka', kafkaController.getInitial);
-
   //type of error object
   type errorType = {
     log: string;
     status: number;
     message: { err: string };
   };
-
+  app.use('*', (req, res) => {
+    res.sendStatus(404);
+  });
   app.use(
     (
       err: express.ErrorRequestHandler,
       req: express.Request,
-      res: express.Response
+      res: express.Response,
+      next: express.NextFunction
     ) => {
       const defaultErr: errorType = {
         log: 'Express error handler caught unknown middleware error',

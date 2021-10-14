@@ -25,8 +25,7 @@ userController.createUser = async (req, res, next) => {
       password,
     };
     const user = await userModels.findOne({ username });
-
-    if (user) return res.send('User already created').status(304);
+    if (user) return res.status(304).send('User already created');
     console.log('the password from create user method is ', newUser.password);
     await userModels.create(newUser);
     console.log(`User: ${username} signed up`);
@@ -60,7 +59,7 @@ userController.verifyUser = async (req, res, next) => {
   } catch (err) {
     next({
       log: 'Express error handler caught in userController.verifyUser middleware',
-      status: 500,
+      status: 401,
       message: { err },
     });
   }
