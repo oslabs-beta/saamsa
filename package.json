@@ -13,7 +13,7 @@
   "scripts": {
     "webpack": " tsc client/index.tsx --declaration --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./client/server/server.ts --moduleResolution node --outDir ./dist/server --esModuleInterop true",
     "start": "tsc index.ts --outDir ./dist/electron && electron ./dist/electron/index.js",
-    "test": "NODE_ENV=testing jest",
+    "test": "NODE_ENV=testing jest GraphUnitTests SelectorUnitTests LoginPageUnitTests && NODE_ENV=testing TEST_ENVIRONMENT=node jest serverUnitTests sqlUnitTests",
     "both": "npm run webpack && npm run start",
     "package": "electron-forge package",
     "make": "electron-forge make"

@@ -1,6 +1,3 @@
-import { TextEncoder } from 'util';
-
-global.TextEncoder = TextEncoder;
 import { Schema, model } from 'mongoose';
 import * as express from 'express';
 const bcrypt = require('bcryptjs');
