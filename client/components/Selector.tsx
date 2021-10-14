@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import '../../client/scss/Selector.scss';
 interface Props {
   setData: (arg: { time: number; value: number }[]) => void;
   setTopic: (arg: string) => void;
@@ -133,17 +134,32 @@ const Selector = ({
   }, []);
   return (
     <div>
-      SELECT YOUR BROKER :&#41;
-      <select name='bootstrap' id='bootstrap' onChange={changeServer}>
-        <option></option>
-        {serverListArr}
-      </select>
-      <label htmlFor='topicInput'>
-        Enter a new broker address
-        <input id='bootstrapInput' placeholder='localhost:00000'></input>
-      </label>
-      <button onClick={createTable}>Submit</button>
-      SELECT YOUR TOPIC :&#41;
+      <div>
+        Saamsa
+      </div>
+      <div className="brokersDiv">
+          <div className='newBrokerDiv'>
+              <label htmlFor='topicInput'>
+                Enter a new broker address
+              </label>
+              <input id='bootstrapInput' placeholder='localhost:00000'></input>
+          </div>
+
+          <div className="or">
+            OR
+          </div>
+        <div className="brokerSelector">
+          Select your broker:
+          <select name='bootstrap' id='bootstrap' onChange={changeServer}>
+            <option></option>
+            {serverListArr}
+          </select>
+          </div>
+          <button className="submitBtn" onClick={createTable}>Submit</button>
+     </div> 
+
+      
+      Select your topic: 
       <select name='topics' id='topics' onChange={changeTopics}>
         <option></option>
         {topicListArr}

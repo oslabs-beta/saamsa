@@ -1,0 +1,28 @@
+@import "_variables";
+
+.newBrokerDiv{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.or{
+    margin-top:10px;
+}
+
+.brokerSelector{
+    margin-top:10px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.brokersDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.submitBtn{
+    margin-top:10px;
+    width: 60px;
+
+}
