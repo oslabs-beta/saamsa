@@ -3,7 +3,7 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
   const [rendering, setRendering] = React.useState<boolean>(false);
@@ -109,13 +109,7 @@ const App = (): JSX.Element => {
           />
           {!!topic.length && (
             <Graph
-              loginStatus={loginStatus}
               data={data}
-              setData={setData}
-              bootstrap={bootstrap}
-              topic={topic}
-              setBootstrap={setBootstrap}
-              setTopic={setTopic}
             />
           )}
         </div>
