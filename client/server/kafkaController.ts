@@ -29,7 +29,7 @@ const controller: controller = {
   fetchTopics: function (req, res, next) {
     const { bootstrap } = req.body;
     //cleaning it up for SQL, which can't have colons
-    const bootstrapSanitized = bootstrap.replaceAll(':', '_');
+    const bootstrapSanitized = bootstrap.replace(':', '_');
     //opening connection to sqlite db
     try {
       open({
@@ -69,7 +69,7 @@ const controller: controller = {
     //if there is no server given, we send an error page
     if (!bootstrap.length) res.sendStatus(403);
     //sanitizing for sql
-    const bootstrapSanitized = bootstrap.replaceAll(':', '_');
+    const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
       clientId: 'testing2',
       brokers: [`${bootstrap}`], //must be unsanitized form
@@ -140,7 +140,7 @@ const controller: controller = {
   //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
   refresh: function (req, res) {
     const { bootstrap, topic } = req.body;
-    const bootstrapSanitized = bootstrap.replaceAll(':', '_');
+    const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
       brokers: [`${bootstrap}`],
       clientId: 'testing2', //hardcoded, probably should use username from state

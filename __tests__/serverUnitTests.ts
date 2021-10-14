@@ -47,29 +47,3 @@ describe('user login/signup unit tests', () => {
     expect(result?.password).not.toBe(password);
   });
 });
-
-describe('kafka unit tests', () => {
-  beforeAll(() => {
-    open({
-      filename: './testdb.db',
-      driver: sqlite3.Database,
-    }).then((db) => {
-      db.exec('CREATE TABLE test_test (topic, partition_0, partition_1)');
-    });
-  });
-  afterAll(() => {
-    open({
-      filename: './testdb.db',
-      driver: sqlite3.Database,
-    }).then((db) => {
-      db.exec('DROP TABLE test_test');
-    });
-  });
-  it('should be able to create tables in local sql database', async () => {
-    const result = await request(app).post('/kafka/fetchTables');
-    console.log(result);
-  });
-  // xit('should fetch all table from local sql database');
-  // xit('should fetch topics from local sql database');
-  // xit('should fetch partitions for a specific topic in local sql database');
-});

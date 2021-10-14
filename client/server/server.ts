@@ -11,7 +11,7 @@ connect(MONGO_URI, {
 } as ConnectOptions)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(3000, () => console.log('server listening on port 3000 :)'));
+    app.listen(3001, () => console.log('server listening on port 3001 :)'));
   })
   .catch((err: Error) =>
     console.log(`Error found inside the mongoose connect method: ${err}`)

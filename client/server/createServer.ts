@@ -1,6 +1,6 @@
 import express from 'express';
 import userController from './userController';
-import kafkaController from './kafkaController';
+import kafkaRouter from './kafkaRouter';
 function createServer(): express.Application {
   const app = express();
 
@@ -25,7 +25,7 @@ function createServer(): express.Application {
     }
   );
 
-  app.use('/kafka/refresh', kafkaController.refresh);
+  app.use('/kafka', kafkaRouter);
   //type of error object
   type errorType = {
     log: string;
@@ -48,7 +48,7 @@ function createServer(): express.Application {
         message: { err: 'An error occurred' },
       };
       const errorObj = { ...defaultErr, ...err };
-      console.log(errorObj.log);
+      console.log(err);
       return res.status(errorObj.status).json(errorObj.message);
     }
   );

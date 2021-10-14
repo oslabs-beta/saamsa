@@ -26,16 +26,33 @@ const Selector = ({
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
   for (let i = 0; i < serverList.length; i++) {
-    serverListArr.push(<option value={serverList[i]}>{serverList[i]}</option>);
+    serverListArr.push(
+      <option
+        className='serverOption'
+        key={serverList[i] + i.toString()}
+        value={serverList[i]}
+      >
+        {serverList[i]}
+      </option>
+    );
   }
   //below creates an array filled with options for the topics of selected bootstrap
   const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
-    topicListArr.push(<option value={topicList[i]}>{topicList[i]}</option>);
+    topicListArr.push(
+      <option
+        key={topicList[i] + i.toString()}
+        className='topicOption'
+        value={topicList[i]}
+      >
+        {topicList[i]}
+      </option>
+    );
   }
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
     const bootstrap: HTMLInputElement | null =
+      //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
       url: 'http://localhost:3001/kafka/createTable',
@@ -60,6 +77,7 @@ const Selector = ({
   };
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
@@ -83,10 +101,12 @@ const Selector = ({
   };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const mainContainer = document.querySelector('#mainContainer');
     if (mainContainer!.className.length > 0)
       //checking if the maincontainer has an interval already set on it, and if it does, we clear it
       window.clearInterval(Number(mainContainer!.className));
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const newTopic: HTMLSelectElement | null = document.querySelector(
       '#topics option:checked'
     ); //grabbing current selected topic
@@ -99,6 +119,7 @@ const Selector = ({
         data: { topic: newTopic?.value, bootstrap },
       })
         .then((response) => {
+          //change this to be compatible with  enzyme testing, use event.target.etcetc
           document.querySelector('svg')?.remove();
           return response;
         })
@@ -126,16 +147,17 @@ const Selector = ({
       setData([]);
     }
   };
-
-  React.useEffect(() => {
-    console.log('hereee');
-    fetchTables();
-  }, []);
+  if (process.env.NODE_ENV !== 'testing') {
+    React.useEffect(() => {
+      console.log('hereee');
+      fetchTables();
+    }, []);
+  }
   return (
     <div>
       SELECT YOUR BROKER :&#41;
       <select name='bootstrap' id='bootstrap' onChange={changeServer}>
-        <option></option>
+        <option className='serverOption'></option>
         {serverListArr}
       </select>
       <label htmlFor='topicInput'>
@@ -145,7 +167,7 @@ const Selector = ({
       <button onClick={createTable}>Submit</button>
       SELECT YOUR TOPIC :&#41;
       <select name='topics' id='topics' onChange={changeTopics}>
-        <option></option>
+        <option className='topicOption'></option>
         {topicListArr}
       </select>
     </div>

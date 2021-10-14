@@ -11,13 +11,9 @@
   "description": "this is testing",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "webpack": " tsc client/index.tsx --declaration --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./client/server/server.ts --moduleResolution node --outDir ./dist/server --esModuleInterop true",
-=======
-    "webpack": "tsc client/index.tsx --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./client/server/server.ts --moduleResolution node --outDir ./dist/server --esModuleInterop true",
->>>>>>> dev
     "start": "tsc index.ts --outDir ./dist/electron && electron ./dist/electron/index.js",
-    "test": "jest",
+    "test": "NODE_ENV=testing jest",
     "both": "npm run webpack && npm run start",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -51,7 +47,6 @@
     "@types/react-dom": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
-<<<<<<< HEAD
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
     "babel-jest": "^27.2.4",
     "electron": "^15.1.1",
@@ -61,35 +56,24 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "ts-jest": "^27.0.5",
-=======
-    "eslint": "^7.32.0",
-    "eslint-plugin-react": "^7.26.1",
->>>>>>> dev
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-react": "^7.14.5",
+    "@testing-library/react": "^12.1.2",
     "@types/supertest": "^2.0.11",
     "axios": "^0.22.0",
     "babel-loader": "^8.2.2",
     "bcryptjs": "^2.4.3",
     "css-loader": "^6.3.0",
-<<<<<<< HEAD
-    "d3": "^6.7.0",
-=======
-    "d3": "^7.1.1",
+    "d3": "6.7.0",
     "electron": "^15.1.1",
->>>>>>> dev
     "electron-squirrel-startup": "^1.0.0",
     "enzyme": "^3.11.0",
     "express": "^4.17.1",
-<<<<<<< HEAD
-    "jest": "^27.2.4",
-=======
     "kafkajs": "^1.15.0",
->>>>>>> dev
     "mongoose": "^6.0.9",
     "react-test-renderer": "^17.0.2",
     "sass": "^1.42.1",

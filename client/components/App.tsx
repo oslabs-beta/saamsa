@@ -96,7 +96,7 @@ const App = (): JSX.Element => {
       );
     } else if (loginStatus === true) {
       return (
-        <div id='mainContainer'>
+        <div>
           <Selector
             setData={setData}
             setTopic={setTopic}
@@ -107,17 +107,7 @@ const App = (): JSX.Element => {
             serverList={serverList}
             setServerList={setServerList}
           />
-          {!!topic.length && (
-            <Graph
-              loginStatus={loginStatus}
-              data={data}
-              setData={setData}
-              bootstrap={bootstrap}
-              topic={topic}
-              setBootstrap={setBootstrap}
-              setTopic={setTopic}
-            />
-          )}
+          <Graph data={data} />
         </div>
       );
     }

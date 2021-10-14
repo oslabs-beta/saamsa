@@ -4,11 +4,6 @@ import axios from 'axios';
 import '../../client/scss/Graph.scss';
 interface Props {
   data: Array<{ time: number; value: number }>;
-<<<<<<< HEAD
-  setData: ([{ time, value }]: { time: number; value: number }[]) => void;
-  loginStatus: boolean;
-=======
->>>>>>> dev
 }
 const Graph = ({ data }: Props): JSX.Element => {
   //below always remove old graph on render/re-render
@@ -46,10 +41,7 @@ const Graph = ({ data }: Props): JSX.Element => {
     const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> = d3
       .select('#mainContainer')
       .append('svg');
-<<<<<<< HEAD
-=======
     //calculating the x-scale and y-scale functions
->>>>>>> dev
     const xScale = d3
       .scaleLinear()
       .domain([dataTimeMin, dataTimeMax])
@@ -104,28 +96,12 @@ const Graph = ({ data }: Props): JSX.Element => {
       .attr('x', -75)
       .attr('y', -25); // Relative to the y axis.
   }
-<<<<<<< HEAD
   return (
     <div>
-      <h2>Graph</h2>
-      <button id='connectButton' onClick={connectAndInterval}>
-        Connect to Kafka
-      </button>
-      <button
-        id='disconnectButton'
-        onClick={() =>
-          clearInterval(
-            Number(document.querySelector('#mainContainer')!.className)
-          )
-        }
-      >
-        Disconnect From Kafka
-      </button>
+      {!!data.length && <h2>Graph</h2>}
+      <div id='mainContainer'></div>
     </div>
   );
-=======
-  return <div>{!!data.length && <h2>Graph</h2>}</div>;
->>>>>>> dev
 };
 
 export default Graph;
