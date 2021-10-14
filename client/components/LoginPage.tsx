@@ -21,9 +21,10 @@ const LoginPage = ({
 }: Props): JSX.Element => {
   return (
     <div className='mainWrapper'>
-      <div className='headingWrapper'>
-    <h1 className='heading'>Saamsa</h1>
+    <div className='headingWrapper'>
+      <h1 className='heading'>Saamsa</h1>
     </div>
+    <img className="saamsaLogo" src="https://media.discordapp.net/attachments/890965712405946428/898253886811418634/roach_hat.png?width=722&height=722"></img>
     <div className='loginWrapper'>
       <div className='loginTitle'>
         Welcome
@@ -59,13 +60,13 @@ const LoginPage = ({
         </button>
         <button id='forgotPassword'> Forgot password? </button>
         <div id='loginAttemptMessage'>{loginAttempt}</div>
-      </div>
 
-      <div id='signUpArea'>
+        <div id='signUpArea'>
         <h2 id='noAccount'>Don&apos;t have an account?</h2>
         <button type='button' onClick={signUp} id='signUpBtn' value='Sign-Up'>
           Sign up now!
         </button>
+      </div>
       </div>
     </div>
     </div>

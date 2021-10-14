@@ -7,7 +7,9 @@ body {
     margin: 0px;
     width: 100%;
     height: 100%;
-    background-image: '../images/cockroach.jpeg';
+    // background-image: url('https://media.discordapp.net/attachments/890965712405946428/898253886811418634/roach_hat.png?width=722&height=722');
+    // background-attachment: fixed;
+    // background-position: center;
 }
 .headingWrapper {
   background-color: $saamsaGrey;
@@ -15,40 +17,52 @@ body {
   top: 0px;
   width: 100%;
   height: 60px;
-  align-items: center;
+  // align-items: center;
+  // text-align:center;
+}
+.saamsaLogo{
+  width: 450px;
+  height: 450px;
+  position: fixed;
+  bottom: 0;
 }
 .heading{
-  font-size: 50px;
+  font-size: 60px;
   color: $saamsaBlack ;
   opacity: 1;
   margin-bottom:40px;
   margin-top: 0;
   font-family: $fontTitle;
+  line-height:51px;
+  vertical-align:middle;
 }
 .loginTitle{
     font-family: $fontTitle;
     font-size: 30px;
     position: relative;
     left: 5px;
-
+    float:left;
+    margin-left: 7px;
 }
 
 .loginWrapper{
  
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items:flex-start;
     background-color: $saamsaWhite;
-    width: 300px;
-    margin-top: 25%; //make it responsive
-    margin-left: 60%; // make it responsive
-    border: 1px solid black;
+    width: 220px;
+    height: 320px;
+    margin-top: 25%; 
+    margin-left: 60%; 
+    border: 2px solid black;
 }
 
 .inputFields{
   border:none;
   border-bottom: 2px solid black;
   width: 200px;
+  margin-left: 7px;
 }
 
 #usernameAndPasswordWrapper{
@@ -67,6 +81,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    margin-left: 7px;
   }
 
   #forgotPassword {
@@ -75,13 +90,14 @@ body {
     font-size: 12px;
     background-color: transparent;
     border-color: transparent;
+    margin-left: 7px;
   }
-  h2 {
-    margin-top: 30px;
-    color: #313A46;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 12px;
-  }
+  // h2 {
+  //   margin-top: 30px;
+  //   color: #313A46;
+  //   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  //   font-size: 12px;
+  // }
   #loginBtn{
     border-radius: 4px;
     background-color: $saamsaYellow;
