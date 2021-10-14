@@ -1,12 +1,5 @@
 {
   "name": "firstrepo",
-  "jest": {
-    "setupTestFrameworkScriptFile": "./__tests__/testSetup.ts",
-    "transformIgnorePatterns": [
-      "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)"
-    ],
-    "testEnvironment": "node"
-  },
   "version": "1.0.0",
   "description": "this is testing",
   "main": "index.js",
