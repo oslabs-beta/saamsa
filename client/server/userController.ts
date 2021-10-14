@@ -26,9 +26,7 @@ userController.createUser = async (req, res, next) => {
     };
     const user = await userModels.findOne({ username });
     if (user) return res.status(304).send('User already created');
-    console.log('the password from create user method is ', newUser.password);
     await userModels.create(newUser);
-    console.log(`User: ${username} signed up`);
     res.locals.user = username;
     return next();
   } catch (err) {
@@ -48,12 +46,9 @@ userController.verifyUser = async (req, res, next) => {
     const user = await userModels.findOne({ username });
 
     const hashedPW = user!.password;
-    console.log('hello');
     const compare = bcrypt.compareSync(password, hashedPW);
-    console.log('compare: ', compare);
     if (!compare)
       throw Error('Incorrect username or password. Please try again.');
-    console.log(`User: ${username} logged in`);
     res.locals.user = username;
     next();
   } catch (err) {

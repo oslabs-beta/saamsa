@@ -16,8 +16,6 @@ const userSchema: Schema<Users> = new Schema({
 userSchema.pre<Users>(
   'save',
   function (this: Users, next: (err?: Error | undefined) => void) {
-    console.log('request body is ', express.request.body);
-    console.log('The this password is ', this.password);
     bcrypt.hash(this.password, SALT_WORK_FACTOR, (err: Error, hash: string) => {
       if (err) return next(err);
       this.password = hash;

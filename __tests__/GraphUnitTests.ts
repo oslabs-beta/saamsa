@@ -29,7 +29,6 @@ describe('Graph Unit Tests', () => {
     const wrapper = mount(Graph({ data: [{ value: 0, time: 0 }] }));
     const $ = cheerio.load(wrapper.html());
     await waitFor(() => {
-      console.log($('svg'));
       expect($('svg')).not.toEqual({});
       expect($('path')).not.toEqual({});
       expect($('text')).not.toEqual({});
