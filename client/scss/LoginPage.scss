@@ -1,33 +1,67 @@
 
+@import "_variables";
 body { 
-    background-color: #eef1f2;
+    background-color: $saamsaYellow;
     background-repeat: no-repeat;
     background-position-x: center;
     margin: 0px;
+    width: 100%;
+    height: 100%;
+    background-image: '../images/cockroach.jpeg';
+}
+.headingWrapper {
+  background-color: $saamsaGrey;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  height: 60px;
+  align-items: center;
+}
+.heading{
+  font-size: 50px;
+  color: $saamsaBlack ;
+  opacity: 1;
+  margin-bottom:40px;
+  margin-top: 0;
+  font-family: $fontTitle;
+}
+.loginTitle{
+    font-family: $fontTitle;
+    font-size: 30px;
+    position: relative;
+    left: 5px;
+
 }
 
 .loginWrapper{
-    margin-top: 40px;
+ 
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: $saamsaWhite;
+    width: 300px;
+    margin-top: 25%; //make it responsive
+    margin-left: 60%; // make it responsive
+    border: 1px solid black;
 }
 
-.heading{
-        font-size: 60px;
-        color: #571fac;
-        opacity: 1;
-        margin-bottom:40px;
-        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+.inputFields{
+  border:none;
+  border-bottom: 2px solid black;
+  width: 200px;
 }
 
 #usernameAndPasswordWrapper{
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 40px;
         align-items: center;
         margin-bottom: 20px;
+        margin-top: 20px;
+        border: none;
+        // border-bottom: 2px solid red;
 }
+
 #buttonsDiv {
     display: flex;
     flex-direction: column;
@@ -50,30 +84,35 @@ body {
   }
   #loginBtn{
     border-radius: 4px;
-    background-color: #571fac;
-    border: 0px solid transparent;
-    width: 70px;
-    height: 40px;
+    background-color: $saamsaYellow;
+    border: 1px solid black;
+    height: 30px;
     font-size: 15px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color: #e6ebee;
+    color: $saamsaBlack;
+    width: 200px;
+  }
+  #noAccount{
+    font-size: 10px;
+    font-family: $buttonTitle;
+
   }
 #signUpArea {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
+    justify-content: space-around;
   }
 
   #signUpBtn {
     border-radius: 4px;
     background-color: transparent;
-    border: 1px solid #571fac;
+    border: 0px transparent;
     width: 70px;
     height: 30px;
-    font-size: 15px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color: #571fac;
+    font-size: 10px;
+    font-family: $buttonTitle;
+    color: $saamsaBlack;
   }
   #signupBtn:hover {
     cursor: pointer;

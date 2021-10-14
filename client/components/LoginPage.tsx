@@ -20,9 +20,13 @@ const LoginPage = ({
   signUp,
 }: Props): JSX.Element => {
   return (
+    <div className='mainWrapper'>
+      <div className='headingWrapper'>
+    <h1 className='heading'>Saamsa</h1>
+    </div>
     <div className='loginWrapper'>
       <div className='loginTitle'>
-        <h1 className='heading'>Saamsa</h1>
+        Welcome
       </div>
 
       {/* <img className="backgroundImage" src="https://t3.ftcdn.net/jpg/02/81/53/44/360_F_281534428_7egrXk3Wm5qR9JXioYSqhE7fXTzaYiXW.jpg" /> */}
@@ -33,13 +37,14 @@ const LoginPage = ({
           placeholder='username'
           id='username'
           autoComplete='off'
-        />
+        className='inputFields'/>
         <input
           name='password'
           placeholder='password'
           id='password'
           autoComplete='off'
           type='password'
+          className='inputFields'
         />
       </div>
 
@@ -59,9 +64,10 @@ const LoginPage = ({
       <div id='signUpArea'>
         <h2 id='noAccount'>Don&apos;t have an account?</h2>
         <button type='button' onClick={signUp} id='signUpBtn' value='Sign-Up'>
-          Sign up
+          Sign up now!
         </button>
       </div>
+    </div>
     </div>
   );
 };
