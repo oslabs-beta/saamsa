@@ -134,9 +134,9 @@ const Selector = ({
   }, []);
   return (
     <div>
-      <div>
-        Saamsa
-      </div>
+    <div className='headingWrapper'>
+      <h1 className='heading'>Saamsa</h1>
+    </div>
       <div className="brokersDiv">
           <div className='newBrokerDiv'>
               <label htmlFor='topicInput'>
