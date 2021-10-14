@@ -109,13 +109,7 @@ const App = (): JSX.Element => {
           />
           {!!topic.length && (
             <Graph
-              loginStatus={loginStatus}
               data={data}
-              setData={setData}
-              bootstrap={bootstrap}
-              topic={topic}
-              setBootstrap={setBootstrap}
-              setTopic={setTopic}
             />
           )}
         </div>
