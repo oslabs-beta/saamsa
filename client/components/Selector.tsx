@@ -146,8 +146,9 @@ const Selector = ({
                   Enter a new broker address
                 </label>
                 <input id='bootstrapInput' placeholder='localhost:00000'></input>
+                
             </div>
-
+            <button className="submitBtn" onClick={createTable}>Submit</button>
             <div className="or">
               OR
             </div>
@@ -159,7 +160,7 @@ const Selector = ({
               {serverListArr}
             </select>
             </div>
-            <button className="submitBtn" onClick={createTable}>Submit</button>
+            
           
 
           <div className="topicSelector"> 
