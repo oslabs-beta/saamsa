@@ -133,38 +133,44 @@ const Selector = ({
     fetchTables();
   }, []);
   return (
-    <div>
-    <div className='headingWrapper'>
-      <h1 className='heading'>Saamsa</h1>
-    </div>
+    <div className='mainWrapper'>
+
+      <div className='headingWrapper'>
+        <h1 className='heading'>Saamsa</h1>
+      </div>
+
       <div className="brokersDiv">
-          <div className='newBrokerDiv'>
-              <label htmlFor='topicInput'>
-                Enter a new broker address
-              </label>
-              <input id='bootstrapInput' placeholder='localhost:00000'></input>
-          </div>
 
-          <div className="or">
-            OR
-          </div>
-        <div className="brokerSelector">
-          Select your broker:
-          <select name='bootstrap' id='bootstrap' onChange={changeServer}>
-            <option></option>
-            {serverListArr}
-          </select>
-          </div>
-          <button className="submitBtn" onClick={createTable}>Submit</button>
-     </div> 
+            <div className='newBrokerDiv'>
+                <label htmlFor='topicInput'>
+                  Enter a new broker address
+                </label>
+                <input id='bootstrapInput' placeholder='localhost:00000'></input>
+            </div>
 
-      
-      Select your topic: 
-      <select name='topics' id='topics' onChange={changeTopics}>
-        <option></option>
-        {topicListArr}
-      </select>
-    </div>
+            <div className="or">
+              OR
+            </div>
+
+          <div className="brokerSelector">
+            Select your broker:
+            <select name='bootstrap' id='bootstrap' onChange={changeServer}>
+              <option></option>
+              {serverListArr}
+            </select>
+            </div>
+            <button className="submitBtn" onClick={createTable}>Submit</button>
+          
+
+          <div className="topicSelector"> 
+            Select your topic: 
+            <select name='topics' id='topics' onChange={changeTopics}>
+              <option></option>
+              {topicListArr}
+            </select>
+          </div>
+        </div>
+      </div> 
   );
 };
 

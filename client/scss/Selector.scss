@@ -1,9 +1,43 @@
 @import "_variables";
+.mainWrapper{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.headingWrapper {
+    background-color: $saamsaYellow;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 60px;
+    // align-items: center;
+    // text-align:center;
+  }
+  
+  .heading{
+    font-size: 60px;
+    color: $saamsaBlack ;
+    opacity: 1;
+    margin-bottom:40px;
+    margin-top: 0;
+    font-family: $fontTitle;
+    line-height:51px;
+    vertical-align:middle;
+  }
+  .brokersDiv{
+    background-color: $saamsaGrey;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+    align-content: center
+  }
 
 .newBrokerDiv{
     display: flex;
     flex-direction: row;
     gap: 20px;
+    margin-top: 10px;
 }
 .or{
     margin-top:10px;
@@ -16,13 +50,11 @@
     gap: 20px;
 }
 
-.brokersDiv{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+
 .submitBtn{
     margin-top:10px;
     width: 60px;
-
+}
+.topicSelector{
+    margin-top:10px;
 }
