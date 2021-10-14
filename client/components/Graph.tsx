@@ -65,7 +65,8 @@ const Graph = ({ data }: Props): JSX.Element => {
       .data(data)
       .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
       .attr('fill', 'none')
-      .attr('stroke', '#ccc')
+      .attr('stroke', '#000')
+      .attr('stroke-width','2px')
       .attr('class', 'line')
       .attr('d', line(data));
     //defining the xaxis from the scales
@@ -80,7 +81,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       //adding label
       .append('text')
       .attr('class', 'axis-label')
-      .text('Number of partitions')
+      .text('Partition Index')
       .attr('x', width - 140)
       .attr('y', 25); // Relative to the x axis.
     svg

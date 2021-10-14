@@ -52,8 +52,15 @@
 
 
 .submitBtn{
-    margin-top:10px;
-    width: 60px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: $saamsaYellow;
+    border: 1px solid black;
+    height: 30px;
+    font-size: 15px;
+    font-family: $buttonTitle;
+    color: $saamsaBlack;
+    width: 100px;
 }
 .topicSelector{
     margin-top:10px;
