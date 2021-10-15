@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import '../../client/scss/Selector.scss';
 interface Props {
   setData: (arg: { time: number; value: number }[]) => void;
   setTopic: (arg: string) => void;
@@ -154,22 +155,37 @@ const Selector = ({
     }, []);
   }
   return (
-    <div>
-      SELECT YOUR BROKER :&#41;
-      <select name='bootstrap' id='bootstrap' onChange={changeServer}>
-        <option className='serverOption'></option>
-        {serverListArr}
-      </select>
-      <label htmlFor='topicInput'>
-        Enter a new broker address
-        <input id='bootstrapInput' placeholder='localhost:00000'></input>
-      </label>
-      <button onClick={createTable}>Submit</button>
-      SELECT YOUR TOPIC :&#41;
-      <select name='topics' id='topics' onChange={changeTopics}>
-        <option className='topicOption'></option>
-        {topicListArr}
-      </select>
+    <div className='mainWrapper'>
+      <div className='headingWrapper'>
+        <h1 className='heading'>Saamsa</h1>
+      </div>
+
+      <div className='brokersDiv'>
+        <div className='newBrokerDiv'>
+          <label htmlFor='topicInput'>Enter a new broker address</label>
+          <input id='bootstrapInput' placeholder='localhost:00000'></input>
+        </div>
+        <button className='submitBtn' onClick={createTable}>
+          Submit
+        </button>
+        <div className='or'>OR</div>
+
+        <div className='brokerSelector'>
+          Select your broker:
+          <select name='bootstrap' id='bootstrap' onChange={changeServer}>
+            <option></option>
+            {serverListArr}
+          </select>
+        </div>
+
+        <div className='topicSelector'>
+          Select your topic:
+          <select name='topics' id='topics' onChange={changeTopics}>
+            <option></option>
+            {topicListArr}
+          </select>
+        </div>
+      </div>
     </div>
   );
 };
