@@ -25,15 +25,20 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const updateTables = (): void => {
-    console.log(bootstrap);
+    console.log('from update');
     if (bootstrap.length) {
       axios({
         method: 'post',
         url: 'http://localhost:3001/kafka/updateTables',
         data: { bootstrap },
+      }).then((response) => {
+        console.log(response.data);
+        const temp: { topic: string }[] = [...response.data];
+        setTopicList(temp.map((el) => el.topic));
       });
     }
   };
+
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
   for (let i = 0; i < serverList.length; i++) {
@@ -98,6 +103,7 @@ const Selector = ({
       setBootstrap(newBootstrap?.value.replace('_', ':'));
       fetchTopics(newBootstrap?.value);
     }
+    updateTables();
   };
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
@@ -141,6 +147,7 @@ const Selector = ({
         });
       //setting interval of same request above so we autorefresh it (pull model)
       const intervalId = window.setInterval(() => {
+        updateTables();
         axios({
           method: 'POST',
           url: 'http://localhost:3001/kafka/refresh',
@@ -164,11 +171,10 @@ const Selector = ({
     React.useEffect(() => {
       fetchTables();
       console.log('literally anything');
-      window.setInterval(updateTables, 1000);
     }, []);
   }
   return (
-    <div className='mainWrapper'>
+    <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 className='heading'>Saamsa</h1>
       </div>

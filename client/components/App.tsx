@@ -12,6 +12,7 @@ const App = (): JSX.Element => {
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
+  console.log(bootstrap);
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>

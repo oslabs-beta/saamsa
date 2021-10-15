@@ -44,18 +44,20 @@ const controller: controller = {
         (db) => {
           data.forEach((el) => {
             db.all(
-              `SELECT topic FROM ${bootstrapSanitized} WHERE topic=${el}`
+              `SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`
             ).then((result) => {
               if (result.length === 0) {
                 admin.fetchTopicOffsets(el).then((response) => {
-                  let colString = '';
-                  let valString = '';
+                  let colString = 'topic, ';
+                  let valString = `'${el}', `;
                   response.forEach((partition) => {
                     valString += `${partition.offset},`;
                     colString += `partition_${partition.partition},`;
-                    valString = valString.slice(0, valString.length - 1);
-                    colString = colString.slice(0, colString.length - 1);
                   });
+                  valString = valString.slice(0, valString.length - 1);
+                  colString = colString.slice(0, colString.length - 1);
+                  console.log(valString);
+                  console.log(colString);
                   db.exec(
                     `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
                   );
@@ -67,6 +69,7 @@ const controller: controller = {
       );
     });
     admin.disconnect();
+    next();
   },
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
