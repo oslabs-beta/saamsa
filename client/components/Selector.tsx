@@ -173,7 +173,7 @@ const Selector = ({
         <div className='brokerSelector'>
           Select your broker:
           <select name='bootstrap' id='bootstrap' onChange={changeServer}>
-            <option></option>
+            <option className='serverOption'></option>
             {serverListArr}
           </select>
         </div>
@@ -181,7 +181,7 @@ const Selector = ({
         <div className='topicSelector'>
           Select your topic:
           <select name='topics' id='topics' onChange={changeTopics}>
-            <option></option>
+            <option className='topicOption'></option>
             {topicListArr}
           </select>
         </div>
