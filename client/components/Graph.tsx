@@ -51,24 +51,15 @@ const Graph = ({ data }: Props): JSX.Element => {
       .domain([dataValueMax, dataValueMin])
       .range([0, height - margin.top - margin.bottom]);
     //creating the function that will take in the data and produce the path element
-    const line = d3
+    const histogram = d3
       .line<typeof data[0]>()
-      .defined((d) => d.value !== null)
-      .curve(d3.curveBasis)
-      .x((d) => xScale(d.time))
-      .y((d) => yScale(d.value));
+      .value((d) => d)
+      .domain([dataTimeMin, dataTimeMax])
+      .thresholds(xScale.ticks(70));
+    const bins = histogram(data.map((el) => el.value));
     //putting the data into svg and moving it around according to the margin
-    svg
-      .attr('width', width)
-      .attr('height', height)
-      .append('path')
-      .data(data)
-      .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
-      .attr('fill', 'none')
-      .attr('stroke', '#000')
-      .attr('stroke-width','2px')
-      .attr('class', 'line')
-      .attr('d', line(data));
+    svg.attr('width', width).attr('height', height);
+
     //defining the xaxis from the scales
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
@@ -81,7 +72,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       //adding label
       .append('text')
       .attr('class', 'axis-label')
-      .text('Partition Index')
+      .text('Number of partitions')
       .attr('x', width - 140)
       .attr('y', 25); // Relative to the x axis.
     svg
@@ -96,6 +87,23 @@ const Graph = ({ data }: Props): JSX.Element => {
       .attr('transform', 'rotate(-90)')
       .attr('x', -75)
       .attr('y', -25); // Relative to the y axis.
+
+    svg
+      .selectAll('rect')
+      .data(bins)
+      .enter()
+      .append('rect')
+      .attr('x', 1)
+      .attr('transform', function (d) {
+        return 'translate(' + xScale(d.x0!) + ',' + yScale(d.length) + ')';
+      })
+      .attr('width', function (d) {
+        return xScale(d.x1!) - xScale(d.x0) - 1;
+      })
+      .attr('height', function (d) {
+        return height - yScale(d.length);
+      })
+      .style('fill', '#69b3a2');
   }
   return (
     <div>

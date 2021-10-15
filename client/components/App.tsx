@@ -3,7 +3,8 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  console.log('rendering app');
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
   const [rendering, setRendering] = React.useState<boolean>(false);
@@ -86,7 +87,7 @@ const App = (): JSX.Element => {
   if (!rendering) {
     if (loginStatus === false) {
       return (
-        <div>
+        <div key='loginPage'>
           <LoginPage
             loginButton={loginButton}
             signUp={signUp}
@@ -96,7 +97,7 @@ const App = (): JSX.Element => {
       );
     } else if (loginStatus === true) {
       return (
-        <div>
+        <div key='selector'>
           <Selector
             setData={setData}
             setTopic={setTopic}
@@ -112,7 +113,7 @@ const App = (): JSX.Element => {
       );
     }
   }
-  return <div>Loading, please wait!</div>;
+  return <div key='loadingMessage'>Loading, please wait!</div>;
 };
 
 export default App;

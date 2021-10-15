@@ -25,14 +25,14 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const updateTables = (): void => {
-    axios({
-      method: 'post',
-      url: 'http://localhost:3001/kafka/updateTables',
-      data: { bootstrap },
-    }).then((response) => {
-      const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
-    });
+    console.log(bootstrap);
+    if (bootstrap.length) {
+      axios({
+        method: 'post',
+        url: 'http://localhost:3001/kafka/updateTables',
+        data: { bootstrap },
+      });
+    }
   };
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
@@ -92,6 +92,7 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
+    console.log(newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
@@ -123,6 +124,7 @@ const Selector = ({
     ); //grabbing current selected topic
     if (newTopic?.value.length) setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
     if (bootstrap.length && newTopic?.value.length) {
+      console.log(bootstrap);
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
@@ -156,13 +158,13 @@ const Selector = ({
     } else {
       //this is if the option chosen is the blank option
       setData([]);
-      setInterval(updateTables, 10000);
     }
   };
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
-      console.log('hereee');
       fetchTables();
+      console.log('literally anything');
+      window.setInterval(updateTables, 1000);
     }, []);
   }
   return (

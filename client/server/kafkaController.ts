@@ -23,8 +23,51 @@ interface controller {
     res: express.Response,
     next: express.NextFunction
   ) => void;
+  updateTables: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
 }
 const controller: controller = {
+  updateTables: function (req, res, next) {
+    const { bootstrap } = req.body;
+    const bootstrapSanitized = bootstrap.replace(':', '_');
+    const instance = new kafka.Kafka({
+      clientId: 'testing2',
+      brokers: [`${bootstrap}`],
+    });
+    const admin = instance.admin();
+    admin.connect();
+    admin.listTopics().then((data) => {
+      open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
+        (db) => {
+          data.forEach((el) => {
+            db.all(
+              `SELECT topic FROM ${bootstrapSanitized} WHERE topic=${el}`
+            ).then((result) => {
+              if (result.length === 0) {
+                admin.fetchTopicOffsets(el).then((response) => {
+                  let colString = '';
+                  let valString = '';
+                  response.forEach((partition) => {
+                    valString += `${partition.offset},`;
+                    colString += `partition_${partition.partition},`;
+                    valString = valString.slice(0, valString.length - 1);
+                    colString = colString.slice(0, colString.length - 1);
+                  });
+                  db.exec(
+                    `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
+                  );
+                });
+              }
+            });
+          });
+        }
+      );
+    });
+    admin.disconnect();
+  },
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
     const { bootstrap } = req.body;
