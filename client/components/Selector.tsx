@@ -24,6 +24,16 @@ const Selector = ({
   bootstrap,
   setBootstrap,
 }: Props): JSX.Element => {
+  const updateTables = (): void => {
+    axios({
+      method: 'post',
+      url: 'http://localhost:3001/kafka/updateTables',
+      data: { bootstrap },
+    }).then((response) => {
+      const temp: { topic: string }[] = [...response.data];
+      setTopicList(temp.map((el) => el.topic));
+    });
+  };
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
   for (let i = 0; i < serverList.length; i++) {
@@ -146,6 +156,7 @@ const Selector = ({
     } else {
       //this is if the option chosen is the blank option
       setData([]);
+      setInterval(updateTables, 10000);
     }
   };
   if (process.env.NODE_ENV !== 'testing') {
