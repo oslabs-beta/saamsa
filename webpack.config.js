@@ -18,11 +18,19 @@ module.exports = {
     compress: true,
     port: 8080,
   },
+  resolve: {
+    alias: {
+      react: path.resolve(__dirname, '/node_modules/react'),
+    },
+  },
+  // externals: {
+  //   react: 'react',
+  // },
   module: {
     rules: [
       {
         test: /\.jsx?/,
-        exclude: /node_modules/,
+        exclude: /(node_modules)/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -32,7 +40,7 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ['style-loader','css-loader', 'sass-loader'],
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
     ],
   },

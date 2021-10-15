@@ -97,7 +97,12 @@ const Graph = ({ data }: Props): JSX.Element => {
       .attr('x', -75)
       .attr('y', -25); // Relative to the y axis.
   }
-  return <div>{!!data.length && <h2>Graph</h2>}</div>;
+  return (
+    <div>
+      {!!data.length && <h2>Graph</h2>}
+      <div id='mainContainer'></div>
+    </div>
+  );
 };
 
 export default Graph;
