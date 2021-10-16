@@ -1,0 +1,12 @@
+@import "_variables";
+body{
+background-color: $saamsaGrey;
+}
+
+.axis-label {
+    fill: #000;
+    font-size: 12px;
+    text-anchor: middle;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;;
+  }
+

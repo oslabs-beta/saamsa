@@ -1,54 +1,18 @@
-import express from 'express';
-import userController from './userController';
-import kafkaController from './kafkaController';
-const app = express();
+import createServer from './createServer';
+import { connect, ConnectOptions } from 'mongoose';
+const app = createServer();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-//logging in
-app.post(
-  '/login',
-  userController.verifyUser,
-  (req: express.Request, res: express.Response) => {
-    res.status(200).json(res.locals.user);
-  }
-);
-
-//signing up
-app.post(
-  '/signup',
-  userController.createUser,
-  (req: express.Request, res: express.Response) => {
-    res.status(200).send(res.locals.user);
-  }
-);
-
-app.use('/kafka/refresh', kafkaController.refresh);
-app.use('/kafka', kafkaController.getInitial);
-
-//type of error object
-type errorType = {
-  log: string;
-  status: number;
-  message: { err: string };
-};
-
-app.use(
-  (
-    err: express.ErrorRequestHandler,
-    req: express.Request,
-    res: express.Response
-  ) => {
-    const defaultErr: errorType = {
-      log: 'Express error handler caught unknown middleware error',
-      status: 500,
-      message: { err: 'An error occurred' },
-    };
-    const errorObj = { ...defaultErr, ...err };
-    console.log(errorObj.log);
-    return res.status(errorObj.status).json(errorObj.message);
-  }
-);
-
-app.listen(3001, () => console.log('listening on port 3000 :)'));
+const MONGO_URI =
+  'mongodb+srv://dbUser:codesmith@cluster0.drsef.mongodb.net/saamsa?retryWrites=true&w=majority';
+connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: 'saamsa',
+} as ConnectOptions)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(3001, () => console.log('server listening on port 3001 :)'));
+  })
+  .catch((err: Error) =>
+    console.log(`Error found inside the mongoose connect method: ${err}`)
+  );
