@@ -17,8 +17,8 @@ const Graph = ({ data }: Props): JSX.Element => {
         left: 40,
         right: 40,
       };
-    const height = 600;
-    const width = 600;
+    const height = 600 - margin.top - margin.bottom;
+    const width = 600 - margin.left - margin.right;
     //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
     const dataTimeMin: number = data.reduce((acc, val) => {
       if (val.time < acc.time) return val;
@@ -37,38 +37,80 @@ const Graph = ({ data }: Props): JSX.Element => {
       if (val.value > acc.value) return val;
       else return acc;
     }).value;
+    const newArr = [];
+    for (let i = 0; i <= dataTimeMax; i++) {
+      newArr.push(i);
+    }
+    console.log(newArr);
+    const barWidth = width / (dataTimeMax + 1.2) - 1;
+    const newData: number[] = [];
+    data.forEach((el) => {
+      for (let i = 0; i < el.value; i++) {
+        newData.push(el.time);
+      }
+    });
     //adding svg to the mainContainer, currently blank
-    const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> = d3
-      .select('#mainContainer')
-      .append('svg');
+
+    d3.select('#mainContainer')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+    const svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> =
+      d3.select('g');
     //calculating the x-scale and y-scale functions
     const xScale = d3
       .scaleLinear()
-      .domain([dataTimeMin, dataTimeMax])
-      .range([0, width - margin.left - margin.right]);
+      .domain([dataTimeMin, dataTimeMax + 1.2])
+      .range([0, width]);
     const yScale = d3
       .scaleLinear()
-      .domain([dataValueMax, dataValueMin])
-      .range([0, height - margin.top - margin.bottom]);
+      .domain([0, Math.ceil(dataValueMax * 1.2)])
+      .range([height, 0]);
     //creating the function that will take in the data and produce the path element
-    const line = d3
-      .line<typeof data[0]>()
-      .defined((d) => d.value !== null)
-      .curve(d3.curveBasis)
-      .x((d) => xScale(d.time))
-      .y((d) => yScale(d.value));
+    // const line = d3
+    //   .line<typeof data[0]>()
+    //   .defined((d) => d.value !== null)
+    //   .curve(d3.curveBasis)
+    //   .x((d) => xScale(d.time))
+    //   .y((d) => yScale(d.value));
+    const histogram = d3
+      .bin()
+      .value((d) => d)
+      .thresholds(newArr);
+    const bars = histogram(newData);
+    console.log(bars);
     //putting the data into svg and moving it around according to the margin
     svg
-      .attr('width', width)
-      .attr('height', height)
-      .append('path')
-      .data(data)
-      .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
-      .attr('fill', 'none')
-      .attr('stroke', '#000')
-      .attr('stroke-width', '2px')
-      .attr('class', 'line')
-      .attr('d', line(data));
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .selectAll('rect')
+      .data(bars)
+      .enter()
+      .append('rect')
+      .attr('x', 1)
+      .attr('transform', function (d) {
+        return (
+          'translate(' +
+          (xScale(d.x0!) + margin.left) +
+          ',' +
+          yScale(d.length) +
+          ')'
+        );
+      })
+      .attr('width', `${barWidth}`)
+      .attr('height', function (d) {
+        return height - yScale(d.length);
+      })
+      .style('fill', '#69b3a2');
+
+    // .data(data)
+    // .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
+    // .attr('fill', 'none')
+    // .attr('stroke', '#000')
+    // .attr('stroke-width', '2px')
+    // .attr('class', 'line');
+    // .attr('d', line(data));
     //defining the xaxis from the scales
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
@@ -77,7 +119,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       .append('g')
       .call(xAxis)
       .attr('class', 'xAxis')
-      .attr('transform', `translate(${margin.left},${height - margin.bottom})`)
+      .attr('transform', `translate(${margin.left + barWidth / 2},${height})`)
       //adding label
       .append('text')
       .attr('class', 'axis-label')
@@ -87,7 +129,7 @@ const Graph = ({ data }: Props): JSX.Element => {
     svg
       .append('g')
       .attr('class', 'yAxis')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`)
+      .attr('transform', `translate(${margin.left},0)`)
       .call(yAxis)
       //adding label
       .append('text')
