@@ -66,7 +66,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
       .attr('fill', 'none')
       .attr('stroke', '#000')
-      .attr('stroke-width','2px')
+      .attr('stroke-width', '2px')
       .attr('class', 'line')
       .attr('d', line(data));
     //defining the xaxis from the scales
@@ -97,12 +97,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       .attr('x', -75)
       .attr('y', -25); // Relative to the y axis.
   }
-  return (
-    <div>
-      {!!data.length && <h2>Graph</h2>}
-      <div id='mainContainer'></div>
-    </div>
-  );
+  return <div id='mainContainer'>{!!data.length && <h2>Graph</h2>}</div>;
 };
 
 export default Graph;
