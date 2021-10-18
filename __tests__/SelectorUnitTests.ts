@@ -6,6 +6,10 @@ configure({ adapter: new Adapter() });
 
 describe('Selector unit tests', () => {
   const props = {
+    setGraphIntervalId: jest.fn(),
+    setTableIntervalId: jest.fn(),
+    tableIntervalId: null,
+    graphIntervalId: null,
     setData: jest.fn(),
     setTopic: jest.fn(),
     serverList: ['test_test'],

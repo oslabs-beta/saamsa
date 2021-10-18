@@ -1,15 +1,14 @@
-
-@import "_variables";
-body { 
-    background-color: $saamsaYellow;
-    background-repeat: no-repeat;
-    background-position-x: center;
-    margin: 0px;
-    width: 100%;
-    height: 100%;
-    // background-image: url('https://media.discordapp.net/attachments/890965712405946428/898253886811418634/roach_hat.png?width=722&height=722');
-    // background-attachment: fixed;
-    // background-position: center;
+@import '_variables';
+body {
+  background-color: $saamsaYellow;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  // background-image: url('https://media.discordapp.net/attachments/890965712405946428/898253886811418634/roach_hat.png?width=722&height=722');
+  // background-attachment: fixed;
+  // background-position: center;
 }
 .headingWrapper {
   background-color: $saamsaGrey;
@@ -20,116 +19,113 @@ body {
   // align-items: center;
   // text-align:center;
 }
-.saamsaLogo{
+.saamsaLogo {
   width: 450px;
   height: 450px;
   position: fixed;
   bottom: 0;
 }
-.heading{
+.heading {
   font-size: 60px;
-  color: $saamsaBlack ;
+  color: $saamsaBlack;
   opacity: 1;
-  margin-bottom:40px;
+  margin-bottom: 40px;
   margin-top: 0;
   font-family: $fontTitle;
-  line-height:51px;
-  vertical-align:middle;
+  line-height: 51px;
+  vertical-align: middle;
 }
-.loginTitle{
-    font-family: $fontTitle;
-    font-size: 30px;
-    position: relative;
-    left: 5px;
-    float:left;
-    margin-left: 7px;
-}
-
-.loginWrapper{
- 
-    display: flex;
-    flex-direction: column;
-    align-items:flex-start;
-    background-color: $saamsaWhite;
-    width: 220px;
-    height: 320px;
-    margin-top: 25%; 
-    margin-left: 60%; 
-    border: 2px solid black;
+.loginTitle {
+  font-family: $fontTitle;
+  font-size: 30px;
+  position: relative;
+  left: 5px;
+  float: left;
+  margin-left: 7px;
 }
 
-.inputFields{
-  border:none;
+.loginWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: $saamsaWhite;
+  width: 220px;
+  height: 320px;
+  margin-top: 25%;
+  margin-left: 60%;
+  border: 2px solid black;
+}
+
+.inputFields {
+  border: none;
   border-bottom: 2px solid black;
   width: 200px;
   margin-left: 7px;
 }
-
-#usernameAndPasswordWrapper{
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-        align-items: center;
-        margin-bottom: 20px;
-        margin-top: 20px;
-        border: none;
-        // border-bottom: 2px solid red;
+#usernameAndPasswordWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  border: none;
+  // border-bottom: 2px solid red;
 }
 
 #buttonsDiv {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-left: 7px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-left: 7px;
+}
 
-  #forgotPassword {
-    color: #313A46;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 12px;
-    background-color: transparent;
-    border-color: transparent;
-    margin-left: 7px;
-  }
-  // h2 {
-  //   margin-top: 30px;
-  //   color: #313A46;
-  //   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  //   font-size: 12px;
-  // }
-  #loginBtn{
-    border-radius: 4px;
-    background-color: $saamsaYellow;
-    border: 1px solid black;
-    height: 30px;
-    font-size: 15px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color: $saamsaBlack;
-    width: 200px;
-  }
-  #noAccount{
-    font-size: 10px;
-    font-family: $buttonTitle;
-
-  }
+#forgotPassword {
+  color: #313a46;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 12px;
+  background-color: transparent;
+  border-color: transparent;
+  margin-left: 7px;
+}
+// h2 {
+//   margin-top: 30px;
+//   color: #313A46;
+//   font-family: Verdana, Geneva, Tahoma, sans-serif;
+//   font-size: 12px;
+// }
+#loginBtn {
+  border-radius: 4px;
+  background-color: $saamsaYellow;
+  border: 1px solid black;
+  height: 30px;
+  font-size: 15px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: $saamsaBlack;
+  width: 200px;
+}
+#noAccount {
+  font-size: 10px;
+  font-family: $buttonTitle;
+}
 #signUpArea {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
 
-  #signUpBtn {
-    border-radius: 4px;
-    background-color: transparent;
-    border: 0px transparent;
-    width: 70px;
-    height: 30px;
-    font-size: 10px;
-    font-family: $buttonTitle;
-    color: $saamsaBlack;
-  }
-  #signupBtn:hover {
-    cursor: pointer;
-  }
+#signUpBtn {
+  border-radius: 4px;
+  background-color: transparent;
+  border: 0px transparent;
+  width: 70px;
+  height: 30px;
+  font-size: 10px;
+  font-family: $buttonTitle;
+  color: $saamsaBlack;
+}
+#signupBtn:hover {
+  cursor: pointer;
+}
