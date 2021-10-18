@@ -86,6 +86,8 @@ const Selector = ({
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
       fetchTopics(newBootstrap?.value);
+      //invoke the method that fetches all consumers and producers connected to the kafka broker
+      fetchConsumers(newBootstrap?.value);
     }
   };
   //sends a request to backend to grab topics for passed in bootstrap server
@@ -100,6 +102,16 @@ const Selector = ({
       setTopicList(temp.map((el) => el.topic));
     });
   };
+  //method that sends request to backend to grab all consumers of passed in bootstrap server
+  const fetchConsumers = (arg: string) => {
+    axios({
+      url:'http://localhost:3001/kafka/fetchConsumers',
+      method: 'post',
+      data: {bootstrap: arg},
+    }).then((response) => {
+      console.log(response);
+    })
+  }
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc

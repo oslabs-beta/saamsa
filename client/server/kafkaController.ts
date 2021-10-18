@@ -23,11 +23,18 @@ interface controller {
     res: express.Response,
     next: express.NextFunction
   ) => void;
+  fetchConsumers: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
 }
 const controller: controller = {
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
+
     const { bootstrap } = req.body;
+    console.log(bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
     //opening connection to sqlite db
@@ -190,6 +197,28 @@ const controller: controller = {
             });
           });
       });
+  },
+  fetchConsumers: function (req, res, next) {
+    const {bootstrap} = req.body;
+
+    //if there is no server, send an error page
+    if(!bootstrap.length) res.sendStatus(403);
+
+    //create a new instance of kafka
+    const instance = new kafka.Kafka({
+      brokers: [`${bootstrap}`],
+    });
+
+    //create a new admin instance with the kafka instance
+    const admin = instance.admin();
+    admin.connect();
+
+    //fetch groups for that broker
+    const results = admin.listGroups();
+    console.log("results: ", results);
+
+    //fetch consumer list with the kafka broker given
+
   },
 };
 

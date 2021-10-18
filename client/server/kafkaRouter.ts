@@ -10,5 +10,6 @@ router.use(
 router.use('/fetchTopics', kafkaController.fetchTopics);
 router.use('/fetchTables', kafkaController.fetchTables);
 router.use('/createTable', kafkaController.createTable);
+router.use('/fetchConsumers', kafkaController.fetchConsumers);
 router.use('/refresh', kafkaController.refresh);
 export default router;
