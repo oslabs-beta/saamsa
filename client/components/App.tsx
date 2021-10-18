@@ -3,7 +3,6 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
-  console.log('rendering app');
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
@@ -12,7 +11,6 @@ const App = (): JSX.Element => {
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
-  console.log(bootstrap);
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>

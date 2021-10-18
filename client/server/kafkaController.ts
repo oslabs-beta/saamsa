@@ -45,25 +45,43 @@ const controller: controller = {
           data.forEach((el) => {
             db.all(
               `SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`
-            ).then((result) => {
-              if (result.length === 0) {
-                admin.fetchTopicOffsets(el).then((response) => {
-                  let colString = 'topic, ';
-                  let valString = `'${el}', `;
-                  response.forEach((partition) => {
-                    valString += `${partition.offset},`;
-                    colString += `partition_${partition.partition},`;
+            )
+              .then((result) => {
+                if (result.length === 0) {
+                  admin.fetchTopicOffsets(el).then((response) => {
+                    let colString = 'topic, ';
+                    let valString = `'${el}', `;
+                    response.forEach((partition) => {
+                      valString += `${partition.offset},`;
+                      colString += `partition_${partition.partition},`;
+                    });
+                    valString = valString.slice(0, valString.length - 1);
+                    colString = colString.slice(0, colString.length - 1);
+                    try {
+                      console.log('hererafkjalksoddsia08j');
+                      db.exec(
+                        `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
+                      ).catch(() => {
+                        console.log('a testt');
+                        db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
+                          res.redirect(
+                            307,
+                            'http://localhost:3001/kafka/createTable'
+                          );
+                          return next();
+                        });
+                      });
+                    } catch (error) {
+                      return next(error);
+                    }
                   });
-                  valString = valString.slice(0, valString.length - 1);
-                  colString = colString.slice(0, colString.length - 1);
-                  console.log(valString);
-                  console.log(colString);
-                  db.exec(
-                    `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
-                  );
-                });
-              }
-            });
+                }
+              })
+              .catch(() => {
+                console.log('a testt');
+                res.redirect(307, 'http://localhost:3001/kafka/createTable');
+                return next();
+              });
           });
         }
       );
@@ -111,6 +129,7 @@ const controller: controller = {
   },
   //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
   createTable: async function (req, res, next) {
+    console.log('in create table');
     try {
       const { bootstrap } = req.body;
       //if there is no server given, we send an error page
@@ -243,6 +262,7 @@ const controller: controller = {
             });
         });
     } catch (error) {
+      console.log('alsfkjalskfjalsfkj');
       console.log(error);
       next(error);
     }
