@@ -1,5 +1,5 @@
 import { BrowserWindow, app } from 'electron';
-import { fork } from 'child_process';
+import * as childProcess from 'child_process';
 import * as path from 'path';
 
 //so we need to compile down from ts to js upon loading app -> adding that to package.json
@@ -13,10 +13,8 @@ function createWindow() {
   win.loadFile('../../index.html');
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow();
-  const serverProcess = fork(path.resolve(__dirname, '../server/server.js'));
-
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -24,6 +22,6 @@ app.whenReady().then(() => {
   //closes process if window closed and not on MacOS (keeps in dock for Mac though, as expected for Mac UX)
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
-    serverProcess.kill(0);
+    // serverProcess.kill(0);
   });
 });

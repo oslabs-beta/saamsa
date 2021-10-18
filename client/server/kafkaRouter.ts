@@ -7,6 +7,11 @@ router.use(
   kafkaController.createTable,
   kafkaController.fetchTables
 );
+router.use(
+  '/updateTables',
+  kafkaController.updateTables,
+  kafkaController.fetchTopics
+);
 router.use('/fetchTopics', kafkaController.fetchTopics);
 router.use('/fetchTables', kafkaController.fetchTables);
 router.use('/createTable', kafkaController.createTable);

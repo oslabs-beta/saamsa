@@ -2,6 +2,10 @@ import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
 interface Props {
+  graphIntervalId: NodeJS.Timeout | null;
+  setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
+  tableIntervalId: NodeJS.Timeout | null;
+  setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
   setData: (arg: { time: number; value: number }[]) => void;
   setTopic: (arg: string) => void;
   serverList: string[];
@@ -15,6 +19,10 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  graphIntervalId,
+  setGraphIntervalId,
+  setTableIntervalId,
+  tableIntervalId,
   setData,
   setTopic,
   serverList,
@@ -24,6 +32,21 @@ const Selector = ({
   bootstrap,
   setBootstrap,
 }: Props): JSX.Element => {
+  const updateTables = (arg: string | undefined): void => {
+    console.log('from update');
+    if (!arg || !arg.length) arg = bootstrap;
+    console.log(arg);
+    axios({
+      method: 'post',
+      url: 'http://localhost:3001/kafka/updateTables',
+      data: { bootstrap: arg },
+    }).then((response) => {
+      console.log(response.data);
+      const temp: { topic: string }[] = [...response.data];
+      setTopicList(temp.map((el) => el.topic));
+    });
+  };
+
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
   for (let i = 0; i < serverList.length; i++) {
@@ -82,10 +105,25 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
+    console.log(newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
       fetchTopics(newBootstrap?.value);
+
+      if (tableIntervalId) {
+        clearInterval(tableIntervalId);
+      }
+      const intervalId = setInterval(() => {
+        if (newBootstrap?.value.length) {
+          updateTables(newBootstrap?.value.replace('_', ':'));
+          fetchTopics(newBootstrap?.value);
+        }
+      }, 3000);
+      setTableIntervalId(intervalId);
+    } else {
+      setTopicList([]);
+      if (tableIntervalId) clearInterval(tableIntervalId);
     }
   };
   //sends a request to backend to grab topics for passed in bootstrap server
@@ -103,10 +141,11 @@ const Selector = ({
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const mainContainer = document.querySelector('#mainContainer');
-    if (mainContainer!.className.length > 0)
+    if (graphIntervalId) {
       //checking if the maincontainer has an interval already set on it, and if it does, we clear it
-      window.clearInterval(Number(mainContainer!.className));
+      clearInterval(graphIntervalId);
+      setGraphIntervalId(null);
+    }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
     const newTopic: HTMLSelectElement | null = document.querySelector(
       '#topics option:checked'
@@ -128,7 +167,7 @@ const Selector = ({
           setData(response.data);
         });
       //setting interval of same request above so we autorefresh it (pull model)
-      const intervalId = window.setInterval(() => {
+      const intervalId = setInterval(() => {
         axios({
           method: 'POST',
           url: 'http://localhost:3001/kafka/refresh',
@@ -142,7 +181,7 @@ const Selector = ({
             setData(response.data);
           });
       }, 3000);
-      mainContainer!.className = intervalId.toString();
+      setGraphIntervalId(intervalId);
     } else {
       //this is if the option chosen is the blank option
       setData([]);
@@ -150,12 +189,12 @@ const Selector = ({
   };
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
-      console.log('hereee');
       fetchTables();
+      console.log('literally anything');
     }, []);
   }
   return (
-    <div className='mainWrapper'>
+    <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 className='heading'>Saamsa</h1>
       </div>
