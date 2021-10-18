@@ -105,29 +105,30 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log(newBootstrap?.value);
+    console.log('boostrap we grabbed from user', newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
-      fetchTopics(newBootstrap?.value);
-      //invoke the method that fetches all consumers and producers connected to the kafka broker
-      fetchConsumers(newBootstrap?.value);
-
-      if (tableIntervalId) {
-        clearInterval(tableIntervalId);
-      }
-      const intervalId = setInterval(() => {
-        if (newBootstrap?.value.length) {
-          updateTables(newBootstrap?.value.replace('_', ':'));
-          fetchTopics(newBootstrap?.value);
-        }
-      }, 3000);
-      setTableIntervalId(intervalId);
+      if (tableIntervalId) clearInterval(tableIntervalId);
     } else {
       setTopicList([]);
       if (tableIntervalId) clearInterval(tableIntervalId);
     }
   };
+
+  React.useEffect(() => {
+    console.log('made it to useEffect after bootstrap changed', bootstrap);
+    fetchTopics(bootstrap);
+    fetchConsumers(bootstrap);
+    const intervalId = setInterval(() => {
+      console.log('inside of setinterval bootstrap', bootstrap);
+      updateTables(bootstrap);
+      fetchTopics(bootstrap);
+      fetchConsumers(bootstrap);
+    }, 3000);
+    setTableIntervalId(intervalId);
+  }, [bootstrap]);
+
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({

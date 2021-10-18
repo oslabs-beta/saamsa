@@ -99,9 +99,10 @@ const controller: controller = {
   fetchTopics: function (req, res, next) {
 
     const { bootstrap } = req.body;
-    console.log(bootstrap);
+    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
+    console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -275,9 +276,10 @@ const controller: controller = {
       next(error);
     }
   },
-  fetchConsumers: function (req, res, next) {
+  fetchConsumers: async (req, res, next)  => {
     const {bootstrap} = req.body;
 
+    console.log('this is bootstrap in fetch consumers', bootstrap);
     //if there is no server, send an error page
     if(!bootstrap.length) res.sendStatus(403);
 
@@ -290,8 +292,9 @@ const controller: controller = {
     const admin = instance.admin();
     admin.connect();
 
+    console.log("here..")
     //fetch groups for that broker
-    const results = admin.listGroups();
+    const results = await admin.listGroups();
     console.log("results: ", results);
 
     //fetch consumer list with the kafka broker given
