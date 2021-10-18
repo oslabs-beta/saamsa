@@ -3,6 +3,10 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
+  const [graphIntervalId, setGraphInvervalId] =
+    React.useState<NodeJS.Timeout | null>(null);
+  const [tableIntervalId, setTableIntervalId] =
+    React.useState<NodeJS.Timeout | null>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
@@ -98,6 +102,10 @@ const App = (): JSX.Element => {
       return (
         <div key='selector'>
           <Selector
+            graphIntervalId={graphIntervalId}
+            setGraphIntervalId={setGraphInvervalId}
+            tableIntervalId={tableIntervalId}
+            setTableIntervalId={setTableIntervalId}
             setData={setData}
             setTopic={setTopic}
             bootstrap={bootstrap}

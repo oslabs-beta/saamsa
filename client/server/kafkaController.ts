@@ -64,11 +64,10 @@ const controller: controller = {
                       ).catch(() => {
                         console.log('a testt');
                         db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
-                          res.redirect(
+                          return res.redirect(
                             307,
                             'http://localhost:3001/kafka/createTable'
                           );
-                          return next();
                         });
                       });
                     } catch (error) {
@@ -79,8 +78,10 @@ const controller: controller = {
               })
               .catch(() => {
                 console.log('a testt');
-                res.redirect(307, 'http://localhost:3001/kafka/createTable');
-                return next();
+                return res.redirect(
+                  307,
+                  'http://localhost:3001/kafka/createTable'
+                );
               });
           });
         }
@@ -102,7 +103,7 @@ const controller: controller = {
       }).then((db) =>
         db
           .all(`SELECT topic FROM ${bootstrapSanitized}`)
-          .then((result) => res.status(200).json(result))
+          .then((result) => res.json(result))
       );
     } catch (error) {
       console.log(error);
@@ -118,7 +119,7 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            res.status(200).json(result);
+            res.json(result);
           });
         }
       );
@@ -257,7 +258,7 @@ const controller: controller = {
                     });
                   }
                 });
-                res.status(200).json(arr);
+                res.json(arr);
               });
             });
         });
