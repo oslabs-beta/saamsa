@@ -102,7 +102,7 @@ const controller: controller = {
     console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
-    console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
+    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
