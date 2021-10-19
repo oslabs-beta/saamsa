@@ -42,7 +42,7 @@ const Graph = ({ data }: Props): JSX.Element => {
       newArr.push(i);
     }
     console.log(newArr);
-    const barWidth = width / (dataTimeMax + 1.2) - 1;
+    const barWidth = width / (dataTimeMax + 1);
     const newData: number[] = [];
     data.forEach((el) => {
       for (let i = 0; i < el.value; i++) {
@@ -62,7 +62,7 @@ const Graph = ({ data }: Props): JSX.Element => {
     //calculating the x-scale and y-scale functions
     const xScale = d3
       .scaleLinear()
-      .domain([dataTimeMin, dataTimeMax + 1.2])
+      .domain([-0.5, dataTimeMax + 0.5])
       .range([0, width]);
     const yScale = d3
       .scaleLinear()
@@ -79,7 +79,8 @@ const Graph = ({ data }: Props): JSX.Element => {
       .bin()
       .value((d) => d)
       .thresholds(newArr);
-    const bars = histogram(newData);
+    let bars = histogram(newData);
+    bars = bars.filter((el) => el.x0 !== undefined);
     console.log(bars);
     //putting the data into svg and moving it around according to the margin
     svg
@@ -90,15 +91,17 @@ const Graph = ({ data }: Props): JSX.Element => {
       .append('rect')
       .attr('x', 1)
       .attr('transform', function (d) {
+        console.log(barWidth * (d.x0! + 0.5));
+        console.log(xScale(d.x0!) + barWidth / 2);
         return (
           'translate(' +
-          (xScale(d.x0!) + margin.left) +
+          (d.x0! * barWidth + margin.left) +
           ',' +
           yScale(d.length) +
           ')'
         );
       })
-      .attr('width', `${barWidth}`)
+      .attr('width', `${barWidth - 1}`)
       .attr('height', function (d) {
         return height - yScale(d.length);
       })
@@ -112,14 +115,22 @@ const Graph = ({ data }: Props): JSX.Element => {
     // .attr('class', 'line');
     // .attr('d', line(data));
     //defining the xaxis from the scales
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
+    const xAxisTicks = xScale.ticks().filter((tick) => Number.isInteger(tick));
+    const xAxis = d3
+      .axisBottom(xScale)
+      .tickValues(xAxisTicks)
+      .tickFormat(d3.format('d'));
+    const yAxisTicks = yScale.ticks().filter((tick) => Number.isInteger(tick));
+    const yAxis = d3
+      .axisLeft(yScale)
+      .tickValues(yAxisTicks)
+      .tickFormat(d3.format('d'));
     //appending the axes to the svg
     svg
       .append('g')
       .call(xAxis)
       .attr('class', 'xAxis')
-      .attr('transform', `translate(${margin.left + barWidth / 2},${height})`)
+      .attr('transform', `translate(${margin.left},${height})`)
       //adding label
       .append('text')
       .attr('class', 'axis-label')
