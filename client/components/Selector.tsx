@@ -33,15 +33,12 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg },
     }).then((response) => {
-      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       setTopicList(temp.map((el) => el.topic));
     });
@@ -105,7 +102,6 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log(newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
@@ -114,13 +110,13 @@ const Selector = ({
       if (tableIntervalId) {
         clearInterval(tableIntervalId);
       }
-      // const intervalId = setInterval(() => {
-      //   if (newBootstrap?.value.length) {
-      //     updateTables(newBootstrap?.value.replace('_', ':'));
-      //     fetchTopics(newBootstrap?.value);
-      //   }
-      // }, 3000);
-      // setTableIntervalId(intervalId);
+      const intervalId = setInterval(() => {
+        if (newBootstrap?.value.length) {
+          updateTables(newBootstrap?.value.replace('_', ':'));
+          fetchTopics(newBootstrap?.value);
+        }
+      }, 3000);
+      setTableIntervalId(intervalId);
     } else {
       setTopicList([]);
       if (tableIntervalId) clearInterval(tableIntervalId);
@@ -167,21 +163,21 @@ const Selector = ({
           setData(response.data);
         });
       //setting interval of same request above so we autorefresh it (pull model)
-      // const intervalId = setInterval(() => {
-      //   axios({
-      //     method: 'POST',
-      //     url: 'http://localhost:3001/kafka/refresh',
-      //     data: { topic: newTopic?.value, bootstrap },
-      //   })
-      //     .then((response) => {
-      //       document.querySelector('svg')?.remove();
-      //       return response;
-      //     })
-      //     .then((response) => {
-      //       setData(response.data);
-      //     });
-      // }, 3000);
-      // setGraphIntervalId(intervalId);
+      const intervalId = setInterval(() => {
+        axios({
+          method: 'POST',
+          url: 'http://localhost:3001/kafka/refresh',
+          data: { topic: newTopic?.value, bootstrap },
+        })
+          .then((response) => {
+            document.querySelector('svg')?.remove();
+            return response;
+          })
+          .then((response) => {
+            setData(response.data);
+          });
+      }, 3000);
+      setGraphIntervalId(intervalId);
     } else {
       //this is if the option chosen is the blank option
       setData([]);
@@ -190,7 +186,6 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
-      console.log('literally anything');
     }, []);
   }
   return (
