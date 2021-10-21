@@ -277,28 +277,45 @@ const controller: controller = {
     }
   },
   fetchConsumers: async (req, res, next)  => {
-    const {bootstrap} = req.body;
+    try {
+      const {bootstrap} = req.body;
 
-    console.log('this is bootstrap in fetch consumers', bootstrap);
-    //if there is no server, send an error page
-    if(!bootstrap.length) res.sendStatus(403);
+      //if there is no server, send an error page
+      if(!bootstrap.length) res.sendStatus(403);
 
-    //create a new instance of kafka
-    const instance = new kafka.Kafka({
-      brokers: [`${bootstrap}`],
-    });
+      //create a new instance of kafka
+      const instance = new kafka.Kafka({
+        brokers: [`${bootstrap}`],
+      });
 
-    //create a new admin instance with the kafka instance
-    const admin = instance.admin();
-    admin.connect();
+      //create a new admin instance with the kafka instance
+      const admin = instance.admin();
+      admin.connect();
 
-    console.log("here..")
-    //fetch groups for that broker
-    const results = await admin.listGroups();
-    console.log("results: ", results);
+      //fetch groups for that broker
+      const results = await admin.listGroups();
 
-    //fetch consumer list with the kafka broker given
+      //declare a variable to add all the consumer groups to.
+      const consumerGroupNames: string[] = [];
 
+      interface Item {
+        groupId: string, 
+        protocolType: string,
+      }
+      
+      //fetch consumerGroupNames from within the results variable
+      results.groups.forEach( (item: Item) => {
+        consumerGroupNames.push(item.groupId);
+      })
+      //declare a variable consumergroups that holds each consumer group
+      const groupsDescribed = consumerGroupNames.map((consumerGroup: string) => admin.describeGroups([consumerGroup]));
+      
+      const resolved = await Promise.all(groupsDescribed);
+      res.locals.consumerGroups = [...resolved];
+      next();
+    } catch(error) {
+      next(error);
+    }
   },
 };
 

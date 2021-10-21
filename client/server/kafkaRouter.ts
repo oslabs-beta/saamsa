@@ -15,6 +15,8 @@ router.use(
 router.use('/fetchTopics', kafkaController.fetchTopics);
 router.use('/fetchTables', kafkaController.fetchTables);
 router.use('/createTable', kafkaController.createTable);
-router.use('/fetchConsumers', kafkaController.fetchConsumers);
+router.use('/fetchConsumers', kafkaController.fetchConsumers, (req, res) => {
+  return res.status(200).json([...res.locals.consumerGroups]);
+});
 router.use('/refresh', kafkaController.refresh);
 export default router;
