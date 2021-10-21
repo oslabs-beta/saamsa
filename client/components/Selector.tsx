@@ -1,12 +1,14 @@
 import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
+import * as _ from 'lodash';
 interface Props {
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
   setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
   setData: (arg: { time: number; value: number }[]) => void;
+  data: { time: number; value: number }[];
   setTopic: (arg: string) => void;
   serverList: string[];
   setServerList: (arg: string[]) => void;
@@ -19,6 +21,7 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  data,
   graphIntervalId,
   setGraphIntervalId,
   setTableIntervalId,
@@ -160,7 +163,7 @@ const Selector = ({
           return response;
         })
         .then((response) => {
-          setData(response.data);
+          if (_.isEqual(data, response.data)) setData(response.data);
         });
       //setting interval of same request above so we autorefresh it (pull model)
       const intervalId = setInterval(() => {
