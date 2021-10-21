@@ -1,6 +1,6 @@
 import * as express from 'express';
 const bcrypt = require('bcryptjs');
-import userModels from './userModels';
+import userModels from '../models/userModels';
 
 type userController = {
   createUser: (

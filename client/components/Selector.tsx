@@ -33,15 +33,12 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg },
     }).then((response) => {
-      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       setTopicList(temp.map((el) => el.topic));
     });
@@ -105,7 +102,6 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log(newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
@@ -190,7 +186,6 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
-      console.log('literally anything');
     }, []);
   }
   return (
