@@ -116,6 +116,7 @@ const Selector = ({
     }
   };
 
+  if(process.env.NODE_ENV !== 'testing') {
   React.useEffect(() => {
     console.log('made it to useEffect after bootstrap changed', bootstrap);
     fetchTopics(bootstrap);
@@ -128,6 +129,7 @@ const Selector = ({
     }, 3000);
     setTableIntervalId(intervalId);
   }, [bootstrap]);
+}
 
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
