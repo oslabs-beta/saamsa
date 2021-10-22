@@ -113,20 +113,22 @@ const Selector = ({
     }
   };
 
-  if(process.env.NODE_ENV !== 'testing') {
-  React.useEffect(() => {
-    console.log('made it to useEffect after bootstrap changed', bootstrap);
-    fetchTopics(bootstrap);
-    fetchConsumers(bootstrap);
-    const intervalId = setInterval(() => {
-      console.log('inside of setinterval bootstrap', bootstrap);
-      updateTables(bootstrap);
-      fetchTopics(bootstrap);
-      fetchConsumers(bootstrap);
-    }, 3000);
-    setTableIntervalId(intervalId);
-  }, [bootstrap]);
-}
+  if (process.env.NODE_ENV !== 'testing') {
+    React.useEffect(() => {
+      if (bootstrap.length) {
+        console.log('made it to useEffect after bootstrap changed', bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        const intervalId = setInterval(() => {
+          console.log('inside of setinterval bootstrap', bootstrap);
+          updateTables(bootstrap);
+          fetchTopics(bootstrap);
+          fetchConsumers(bootstrap);
+        }, 3000);
+        setTableIntervalId(intervalId);
+      }
+    }, [bootstrap]);
+  }
 
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
@@ -143,13 +145,13 @@ const Selector = ({
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url:'http://localhost:3001/kafka/fetchConsumers',
+      url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
-      data: {bootstrap: arg},
+      data: { bootstrap: arg },
     }).then((response) => {
       console.log(response);
-    })
-  }
+    });
+  };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
