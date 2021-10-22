@@ -3,15 +3,18 @@ package main.java.saamsa.java;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Properties;
 /**
  * Hello world!
  *
  */
 public class App 
-{
+{ private static final Logger logger = LogManager.getLogger();
     public static void main( String[] args )
     {
         Properties props = new Properties();
@@ -22,7 +25,17 @@ public class App
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<Integer, String> kStream = streamsBuilder.stream("testing1");
-        kStream.foreach((k, v) -> System.out.print("Key is" + k + "Value is" + v));
+        kStream.foreach((k, v) -> System.out.println("Key is" + k + "Value is" + v));
+
+        Topology topology = streamsBuilder.build();
+        KafkaStreams streams = new KafkaStreams(topology, props);
+        streams.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting Down Stream");
+            streams.close();
+        }));
+
         System.out.println( "Hello World!" );
     }
 }
