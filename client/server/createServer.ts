@@ -7,6 +7,12 @@ function createServer(): express.Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.all('/', (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+  });
+
   //logging in
   app.post(
     '/login',
@@ -26,6 +32,7 @@ function createServer(): express.Application {
   );
 
   app.use('/kafka', kafkaRouter);
+
   //type of error object
   type errorType = {
     log: string;

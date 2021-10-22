@@ -119,7 +119,10 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            res.json(result);
+            console.log('these are the table rows', result);
+            res.locals.result = result;
+            next();
+            // res.json(result);
           });
         }
       );

@@ -79,7 +79,7 @@ const Selector = ({
       //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
-      url: 'http://localhost:3001/kafka/createTable',
+      url: 'https://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value },
     }) //if successful, we then repopulate all of our tables, as db has been updated
@@ -202,7 +202,7 @@ const Selector = ({
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label htmlFor='topicInput'>Enter a new broker address</label>
-          <input id='bootstrapInput' placeholder='localhost:00000'></input>
+          <input id='bootstrapInput' placeholder='localhost:00000' value='localhost:29092'></input>
         </div>
         <button className='submitBtn' onClick={createTable}>
           Submit
