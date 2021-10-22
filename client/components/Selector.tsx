@@ -1,14 +1,12 @@
 import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
-import * as _ from 'lodash';
 interface Props {
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
   setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
   setData: (arg: { time: number; value: number }[]) => void;
-  data: { time: number; value: number }[];
   setTopic: (arg: string) => void;
   serverList: string[];
   setServerList: (arg: string[]) => void;
@@ -21,7 +19,6 @@ interface TableList {
   name: string;
 }
 const Selector = ({
-  data,
   graphIntervalId,
   setGraphIntervalId,
   setTableIntervalId,
@@ -35,13 +32,33 @@ const Selector = ({
   bootstrap,
   setBootstrap,
 }: Props): JSX.Element => {
+  const balanceLoad = (): void => {
+    /**
+     * in here we need to grab the selected server
+     * need to create a new topic -> (originalTopicName_balanced) (same number of partitions)
+     * need to instatiate a stream onto that topic(do this probably with Java KafkaStreamAPI)
+     * stream should then take each message
+     * apply someway to key it/partition it in the requested load balance way
+     * then write it to that topic
+     * stream should then sit on that topic and continue doing this operation until stream is terminated
+     * also need to write a way to terminate that stream
+     *
+     *
+     *
+     */
+
+    return;
+  };
   const updateTables = (arg: string | undefined): void => {
+    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
+    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg },
     }).then((response) => {
+      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       setTopicList(temp.map((el) => el.topic));
     });
@@ -105,26 +122,30 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
+    console.log('boostrap we grabbed from user', newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
-      fetchTopics(newBootstrap?.value);
-
-      if (tableIntervalId) {
-        clearInterval(tableIntervalId);
-      }
-      const intervalId = setInterval(() => {
-        if (newBootstrap?.value.length) {
-          updateTables(newBootstrap?.value.replace('_', ':'));
-          fetchTopics(newBootstrap?.value);
-        }
-      }, 3000);
-      setTableIntervalId(intervalId);
+      if (tableIntervalId) clearInterval(tableIntervalId);
     } else {
       setTopicList([]);
       if (tableIntervalId) clearInterval(tableIntervalId);
     }
   };
+
+  React.useEffect(() => {
+    console.log('made it to useEffect after bootstrap changed', bootstrap);
+    fetchTopics(bootstrap);
+    fetchConsumers(bootstrap);
+    const intervalId = setInterval(() => {
+      console.log('inside of setinterval bootstrap', bootstrap);
+      updateTables(bootstrap);
+      fetchTopics(bootstrap);
+      fetchConsumers(bootstrap);
+    }, 3000);
+    setTableIntervalId(intervalId);
+  }, [bootstrap]);
+
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
@@ -135,6 +156,17 @@ const Selector = ({
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
       setTopicList(temp.map((el) => el.topic));
+    });
+  };
+  //method that sends request to backend to grab all consumers of passed in bootstrap server
+  const fetchConsumers = (arg: string) => {
+    axios({
+      url: 'http://localhost:3001/kafka/fetchConsumers',
+      method: 'post',
+      data: { bootstrap: arg },
+    }).then((response) => {
+      console.log();
+      console.log(response);
     });
   };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
@@ -163,7 +195,7 @@ const Selector = ({
           return response;
         })
         .then((response) => {
-          if (_.isEqual(data, response.data)) setData(response.data);
+          setData(response.data);
         });
       //setting interval of same request above so we autorefresh it (pull model)
       const intervalId = setInterval(() => {
@@ -189,6 +221,7 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
+      console.log('literally anything');
     }, []);
   }
   return (

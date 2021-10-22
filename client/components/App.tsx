@@ -102,7 +102,6 @@ const App = (): JSX.Element => {
       return (
         <div key='selector'>
           <Selector
-            data={data}
             graphIntervalId={graphIntervalId}
             setGraphIntervalId={setGraphInvervalId}
             tableIntervalId={tableIntervalId}
