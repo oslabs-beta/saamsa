@@ -76,7 +76,7 @@ const Selector = ({
       //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
-      url: 'https://localhost:3001/kafka/createTable',
+      url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value },
     }) //if successful, we then repopulate all of our tables, as db has been updated
@@ -93,6 +93,7 @@ const Selector = ({
       .get<TableList[]>('http://localhost:3001/kafka/fetchTables')
       .then((response) => {
         //updating state to force rerender, so option appears on dropdown of bootstrap servers
+        console.log('front end response in fetch tables', response);
         setServerList(response.data.map((el) => el.name));
       });
   };

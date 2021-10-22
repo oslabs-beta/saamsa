@@ -305,11 +305,41 @@ const controller: controller = {
       results.groups.forEach( (item: Item) => {
         consumerGroupNames.push(item.groupId);
       })
+      console.log(consumerGroupNames);
       //declare a variable consumergroups that holds each consumer group
       const groupsDescribed = consumerGroupNames.map((consumerGroup: string) => admin.describeGroups([consumerGroup]));
       
       const resolved = await Promise.all(groupsDescribed);
-      res.locals.consumerGroups = [...resolved];
+      
+      interface ConsumerGroup {
+        groups: {
+          errorCode: number,
+          groupId: string,
+          members: {
+            memberId: string,
+            clientId: string,
+            clientHost: string, 
+            memberMetadata: Buffer,
+            memberAssignment: Buffer,
+            stringifiedAssignment: string,
+            stringifiedMetadata: string,
+          }[], 
+          protocol: string, 
+          portocolType: string, 
+          state: string,
+        }[]
+      }
+      const cloned: ConsumerGroup[]= JSON.parse(JSON.stringify(resolved));
+      
+      resolved.forEach( (consumerGroup: kafka.GroupDescriptions, index: number) => {
+        consumerGroup.groups[0].members.forEach( (member, memberIndex) => {
+          // console.log(member.memberMetadata.toString());
+          // console.log(member.memberAssignment.toString());
+          cloned[index].groups[0].members[memberIndex].stringifiedAssignment = member.memberAssignment.toString();
+          cloned[index].groups[0].members[memberIndex].stringifiedMetadata = member.memberMetadata.toString();
+        });
+      })
+      res.locals.consumerGroups = [...cloned];
       next();
     } catch(error) {
       next(error);

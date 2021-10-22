@@ -1,4 +1,4 @@
-import createServer from '../client/server/createServer';
+import createServer from '../server/createServer';
 import request from 'supertest';
 import { open } from 'sqlite';
 import sqlite3 from 'sqlite3';
