@@ -1,5 +1,5 @@
 import * as express from 'express';
-import kafkaController from './kafkaController';
+import kafkaController from '../controllers/kafkaController';
 const router = express.Router();
 //routes from localhost:3001/kafka/...
 router.use(

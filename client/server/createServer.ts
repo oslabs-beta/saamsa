@@ -1,6 +1,6 @@
 import express from 'express';
-import userController from './userController';
-import kafkaRouter from './kafkaRouter';
+import userController from './controllers/userController';
+import kafkaRouter from './routers/kafkaRouter';
 function createServer(): express.Application {
   const app = express();
 
