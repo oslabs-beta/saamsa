@@ -62,6 +62,7 @@ const App = (): JSX.Element => {
           }
           // otherwise store the user in state and change login status to true
           else { 
+            
             changeUser(username);
             changeLoginStatus(true);
           }

@@ -14,6 +14,7 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
+
 }
 interface TableList {
   name: string;
@@ -197,7 +198,6 @@ const Selector = ({
     <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 className='heading'>Saamsa </h1>
-        <div className='session'> Logged in as {currentUser}</div>
       </div>
 
       <div className='brokersDiv'>
