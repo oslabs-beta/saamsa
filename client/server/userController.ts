@@ -1,6 +1,6 @@
 import * as express from 'express';
 const bcrypt = require('bcryptjs');
-import userModels from '../models/userModels';
+import userModels from './userModels';
 
 type userController = {
   createUser: (
@@ -42,20 +42,29 @@ userController.createUser = async (req, res, next) => {
 userController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    let hashedPW;
+    let compare;
 
     const user = await userModels.findOne({ username });
-
-    const hashedPW = user!.password;
-    const compare = bcrypt.compareSync(password, hashedPW);
-    if (!compare)
-      throw Error('Incorrect username or password. Please try again.');
-    res.locals.user = username;
+    if(user){
+      hashedPW = user!.password;
+      compare = bcrypt.compareSync(password, hashedPW);
+    }
+    if (!compare || !user){
+      res.locals.message = 'Incorrect username or password. Please try again.';
+      res.status(401).json(res.locals.message)
+      console.log(res.locals.message);
+    }
+      else{
+        res.locals.user = username;
+        res.status(200).json(res.locals.user);
+      }
     next();
   } catch (err) {
     next({
       log: 'Express error handler caught in userController.verifyUser middleware',
-      status: 401,
-      message: { err },
+      status: 503,
+      err
     });
   }
 };

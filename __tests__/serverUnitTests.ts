@@ -2,7 +2,7 @@ import createServer from '../client/server/createServer';
 import request from 'supertest';
 import { connection, connect, ConnectOptions } from 'mongoose';
 const dbURI = 'mongodb://127.0.0.1/testingDB';
-import Users from '../client/server/models/userModels';
+import Users from '../client/server/userModels';
 const app = createServer();
 describe('user login/signup unit tests', () => {
   const username = 'testytest';

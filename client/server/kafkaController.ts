@@ -23,11 +23,6 @@ interface controller {
     res: express.Response,
     next: express.NextFunction
   ) => void;
-  fetchConsumers: (   
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
   updateTables: (
     req: express.Request,
     res: express.Response,
@@ -63,9 +58,11 @@ const controller: controller = {
                     valString = valString.slice(0, valString.length - 1);
                     colString = colString.slice(0, colString.length - 1);
                     try {
+                      console.log('hererafkjalksoddsia08j');
                       db.exec(
                         `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
                       ).catch(() => {
+                        console.log('a testt');
                         db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
                           return res.redirect(
                             307,
@@ -80,6 +77,7 @@ const controller: controller = {
                 }
               })
               .catch(() => {
+                console.log('a testt');
                 return res.redirect(
                   307,
                   'http://localhost:3001/kafka/createTable'
@@ -94,12 +92,9 @@ const controller: controller = {
   },
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
-
     const { bootstrap } = req.body;
-    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
-    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -135,6 +130,7 @@ const controller: controller = {
   },
   //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
   createTable: async function (req, res, next) {
+    console.log('in create table');
     try {
       const { bootstrap } = req.body;
       //if there is no server given, we send an error page
@@ -267,48 +263,8 @@ const controller: controller = {
             });
         });
     } catch (error) {
+      console.log('alsfkjalskfjalsfkj');
       console.log(error);
-      next(error);
-    }
-  },
-  fetchConsumers: async (req, res, next)  => {
-    try {
-      const {bootstrap} = req.body;
-
-      //if there is no server, send an error page
-      if(!bootstrap.length) res.sendStatus(403);
-
-      //create a new instance of kafka
-      const instance = new kafka.Kafka({
-        brokers: [`${bootstrap}`],
-      });
-
-      //create a new admin instance with the kafka instance
-      const admin = instance.admin();
-      admin.connect();
-
-      //fetch groups for that broker
-      const results = await admin.listGroups();
-
-      //declare a variable to add all the consumer groups to.
-      const consumerGroupNames: string[] = [];
-
-      interface Item {
-        groupId: string, 
-        protocolType: string,
-      }
-      
-      //fetch consumerGroupNames from within the results variable
-      results.groups.forEach( (item: Item) => {
-        consumerGroupNames.push(item.groupId);
-      })
-      //declare a variable consumergroups that holds each consumer group
-      const groupsDescribed = consumerGroupNames.map((consumerGroup: string) => admin.describeGroups([consumerGroup]));
-      
-      const resolved = await Promise.all(groupsDescribed);
-      res.locals.consumerGroups = [...resolved];
-      next();
-    } catch(error) {
       next(error);
     }
   },
