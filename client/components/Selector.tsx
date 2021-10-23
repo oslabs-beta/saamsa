@@ -6,7 +6,9 @@ interface Props {
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
   setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
+  data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
+  topic: string;
   setTopic: (arg: string) => void;
   serverList: string[];
   setServerList: (arg: string[]) => void;
@@ -20,11 +22,13 @@ interface TableList {
 }
 const Selector = ({
   graphIntervalId,
+  data,
   setGraphIntervalId,
   setTableIntervalId,
   tableIntervalId,
   setData,
   setTopic,
+  topic,
   serverList,
   setServerList,
   topicList,
@@ -33,6 +37,18 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const balanceLoad = (): void => {
+    const numPartitions: number = data.reduce((acc, val) => {
+      //checking if value is null -> means partition does not exist
+      if (val.value !== null && val.time > acc.time) return val;
+      else return acc;
+    }).time;
+    axios({
+      method: 'post',
+      data: { bootstrap, topic, numPartitions },
+      url: 'http://localhost:3001/kafka/balanceLoad',
+    }).then((response) => {
+      console.log(response.status);
+    });
     /**
      * in here we need to grab the selected server
      * need to create a new topic -> (originalTopicName_balanced) (same number of partitions)
@@ -49,6 +65,7 @@ const Selector = ({
 
     return;
   };
+
   const updateTables = (arg: string | undefined): void => {
     console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
@@ -257,6 +274,7 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
+        <button onClick={balanceLoad}>Balance Load on Topic</button>
       </div>
     </div>
   );

@@ -2,6 +2,9 @@ import * as express from 'express';
 import kafkaController from '../controllers/kafkaController';
 const router = express.Router();
 //routes from localhost:3001/kafka/...
+router.use('/balanceLoad', kafkaController.balanceLoad, (req, res) =>
+  res.sendStatus(200)
+);
 router.use(
   '/createTable',
   kafkaController.createTable,

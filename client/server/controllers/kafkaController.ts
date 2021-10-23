@@ -2,39 +2,51 @@ import * as express from 'express';
 import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-interface controller {
-  refresh: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  fetchTables: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  createTable: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  fetchTopics: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  updateTables: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-}
-const controller: controller = {
+import { exec } from 'child_process';
+
+type middleWareFunction = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => void;
+// interface controller {
+//   balanceLoad: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+//   refresh: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+//   fetchTables: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+//   createTable: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+//   fetchTopics: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+//   updateTables: (
+//     req: express.Request,
+//     res: express.Response,
+//     next: express.NextFunction
+//   ) => void;
+// }
+const controller: Record<string, middleWareFunction> = {
   updateTables: function (req, res, next) {
     const { bootstrap } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
-      clientId: 'testing2',
+      clientId: 'saamsa',
       brokers: [`${bootstrap}`],
     });
     const admin = instance.admin();
@@ -85,6 +97,19 @@ const controller: controller = {
       );
     });
     admin.disconnect();
+    next();
+  },
+  balanceLoad: function (req, res, next) {
+    const { bootstrap, topic, numPartitions } = req.body;
+    const child = exec(
+      `java -jar /Users/adam/Documents/Codesmith/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+      function (error, stdout, stderr) {
+        console.log('Output -> ' + stdout);
+        if (error !== null) {
+          console.log('Error -> ' + error);
+        }
+      }
+    );
     next();
   },
   //fetches all topics for a given broker (taken from frontend broker selection)
