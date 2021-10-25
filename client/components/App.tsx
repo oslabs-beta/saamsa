@@ -7,7 +7,7 @@ const App = (): JSX.Element => {
     React.useState<NodeJS.Timeout | null>(null);
   const [tableIntervalId, setTableIntervalId] =
     React.useState<NodeJS.Timeout | null>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>();
   const [rendering, setRendering] = React.useState<boolean>(false);
