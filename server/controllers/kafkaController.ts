@@ -3,45 +3,44 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
-
-type middleWareFunction = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => void;
-// interface controller {
-//   balanceLoad: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-//   refresh: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-//   fetchTables: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-//   createTable: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-//   fetchTopics: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-//   updateTables: (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => void;
-// }
-const controller: Record<string, middleWareFunction> = {
+interface controller {
+  refresh: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  fetchTables: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  createTable: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  balanceLoad: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  fetchTopics: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  fetchConsumers: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  updateTables: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+}
+const controller: controller = {
   updateTables: function (req, res, next) {
     const { bootstrap } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -115,8 +114,10 @@ const controller: Record<string, middleWareFunction> = {
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
     const { bootstrap } = req.body;
+    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
+    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -141,7 +142,10 @@ const controller: Record<string, middleWareFunction> = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            res.json(result);
+            console.log('these are the table rows', result);
+            res.locals.result = result;
+            next();
+            // res.json(result);
           });
         }
       );
@@ -285,6 +289,83 @@ const controller: Record<string, middleWareFunction> = {
         });
     } catch (error) {
       console.log(error);
+      next(error);
+    }
+  },
+  fetchConsumers: async (req, res, next) => {
+    try {
+      const { bootstrap } = req.body;
+
+      //if there is no server, send an error page
+      if (!bootstrap.length) res.sendStatus(403);
+
+      //create a new instance of kafka
+      const instance = new kafka.Kafka({
+        brokers: [`${bootstrap}`],
+      });
+
+      //create a new admin instance with the kafka instance
+      const admin = instance.admin();
+      admin.connect();
+
+      //fetch groups for that broker
+      const results = await admin.listGroups();
+
+      //declare a variable to add all the consumer groups to.
+      const consumerGroupNames: string[] = [];
+
+      interface Item {
+        groupId: string;
+        protocolType: string;
+      }
+
+      //fetch consumerGroupNames from within the results variable
+      results.groups.forEach((item: Item) => {
+        consumerGroupNames.push(item.groupId);
+      });
+      console.log(consumerGroupNames);
+      //declare a variable consumergroups that holds each consumer group
+      const groupsDescribed = consumerGroupNames.map((consumerGroup: string) =>
+        admin.describeGroups([consumerGroup])
+      );
+
+      const resolved = await Promise.all(groupsDescribed);
+
+      interface ConsumerGroup {
+        groups: {
+          errorCode: number;
+          groupId: string;
+          members: {
+            memberId: string;
+            clientId: string;
+            clientHost: string;
+            memberMetadata: Buffer;
+            memberAssignment: Buffer;
+            stringifiedAssignment: string;
+            stringifiedMetadata: string;
+          }[];
+          protocol: string;
+          portocolType: string;
+          state: string;
+        }[];
+      }
+      const cloned: ConsumerGroup[] = JSON.parse(JSON.stringify(resolved));
+
+      resolved.forEach(
+        (consumerGroup: kafka.GroupDescriptions, index: number) => {
+          consumerGroup.groups[0].members.forEach((member, memberIndex) => {
+            // console.log(member.memberMetadata.toString());
+            // console.log(member.memberAssignment.toString());
+            cloned[index].groups[0].members[memberIndex].stringifiedAssignment =
+              member.memberAssignment.toString();
+            cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
+              member.memberMetadata.toString();
+          });
+        }
+      );
+      res.locals.consumerGroups = [...cloned];
+      next();
+    } catch (error) {
       next(error);
     }
   },

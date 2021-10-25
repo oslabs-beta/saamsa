@@ -133,6 +133,7 @@ const Selector = ({
       .get<TableList[]>('http://localhost:3001/kafka/fetchTables')
       .then((response) => {
         //updating state to force rerender, so option appears on dropdown of bootstrap servers
+        console.log('front end response in fetch tables', response);
         setServerList(response.data.map((el) => el.name));
       });
   };
@@ -153,20 +154,22 @@ const Selector = ({
     }
   };
 
-  React.useEffect(() => {
-    if (bootstrap.length) {
-      console.log('made it to useEffect after bootstrap changed', bootstrap);
-      fetchTopics(bootstrap);
-      fetchConsumers(bootstrap);
-      const intervalId = setInterval(() => {
-        console.log('inside of setinterval bootstrap', bootstrap);
-        updateTables(bootstrap);
+  if (process.env.NODE_ENV !== 'testing') {
+    React.useEffect(() => {
+      if (bootstrap.length) {
+        console.log('made it to useEffect after bootstrap changed', bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-      }, 3000);
-      setTableIntervalId(intervalId);
-    }
-  }, [bootstrap]);
+        const intervalId = setInterval(() => {
+          console.log('inside of setinterval bootstrap', bootstrap);
+          updateTables(bootstrap);
+          fetchTopics(bootstrap);
+          fetchConsumers(bootstrap);
+        }, 3000);
+        setTableIntervalId(intervalId);
+      }
+    }, [bootstrap]);
+  }
 
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
@@ -187,7 +190,6 @@ const Selector = ({
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
-      console.log();
       console.log(response);
     });
   };
@@ -266,7 +268,11 @@ const Selector = ({
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label htmlFor='topicInput'>Enter a new broker address</label>
-          <input id='bootstrapInput' placeholder='localhost:00000'></input>
+          <input
+            id='bootstrapInput'
+            placeholder='localhost:00000'
+            value='localhost:29092'
+          ></input>
         </div>
         <button className='submitBtn' onClick={createTable}>
           Submit
