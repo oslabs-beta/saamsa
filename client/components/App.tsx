@@ -3,6 +3,11 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
+  const [xScale, setXScale] = React.useState<null | d3.ScaleLinear<
+    number,
+    number,
+    never
+  >>(null);
   const [graphIntervalId, setGraphInvervalId] =
     React.useState<NodeJS.Timeout | null>(null);
   const [tableIntervalId, setTableIntervalId] =
@@ -116,8 +121,14 @@ const App = (): JSX.Element => {
             setTopicList={setTopicList}
             serverList={serverList}
             setServerList={setServerList}
+            setXScale={setXScale}
           />
-          <Graph data={data} />
+          <Graph
+            topic={topic}
+            xScale={xScale}
+            setXScale={setXScale}
+            data={data}
+          />
         </div>
       );
     }

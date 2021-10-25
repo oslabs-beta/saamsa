@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
+import * as d3 from 'd3';
 interface Props {
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
@@ -8,6 +9,7 @@ interface Props {
   setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
   data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
+  setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   topic: string;
   setTopic: (arg: string) => void;
   serverList: string[];
@@ -21,6 +23,7 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  setXScale,
   graphIntervalId,
   data,
   setGraphIntervalId,
@@ -208,12 +211,23 @@ const Selector = ({
         url: 'http://localhost:3001/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap },
       })
-        .then((response) => {
+        .then((response: { data: [{ value: number; time: number }] }) => {
           //change this to be compatible with  enzyme testing, use event.target.etcetc
-          document.querySelector('svg')?.remove();
+          // document.querySelector('svg')?.remove();
           return response;
         })
         .then((response) => {
+          const dataTimeMax: number = response.data.reduce((acc, val) => {
+            //checking if value is null -> means partition does not exist
+            if (val.value !== null && val.time > acc.time) return val;
+            else return acc;
+          }).time;
+          const newXScale = d3
+            .scaleLinear()
+            .range([0, 520])
+            .domain([-0.5, dataTimeMax + 0.5]);
+          console.log(newXScale.range());
+          setXScale(() => newXScale);
           setData(response.data);
         });
       //setting interval of same request above so we autorefresh it (pull model)
@@ -224,7 +238,7 @@ const Selector = ({
           data: { topic: newTopic?.value, bootstrap },
         })
           .then((response) => {
-            document.querySelector('svg')?.remove();
+            // document.querySelector('svg')?.remove();
             return response;
           })
           .then((response) => {
