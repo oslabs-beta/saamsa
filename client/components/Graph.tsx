@@ -12,8 +12,19 @@ interface Props {
   xScale: null | d3.ScaleLinear<number, number, never>;
   setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   data: Array<{ time: number; value: number }>;
+  consumerList: any;
+  bootstrap: string;
+  topicList: string[];
 }
-const Graph = ({ data, xScale, setXScale, topic }: Props): JSX.Element => {
+const Graph = ({
+  bootstrap,
+  data,
+  xScale,
+  topicList,
+  setXScale,
+  topic,
+  consumerList,
+}: Props): JSX.Element => {
   //below always remove old graph on render/re-render
   d3.select('svg').remove();
   console.log(xScale?.range());
@@ -223,89 +234,139 @@ const Graph = ({ data, xScale, setXScale, topic }: Props): JSX.Element => {
   //loop through conusmer and create a node for each consumer
   //loop through consumer groups and create link for all consumers in that group
   //loop through consumers and create a node for each topics subscribed to
-  // const nodes = [];
-  // topicListArr.forEach((el) => nodes.push({ id: el, group: 'topic' }));
-  // consumerGroupListArr.forEach((el) =>
-  //   nodes.push({ id: el, group: 'consumerGroup' })
-  // );
-  // consumerListArr.forEach((el) => {
-  //   nodes.push({ id: el, group: 'consumer' });
-  // });
-  // consumerGroupListArr.forEach(el => {
+  const colorDict: { [key: string]: string } = {
+    broker: 'red',
+    consumer: 'blue',
+    consumerGroup: 'green',
+    topic: 'yellow',
+  };
+  const nodes: any = [];
+  const links: any = [];
+  console.log(consumerList);
+  if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
+  if (topicList.length && consumerList.length) {
+    topicList.forEach((el) => {
+      nodes.push({ id: el, group: 'topic' });
+      links.push({ source: el, target: bootstrap, value: 10 });
+    });
+    consumerList.forEach(
+      (el2: {
+        groups: [
+          {
+            groupId: string;
+            members: [
+              {
+                clientId: string;
+                memberId: string;
+                stringifiedMetadata: string;
+              }
+            ];
+          }
+        ];
+      }) => {
+        el2.groups.forEach((innerEl) => {
+          if (innerEl.members.length)
+            nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
+          innerEl.members.forEach((innerInnerEl) => {
+            nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
+            links.push({
+              source: innerEl.groupId,
+              target: innerInnerEl.memberId,
+              value: 10,
+            });
+            links.push({
+              source: innerInnerEl.memberId,
+              target: innerInnerEl.stringifiedMetadata,
+              value: 4,
+            });
+          });
+        });
+      }
+    );
+  }
+  console.log(nodes);
+  console.log(links);
+  const chart = () => {
+    const svg = d3.select('svg');
+    const width = 480;
+    const height = 480;
+    const simulation = d3
+      .forceSimulation<typeof nodes>(nodes)
+      .force(
+        'link',
+        d3.forceLink(links).id((d: any) => d.id)
+      )
+      .force('charge', d3.forceManyBody())
+      .force('center', d3.forceCenter(width / 2, height / 2));
 
-  // })
-  // const chart = () => {
-  //   const simulation = d3
-  //     .forceSimulation(nodes)
-  //     .force(
-  //       'link',
-  //       d3.forceLink(links).id((d) => d.id)
-  //     )
-  //     .force('charge', d3.forceManyBody())
-  //     .force('center', d3.forceCenter(width / 2, height / 2));
+    const link = svg
+      .append('g')
+      .attr('stroke', '#999')
+      .attr('stroke-opacity', 0.6)
+      .selectAll('line')
+      .data(links)
+      .join('line')
+      // .attr('stroke-width', (d) => Math.sqrt(d.value));
+      .attr('stroke-width', 2);
 
-  //   const link = svg
-  //     .append('g')
-  //     .attr('stroke', '#999')
-  //     .attr('stroke-opacity', 0.6)
-  //     .selectAll('line')
-  //     .data(links)
-  //     .join('line')
-  //     .attr('stroke-width', (d) => Math.sqrt(d.value));
+    const node = svg
+      .append('g')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 1.5)
+      .selectAll('circle')
+      .data(nodes)
+      .join('circle')
+      .attr('r', 5)
+      .attr('fill', (d: any) => {
+        // const color = JSON.stringify(d.group);
 
-  //   const node = svg
-  //     .append('g')
-  //     .attr('stroke', '#fff')
-  //     .attr('stroke-width', 1.5)
-  //     .selectAll('circle')
-  //     .data(nodes)
-  //     .join('circle')
-  //     .attr('r', 5)
-  //     .attr('fill', (d) => (d.group === 1 ? 'red' : 'yellow'))
-  //     .call(drag(simulation));
+        console.log(colorDict[d.group]);
+        return colorDict[d.group];
+      });
+    // .call(drag(simulation));
 
-  //   node.append('title').text((d) => d.id);
+    node.append('title').text((d: any) => d.id);
 
-  //   simulation.on('tick', () => {
-  //     link
-  //       .attr('x1', (d) => d.source.x)
-  //       .attr('y1', (d) => d.source.y)
-  //       .attr('x2', (d) => d.target.x)
-  //       .attr('y2', (d) => d.target.y);
+    simulation.on('tick', () => {
+      link
+        .attr('x1', (d: any) => d.source.x)
+        .attr('y1', (d: any) => d.source.y)
+        .attr('x2', (d: any) => d.target.x)
+        .attr('y2', (d: any) => d.target.y);
 
-  //     node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
-  //   });
+      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+    });
 
-  //   // invalidation.then(() => simulation.stop());
+    // invalidation.then(() => simulation.stop());
 
-  //   return svg.node();
-  // };
+    return svg.node();
+  };
 
-  //   const drag = (simulation) => {
-  //     function dragstarted(event) {
-  //       if (!event.active) simulation.alphaTarget(0.3).restart();
-  //       event.subject.fx = event.subject.x;
-  //       event.subject.fy = event.subject.y;
-  //     }
+  const drag = (simulation: any) => {
+    function dragstarted(event: any) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+    }
 
-  //     function dragged(event) {
-  //       event.subject.fx = event.x;
-  //       event.subject.fy = event.y;
-  //     }
+    function dragged(event: any) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    }
 
-  //     function dragended(event) {
-  //       if (!event.active) simulation.alphaTarget(0);
-  //       event.subject.fx = null;
-  //       event.subject.fy = null;
-  //     }
+    function dragended(event: any) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+    }
 
-  //     return d3
-  //       .drag()
-  //       .on('start', dragstarted)
-  //       .on('drag', dragged)
-  //       .on('end', dragended);
-  //   };
-  //   chart();
+    return d3
+      .drag()
+      .on('start', dragstarted)
+      .on('drag', dragged)
+      .on('end', dragended);
+  };
+  chart();
   // }
   // const rects = d3.selectAll('.bar').data(data);
   // rects.enter().append('rect').attr('class', 'bar');

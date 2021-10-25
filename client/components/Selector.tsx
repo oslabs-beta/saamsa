@@ -18,6 +18,7 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
+  setConsumerList: (arg: any) => void;
 }
 interface TableList {
   name: string;
@@ -38,6 +39,7 @@ const Selector = ({
   setTopicList,
   bootstrap,
   setBootstrap,
+  setConsumerList,
 }: Props): JSX.Element => {
   const balanceLoad = (): void => {
     const numPartitions: number = data.reduce((acc, val) => {
@@ -160,13 +162,13 @@ const Selector = ({
         console.log('made it to useEffect after bootstrap changed', bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-        const intervalId = setInterval(() => {
-          console.log('inside of setinterval bootstrap', bootstrap);
-          updateTables(bootstrap);
-          fetchTopics(bootstrap);
-          fetchConsumers(bootstrap);
-        }, 3000);
-        setTableIntervalId(intervalId);
+        // const intervalId = setInterval(() => {
+        //   console.log('inside of setinterval bootstrap', bootstrap);
+        //   updateTables(bootstrap);
+        //   fetchTopics(bootstrap);
+        //   fetchConsumers(bootstrap);
+        // }, 3000);
+        // setTableIntervalId(intervalId);
       }
     }, [bootstrap]);
   }
@@ -190,7 +192,8 @@ const Selector = ({
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
-      console.log(response);
+      console.log(response.data);
+      setConsumerList(response.data);
     });
   };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data

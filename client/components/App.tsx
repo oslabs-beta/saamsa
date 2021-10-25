@@ -8,6 +8,7 @@ const App = (): JSX.Element => {
     number,
     never
   >>(null);
+  const [consumerList, setConsumerList] = React.useState<any>([]);
   const [graphIntervalId, setGraphInvervalId] =
     React.useState<NodeJS.Timeout | null>(null);
   const [tableIntervalId, setTableIntervalId] =
@@ -123,8 +124,12 @@ const App = (): JSX.Element => {
             serverList={serverList}
             setServerList={setServerList}
             setXScale={setXScale}
+            setConsumerList={setConsumerList}
           />
           <Graph
+            bootstrap={bootstrap}
+            topicList={topicList}
+            consumerList={consumerList}
             topic={topic}
             xScale={xScale}
             setXScale={setXScale}

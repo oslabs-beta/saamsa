@@ -100,6 +100,7 @@ const controller: controller = {
   },
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
+    console.log(bootstrap, topic, numPartitions);
     const child = exec(
       `java -jar /Users/adam/Documents/Codesmith/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
@@ -357,9 +358,9 @@ const controller: controller = {
             // console.log(member.memberMetadata.toString());
             // console.log(member.memberAssignment.toString());
             cloned[index].groups[0].members[memberIndex].stringifiedAssignment =
-              member.memberAssignment.toString();
+              member.memberAssignment.filter((el) => el > 32).toString();
             cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
-              member.memberMetadata.toString();
+              member.memberMetadata.filter((el) => el > 32).toString();
           });
         }
       );
