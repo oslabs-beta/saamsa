@@ -3,6 +3,7 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
+// const { StringDecoder } = require('string_decoder');
 interface controller {
   refresh: (
     req: express.Request,
@@ -40,6 +41,7 @@ interface controller {
     next: express.NextFunction
   ) => void;
 }
+// const decoder = new StringDecoder('utf-8');
 const controller: controller = {
   updateTables: function (req, res, next) {
     const { bootstrap } = req.body;
@@ -357,10 +359,19 @@ const controller: controller = {
           consumerGroup.groups[0].members.forEach((member, memberIndex) => {
             // console.log(member.memberMetadata.toString());
             // console.log(member.memberAssignment.toString());
-            cloned[index].groups[0].members[memberIndex].stringifiedAssignment =
-              member.memberAssignment.filter((el) => el > 32).toString();
-            cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
-              member.memberMetadata.filter((el) => el > 32).toString();
+            if (member.memberId.includes('saamsaLoadBalancer')) {
+              cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
+                member.memberId.split('%%%')[1];
+            } else {
+              cloned[index].groups[0].members[
+                memberIndex
+              ].stringifiedAssignment = member.memberAssignment
+                .filter((el) => el > 32)
+                .toString();
+              cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
+                member.memberMetadata.filter((el) => el > 32).toString();
+            }
+            // console.log(atob(member.memberMetadata));
           });
         }
       );

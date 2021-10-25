@@ -162,13 +162,13 @@ const Selector = ({
         console.log('made it to useEffect after bootstrap changed', bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-        // const intervalId = setInterval(() => {
-        //   console.log('inside of setinterval bootstrap', bootstrap);
-        //   updateTables(bootstrap);
-        //   fetchTopics(bootstrap);
-        //   fetchConsumers(bootstrap);
-        // }, 3000);
-        // setTableIntervalId(intervalId);
+        const intervalId = setInterval(() => {
+          console.log('inside of setinterval bootstrap', bootstrap);
+          updateTables(bootstrap);
+          fetchTopics(bootstrap);
+          fetchConsumers(bootstrap);
+        }, 3000);
+        setTableIntervalId(intervalId);
       }
     }, [bootstrap]);
   }

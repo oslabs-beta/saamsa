@@ -265,21 +265,26 @@ const Graph = ({
         ];
       }) => {
         el2.groups.forEach((innerEl) => {
-          if (innerEl.members.length)
+          if (innerEl.members.length) {
             nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
-          innerEl.members.forEach((innerInnerEl) => {
-            nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
-            links.push({
-              source: innerEl.groupId,
-              target: innerInnerEl.memberId,
-              value: 10,
+            innerEl.members.forEach((innerInnerEl) => {
+              nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
+              links.push({
+                source: innerEl.groupId,
+                target: innerInnerEl.memberId,
+                value: 10,
+              });
+              if (innerInnerEl && innerInnerEl.stringifiedMetadata.length)
+                links.push({
+                  source: innerInnerEl.memberId,
+                  target: innerInnerEl.stringifiedMetadata.replace(
+                    /%(.*)/g,
+                    '_balanced'
+                  ),
+                  value: 4,
+                });
             });
-            links.push({
-              source: innerInnerEl.memberId,
-              target: innerInnerEl.stringifiedMetadata,
-              value: 4,
-            });
-          });
+          }
         });
       }
     );
@@ -366,7 +371,7 @@ const Graph = ({
       .on('drag', dragged)
       .on('end', dragended);
   };
-  chart();
+
   // }
   // const rects = d3.selectAll('.bar').data(data);
   // rects.enter().append('rect').attr('class', 'bar');
@@ -382,7 +387,11 @@ const Graph = ({
   //   console.log(newXScale.range());
   //   setXScale(() => newXScale);
   // }, [topic]);
-
+  try {
+    chart();
+  } catch (error) {
+    console.log(error);
+  }
   return <div id='mainContainer'>{!!data.length && <h2>Graph</h2>}</div>;
 };
 
