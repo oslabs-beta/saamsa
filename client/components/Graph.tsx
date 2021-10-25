@@ -215,6 +215,98 @@ const Graph = ({ data, xScale, setXScale, topic }: Props): JSX.Element => {
       .attr('fill', '#fff')
       .attr('opacity', 0);
   }
+
+  // nodes: {id: string, group: numorString}
+  // links: {source: string, target: string, value: num}
+  //loop through topics, and create a node for each topic
+  //loop through consumer groups and create a node for each consumer group
+  //loop through conusmer and create a node for each consumer
+  //loop through consumer groups and create link for all consumers in that group
+  //loop through consumers and create a node for each topics subscribed to
+  // const nodes = [];
+  // topicListArr.forEach((el) => nodes.push({ id: el, group: 'topic' }));
+  // consumerGroupListArr.forEach((el) =>
+  //   nodes.push({ id: el, group: 'consumerGroup' })
+  // );
+  // consumerListArr.forEach((el) => {
+  //   nodes.push({ id: el, group: 'consumer' });
+  // });
+  // consumerGroupListArr.forEach(el => {
+
+  // })
+  // const chart = () => {
+  //   const simulation = d3
+  //     .forceSimulation(nodes)
+  //     .force(
+  //       'link',
+  //       d3.forceLink(links).id((d) => d.id)
+  //     )
+  //     .force('charge', d3.forceManyBody())
+  //     .force('center', d3.forceCenter(width / 2, height / 2));
+
+  //   const link = svg
+  //     .append('g')
+  //     .attr('stroke', '#999')
+  //     .attr('stroke-opacity', 0.6)
+  //     .selectAll('line')
+  //     .data(links)
+  //     .join('line')
+  //     .attr('stroke-width', (d) => Math.sqrt(d.value));
+
+  //   const node = svg
+  //     .append('g')
+  //     .attr('stroke', '#fff')
+  //     .attr('stroke-width', 1.5)
+  //     .selectAll('circle')
+  //     .data(nodes)
+  //     .join('circle')
+  //     .attr('r', 5)
+  //     .attr('fill', (d) => (d.group === 1 ? 'red' : 'yellow'))
+  //     .call(drag(simulation));
+
+  //   node.append('title').text((d) => d.id);
+
+  //   simulation.on('tick', () => {
+  //     link
+  //       .attr('x1', (d) => d.source.x)
+  //       .attr('y1', (d) => d.source.y)
+  //       .attr('x2', (d) => d.target.x)
+  //       .attr('y2', (d) => d.target.y);
+
+  //     node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
+  //   });
+
+  //   // invalidation.then(() => simulation.stop());
+
+  //   return svg.node();
+  // };
+
+  //   const drag = (simulation) => {
+  //     function dragstarted(event) {
+  //       if (!event.active) simulation.alphaTarget(0.3).restart();
+  //       event.subject.fx = event.subject.x;
+  //       event.subject.fy = event.subject.y;
+  //     }
+
+  //     function dragged(event) {
+  //       event.subject.fx = event.x;
+  //       event.subject.fy = event.y;
+  //     }
+
+  //     function dragended(event) {
+  //       if (!event.active) simulation.alphaTarget(0);
+  //       event.subject.fx = null;
+  //       event.subject.fy = null;
+  //     }
+
+  //     return d3
+  //       .drag()
+  //       .on('start', dragstarted)
+  //       .on('drag', dragged)
+  //       .on('end', dragended);
+  //   };
+  //   chart();
+  // }
   // const rects = d3.selectAll('.bar').data(data);
   // rects.enter().append('rect').attr('class', 'bar');
   // rects.attr('height', function (d) {
@@ -229,6 +321,7 @@ const Graph = ({ data, xScale, setXScale, topic }: Props): JSX.Element => {
   //   console.log(newXScale.range());
   //   setXScale(() => newXScale);
   // }, [topic]);
+
   return <div id='mainContainer'>{!!data.length && <h2>Graph</h2>}</div>;
 };
 
