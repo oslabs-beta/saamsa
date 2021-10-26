@@ -3,16 +3,21 @@ import kafkaController from '../controllers/kafkaController';
 const router = express.Router();
 
 /********************************************************************************************************/
-router.use('/createTable', kafkaController.createTable, (req: express.Request, res: express.Response) => {
+router.use('/createTable', kafkaController.createTable, (req, res) => {
   return res.sendStatus(200);
 });
 
-router.use('/updateTables', kafkaController.updateTables, kafkaController.fetchTopics);
+router.use('/updateTables', kafkaController.updateTables, (req, res) => {
+  return res.sendStatus(200);
+ }
+ );
 
 /********************************************************************************************************/
-router.use('/fetchTopics', kafkaController.fetchTopics);
+router.use('/fetchTopics', kafkaController.fetchTopics, (req, res) => {
+  return res.status(200).json([...res.locals.allTopics]);
+});
 
-router.use('/fetchTables', kafkaController.fetchTables, (req: express.Request, res: express.Response) => {
+router.use('/fetchTables', kafkaController.fetchTables, (req, res) => {
   return res.status(200).json(res.locals.result);
 });
 
