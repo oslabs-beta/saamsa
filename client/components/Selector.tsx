@@ -208,7 +208,8 @@ const Selector = ({
     const newTopic: HTMLSelectElement | null = document.querySelector(
       '#topics option:checked'
     ); //grabbing current selected topic
-    if (newTopic?.value.length) setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
+    if (newTopic?.value.length && newTopic?.value !== topic)
+      setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
     if (bootstrap.length && newTopic?.value.length) {
       //making initial request so we instantly update the data
       axios({
@@ -251,7 +252,7 @@ const Selector = ({
           });
       }, 3000);
       setGraphIntervalId(intervalId);
-    } else {
+    } else if (!newTopic?.value.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }

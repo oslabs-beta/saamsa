@@ -2,12 +2,14 @@ import * as React from 'react';
 import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
+import * as d3 from 'd3';
 const App = (): JSX.Element => {
-  const [xScale, setXScale] = React.useState<null | d3.ScaleLinear<
-    number,
-    number,
-    never
-  >>(null);
+  const [xScale, setXScale] = React.useState<
+    d3.ScaleLinear<number, number, never>
+  >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
+  const [yScale, setYScale] = React.useState<
+    d3.ScaleLinear<number, number, never>
+  >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>([]);
   const [graphIntervalId, setGraphInvervalId] =
     React.useState<NodeJS.Timeout | null>(null);
@@ -126,15 +128,19 @@ const App = (): JSX.Element => {
             setXScale={setXScale}
             setConsumerList={setConsumerList}
           />
-          <Graph
-            bootstrap={bootstrap}
-            topicList={topicList}
-            consumerList={consumerList}
-            topic={topic}
-            xScale={xScale}
-            setXScale={setXScale}
-            data={data}
-          />
+          {!!bootstrap.length && (
+            <Graph
+              yScale={yScale}
+              setYScale={setYScale}
+              bootstrap={bootstrap}
+              topicList={topicList}
+              consumerList={consumerList}
+              topic={topic}
+              xScale={xScale}
+              setXScale={setXScale}
+              data={data}
+            />
+          )}
         </div>
       );
     }

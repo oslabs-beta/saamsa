@@ -357,14 +357,12 @@ const controller: controller = {
       resolved.forEach(
         (consumerGroup: kafka.GroupDescriptions, index: number) => {
           consumerGroup.groups[0].members.forEach((member, memberIndex) => {
-            console.log(member.memberMetadata.filter((el) => el > 32));
-            console.log(member.memberAssignment);
             if (member.memberId.includes('saamsaLoadBalancer')) {
               const stringifiedMetaData =
                 cloned[index].groups[0].groupId.split('%%%')[1];
               console.log(stringifiedMetaData);
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
-                stringifiedMetaData ? stringifiedMetaData : 'booboo';
+                stringifiedMetaData ? stringifiedMetaData : 'topic_not_found';
               cloned[index].groups[0].groupId = 'saamsaLoadBalancer';
             } else {
               cloned[index].groups[0].members[
