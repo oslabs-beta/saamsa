@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import * as React from 'react';
+import signUpPage from './SignUpPage';
 import '../../client/scss/LoginPage.scss';
 
 type Props = {

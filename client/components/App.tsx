@@ -10,6 +10,7 @@ const App = (): JSX.Element => {
     React.useState<NodeJS.Timeout | null>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
+  const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>('');
   const [rendering, setRendering] = React.useState<boolean>(false);
   const [topic, setTopic] = React.useState<string>('');

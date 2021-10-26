@@ -1,7 +1,7 @@
 import * as express from 'express';
 const bcrypt = require('bcryptjs');
 import userModels from './userModels';
-import * as cookiePa from 'cookie-parser';
+// import * as cookieParser from 'cookie-parser';
 
 type userController = {
   createUser: (
@@ -15,7 +15,6 @@ type userController = {
     next: express.NextFunction
   ) => void;
 };
-
 const userController = <userController>{};
 
 userController.createUser = async (req, res, next) => {
