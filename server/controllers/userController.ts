@@ -1,7 +1,7 @@
 import * as express from 'express';
 const bcrypt = require('bcryptjs');
 import userModels from './userModels';
-// import * as cookieParser from 'cookie-parser';
+import * as cookiePa from 'cookie-parser';
 
 type userController = {
   createUser: (
