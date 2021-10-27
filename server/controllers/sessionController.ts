@@ -29,9 +29,10 @@ sessionController.startSession = async (req, res, next) => {
 // end session -- delete user from sessions database to delete user information
 sessionController.endSession = async (req, res, next) => {
     try {
-      const { user } = req.cookies;
+      const user = req.body;
+      console.log(user);
       await Session.findOneAndDelete({ cookieId: user });
-      res.locals.id = user;
+      res.locals.user = user;
       next();
     } catch (err) {
       const Error = {
