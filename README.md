@@ -1,7 +1,13 @@
 # Saamsa
-Saamsa is an easy-to-use web & desktop application built to work with Kafka to allow you to visualize load balancing on Kafka brokers and to customize if necessary.
+Saamsa is an easy-to-use web & desktop application built to work with Kafka that:
+* Displays consumer-level load on an individual broker
+* Displays producer-level load on the topic level
+* Allows you as the developer to see what consumer is consuming what data, which groups they belong to, and if any sticky or stale consumers need to be remedied.
+* Allows you to see how your data is stored on topics and if your data rate is causing batching issues, leading to an imbalance of messages on individual partitions
+* Allows you as the developer to circumvent the black box nature of Kafka and really get the behind-the-scenes of their implementation of the Kafka system and assess if everything is behaving as expected
+* Allows you to visualize load balancing on Kafka brokers and to customize if necessary.
 
-Saamsa aims to allow the users to visualize load balancing in their application when reading and writing to different topics through the broker, and to enable users to customize load balancing on a topic level to distribute incoming traffic across multiple targets <to improve ??? >
+The second aspect of Saamsa dives further into Kafka than data visualization. It allows for single replication with exactly-once written commits and continuous real-time load balancing on a single topic on the same broker. This ensures data integrity and efficient read/write operations for maximal performance. All of this is done simply with a click of a button to make the developer experience with Kafka as smooth as possible! This functionality is achieved through a custom Kafka streams API implementation which gets attached to the provided topic. It replicates the data in real-time as an independent consumer and producer to the Kafka topic, ensuring no interference with native consumers and producers.
 
 ## Table of Contents
 * Pre-requisites
@@ -47,7 +53,12 @@ Saamsa has the following features:
   * Creates Consumers that read data upon button click
   * Created producers that produce massive amounts of data upon button click
   
-  To use our Demo app, please go to [Saamsa Demo Application] (https://github.com/Saamsa/SaamsaTestingApp)
+  To use our Demo app, all you have to do is : 
+  1. Install Docker Desktop
+  2. Go to Docker and use the following docker images[Saamsa Demo Application] (https://github.com/Saamsa/SaamsaTestingApp)
+  3. Run "bash docker compose up -d"
+  This opens up a local Kafka instance at localhost:29092, accessible via Saamsa. 
+  The controls for this instance : Topic, consumer, and producer creation, are now available at localhost:3000.
   
 ## Installation
  To use our [Web Application](www.google.com) / [Desktop Application](wwww.google.com), please follow steps 1 - 6 of Getting started with Saamsa , which can be found above.
