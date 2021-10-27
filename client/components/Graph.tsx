@@ -109,6 +109,7 @@ const Graph = ({
       //grabbing container to hold graph and axes, then appending a smaller g to hold only graph
       d3.select('#mainContainer')
         .append('svg')
+        .attr('class','chartSvg') //bar graph
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -171,8 +172,11 @@ const Graph = ({
             .on('zoom', zoomed) //on zoom event, invoke above zoomed function
         );
       };
+
+      //bar graph method
       const svg: d3.Selection<Element, unknown, HTMLElement, unknown> =
-        d3.select('g');
+        d3.select('.chartSvg')
+        .selectChild('g');
       //appending zoom feature onto the svg
       svg.call(zoom);
       //calculating x-y scales
@@ -343,7 +347,9 @@ const Graph = ({
     console.log(topicList);
     console.log(nodes);
     console.log(links);
-    const svg = d3.select('svg');
+    const svg = d3.select('#mainContainer')
+    .append('svg')
+    .attr('class','nodeyChart');
     const width = 480;
     const height = 480;
     const simulation = d3
