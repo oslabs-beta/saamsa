@@ -1,20 +1,20 @@
-@import "_variables";
-body{
-background-color: $saamsaGrey;
+@import '_variables';
+body {
+  background-color: $saamsaGrey;
 }
 
 .axis-label {
-    fill: #000;
-    font-size: 12px;
-    text-anchor: middle;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;;
-  }
-  svg{
-    width: 400px;
-    height: 400px;
-  }
-  .nodeyChart{
-    background-color:aqua;
-    width: 200px;
-    height: 200px;
-  }
+  fill: #000;
+  font-size: 12px;
+  text-anchor: middle;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+svg {
+  width: 400px;
+  height: 400px;
+}
+// .nodeyChart{
+//   background-color:aqua;
+//   width: 200px;
+//   height: 200px;
+// }

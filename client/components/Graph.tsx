@@ -111,7 +111,7 @@ const Graph = ({
 
       d3.select('#mainContainer')
         .append('svg')
-        .attr('class','chartSvg') //bar graph
+        .attr('class', 'chartSvg') //bar graph
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -176,8 +176,8 @@ const Graph = ({
       };
 
       //bar graph method
-      const svg: d3.Selection<Element, unknown, HTMLElement, unknown> =
-        d3.select('.chartSvg')
+      const svg: d3.Selection<Element, unknown, HTMLElement, unknown> = d3
+        .select('.chartSvg')
         .selectChild('g');
       //appending zoom feature onto the svg
       svg.call(zoom);
@@ -369,9 +369,12 @@ const Graph = ({
     console.log(topicList);
     console.log(nodes);
     console.log(links);
-    const svg = d3.select('#mainContainer')
-    .append('svg')
-    .attr('class','nodeyChart');
+    d3.select('#mainContainer')
+      .append('svg')
+      .attr('class', 'nodeyChart')
+      .attr('width', 200)
+      .attr('height', 200);
+    const svg = d3.select('.nodeyChart');
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -383,6 +386,8 @@ const Graph = ({
 
     const link = svg
       .append('g')
+      .attr('height', 200)
+      .attr('width', 200)
       .attr('stroke', '#999')
       .attr('stroke-opacity', 0.6)
       .selectAll('line')
@@ -393,6 +398,8 @@ const Graph = ({
 
     const node: any = svg
       .append('g')
+      .attr('height', 200)
+      .attr('width', 200)
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
       .selectAll('circle')
@@ -714,8 +721,9 @@ const Graph = ({
   //   updateChart();
   // }, [consumerList]);
   React.useEffect(() => {
-    d3.selectAll('circle').remove();
-    d3.selectAll('line').remove();
+    d3.select('.nodeyChart').remove();
+    // d3.selectAll('circle').remove();
+    // d3.selectAll('line').remove();
     chart();
   }, [topicList, consumerList]);
   // React.useEffect(() => {
