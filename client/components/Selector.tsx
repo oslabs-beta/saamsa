@@ -212,7 +212,7 @@ const Selector = ({
       <div className='headingWrapper'>
         <h1 className='heading'>Saamsa 
         <div id = 'loggedIn'> Logged in as {currentUser}
-        <button id="logOutBtn" onClick={logOut}>Log Out </button>)
+        <button className="Btn" onClick={logOut}> Log Out </button>
         </div>
         </h1>
       </div>
@@ -222,7 +222,7 @@ const Selector = ({
           <label htmlFor='topicInput'>Enter a new broker address</label>
           <input id='bootstrapInput' placeholder='localhost:00000' value='localhost:29092'></input>
         </div>
-        <button className='submitBtn' onClick={createTable}>
+        <button className='Btn' onClick={createTable}>
           Submit
         </button>
         

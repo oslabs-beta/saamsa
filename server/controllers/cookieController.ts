@@ -10,7 +10,8 @@ try{
         maxAge: expirationTime,
         httpOnly: true
     };
-    res.cookie('user', `${res.locals.user}`, cookieOptions); 
+    const user = res.locals.user;
+    res.cookie('user', user, cookieOptions); 
     next();
 }
 catch (err){

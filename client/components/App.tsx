@@ -25,12 +25,18 @@ const App = (): JSX.Element => {
   // check / fetch fresh cookies from browser 
   React.useEffect(() => {
     if(!freshCookies) {
-      async () => {
-        const res = await (await fetch('/sessions')).json();
-
+      (async () => {
+        const res = await (await fetch('http://localhost:3001/sessions')).json();
+        getCookies(true);
+        if (res) {
+          const username: string = res;
+          changeLoginStatus(true);
+          changeUser(username);
+        }
       }
+      )();
     }
-  })
+  });
 
 
   // login button function
@@ -49,7 +55,7 @@ const App = (): JSX.Element => {
     // if username or password are empty inputs, display error message
     if (username == '' || password == '') {
       const result =
-        'Please fill out the username and password fields to log in';
+        'Please fill enter your username and password to log in';
       changeAttempt(result);
 
       // if username and password are filled out, send fetch request to backend to see if user/ pw is correct 
@@ -65,17 +71,9 @@ const App = (): JSX.Element => {
         body: JSON.stringify(user),
       })
         // if username or password are empty, have user try again
-        .then((res) => {
-          if (res.status === 401){
-            // had this be an alert window and reload because signup wasn't working after incorrect entry
-            const result = ('Incorrect username or password. Please try again.');
-            changeAttempt(result);
-          }
-          // otherwise store the user in state and change login status to true
-          else { 
+        .then(() =>{
             changeUser(username);
             changeLoginStatus(true);
-          }
         })
         .catch((err) => {
           changeAttempt('Incorrect username or password. Please try again.');
@@ -131,10 +129,10 @@ const App = (): JSX.Element => {
   };
 
 
-  React.useEffect(() => {
-    setRendering(false);
-  }, []);
-  if (!rendering) {
+  // React.useEffect(() => {
+  //   setRendering(false);
+  // }, []);
+  // if (!rendering) {
     if (loginStatus === false) {
       return (
         <div key='loginPage'>
@@ -168,9 +166,10 @@ const App = (): JSX.Element => {
           <Graph data={data} />
         </div>
       );
-    }
+    }else {
+    return <div key='loadingMessage'>Loading, please wait!</div>;
+    };
   }
-  return <div key='loadingMessage'>Loading, please wait!</div>;
-};
+  
 
 export default App;
