@@ -1,6 +1,8 @@
 @import '_variables';
 body {
   background-color: $saamsaGrey;
+  width: 100%;
+  height: 100%;
 }
 
 .axis-label {
@@ -9,12 +11,19 @@ body {
   text-anchor: middle;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+.nodeyChart{
+  background-color:yellowgreen;
+  margin-top: 1px;
+  margin-right:5%
+}
+.graphSvg{
+  background-color: rgb(211, 43, 226);
+  // position: absolute;
+  // right: 2%;
+  // top: 50%;
+}
 svg {
   width: 400px;
   height: 400px;
+  background-color: rgb(109, 165, 162);
 }
-// .nodeyChart{
-//   background-color:aqua;
-//   width: 200px;
-//   height: 200px;
-// }

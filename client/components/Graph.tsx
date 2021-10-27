@@ -111,7 +111,7 @@ const Graph = ({
 
       d3.select('#mainContainer')
         .append('svg')
-        .attr('class', 'chartSvg') //bar graph
+        .attr('class', 'graphSvg') //bar graph
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -177,8 +177,9 @@ const Graph = ({
 
       //bar graph method
       const svg: d3.Selection<Element, unknown, HTMLElement, unknown> = d3
-        .select('.chartSvg')
+        .select('.graphSvg')
         .selectChild('g');
+        
       //appending zoom feature onto the svg
       svg.call(zoom);
       //calculating x-y scales
@@ -207,7 +208,10 @@ const Graph = ({
         .attr('width', width)
         .attr('height', height + 10)
         .attr('x', margin.left)
-        .attr('y', margin.top);
+        .attr('y', margin.top)
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Value vs Date Graph");
       //making sure that x-axis and y-axis ticks are integers only!
       const xAxisTicks = xScale
         .ticks()
@@ -301,12 +305,6 @@ const Graph = ({
     };
     const height = 600 - margin.top - margin.bottom;
     const width = 600 - margin.left - margin.right;
-    d3.select('#mainContainer')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
     const colorDict: { [key: string]: string } = {
       broker: 'red',
       consumer: 'blue',
@@ -707,6 +705,7 @@ const Graph = ({
   };
   // React.useEffect(calculateYScale);
   React.useEffect(() => {
+    d3.select('svg').remove();
     renderGraph();
     // updateGraph();
   }, [topic]);
