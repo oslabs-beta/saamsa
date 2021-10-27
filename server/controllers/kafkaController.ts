@@ -109,7 +109,7 @@ const controller: controller = {
     const child = exec(
       `java -jar ${path.join(
         __dirname,
-        '/../Exec.jar'
+        './../Exec.jar'
       )} ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
         console.log('Output -> ' + stdout);
