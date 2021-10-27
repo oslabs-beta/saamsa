@@ -4,7 +4,8 @@ import { exec } from 'child_process';
 import path from 'path';
 const app = createServer();
 
-const MONGO_URI = 'mongodb+srv://dbUser:codesmith@cluster0.drsef.mongodb.net/saamsa?retryWrites=true&w=majority';
+const MONGO_URI =
+  'mongodb+srv://dbUser:codesmith@cluster0.drsef.mongodb.net/saamsa?retryWrites=true&w=majority';
 // 'mongodb+srv://dbUser:codesmith@cluster0.drsef.mongodb.net/saamsa?retryWrites=true&w=majority';
 connect(MONGO_URI, {
   useNewUrlParser: true,

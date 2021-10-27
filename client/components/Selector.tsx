@@ -2,6 +2,8 @@ import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
 import * as d3 from 'd3';
+import * as _ from 'lodash';
+import useInterval from './useInterval';
 interface Props {
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
@@ -18,12 +20,14 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
+  consumerList: any;
   setConsumerList: (arg: any) => void;
 }
 interface TableList {
   name: string;
 }
 const Selector = ({
+  consumerList,
   setXScale,
   graphIntervalId,
   data,
@@ -157,20 +161,19 @@ const Selector = ({
   };
 
   if (process.env.NODE_ENV !== 'testing') {
-    React.useEffect(() => {
+    useInterval(() => {
       if (bootstrap.length) {
-        console.log('made it to useEffect after bootstrap changed', bootstrap);
+        console.log('inside of setinterval bootstrap', bootstrap);
+        updateTables(bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-        const intervalId = setInterval(() => {
-          console.log('inside of setinterval bootstrap', bootstrap);
-          updateTables(bootstrap);
-          fetchTopics(bootstrap);
-          fetchConsumers(bootstrap);
-        }, 3000);
-        setTableIntervalId(intervalId);
+        console.log(bootstrap);
+        console.log(topic);
+        if (topic.length) {
+          changeTopics();
+        }
       }
-    }, [bootstrap]);
+    }, 3000);
   }
 
   //sends a request to backend to grab topics for passed in bootstrap server
@@ -192,8 +195,11 @@ const Selector = ({
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
+      console.log('from fetch consumers');
       console.log(response.data);
-      setConsumerList(response.data);
+      console.log(_.isEqual(consumerList, response.data));
+      if (!_.isEqual(consumerList, response.data))
+        setConsumerList(response.data);
     });
   };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
@@ -208,8 +214,6 @@ const Selector = ({
     const newTopic: HTMLSelectElement | null = document.querySelector(
       '#topics option:checked'
     ); //grabbing current selected topic
-    if (newTopic?.value.length && newTopic?.value !== topic)
-      setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
     if (bootstrap.length && newTopic?.value.length) {
       //making initial request so we instantly update the data
       axios({
@@ -223,35 +227,25 @@ const Selector = ({
           return response;
         })
         .then((response) => {
-          const dataTimeMax: number = response.data.reduce((acc, val) => {
-            //checking if value is null -> means partition does not exist
-            if (val.value !== null && val.time > acc.time) return val;
-            else return acc;
-          }).time;
-          const newXScale = d3
-            .scaleLinear()
-            .range([0, 520])
-            .domain([-0.5, dataTimeMax + 0.5]);
-          console.log(newXScale.range());
-          setXScale(() => newXScale);
-          setData(response.data);
+          // const dataTimeMax: number = response.data.reduce((acc, val) => {
+          //   //checking if value is null -> means partition does not exist
+          //   if (val.value !== null && val.time > acc.time) return val;
+          //   else return acc;
+          // }).time;
+          // const newXScale = d3
+          //   .scaleLinear()
+          //   .range([0, 520])
+          //   .domain([-0.5, dataTimeMax + 0.5]);
+          // console.log(newXScale.range());
+          // setXScale(() => newXScale);
+          // console.log(data);
+          // console.log(response.data);
+          // console.log(_.isEqual(response.data, data));
+          if (!_.isEqual(response.data, data)) setData(response.data);
+          if (newTopic?.value.length && newTopic?.value !== topic)
+            setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
         });
       //setting interval of same request above so we autorefresh it (pull model)
-      const intervalId = setInterval(() => {
-        axios({
-          method: 'POST',
-          url: 'http://localhost:3001/kafka/refresh',
-          data: { topic: newTopic?.value, bootstrap },
-        })
-          .then((response) => {
-            // document.querySelector('svg')?.remove();
-            return response;
-          })
-          .then((response) => {
-            setData(response.data);
-          });
-      }, 3000);
-      setGraphIntervalId(intervalId);
     } else if (!newTopic?.value.length) {
       //this is if the option chosen is the blank option
       setData([]);
@@ -272,11 +266,7 @@ const Selector = ({
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label htmlFor='topicInput'>Enter a new broker address</label>
-          <input
-            id='bootstrapInput'
-            placeholder='localhost:00000'
-            value='localhost:29092'
-          ></input>
+          <input id='bootstrapInput' placeholder='localhost:00000'></input>
         </div>
         <button className='submitBtn' onClick={createTable}>
           Submit
@@ -285,7 +275,16 @@ const Selector = ({
 
         <div className='brokerSelector'>
           Select your broker:
-          <select name='bootstrap' id='bootstrap' onChange={changeServer}>
+          <select
+            name='bootstrap'
+            id='bootstrap'
+            onChange={() => {
+              const newBootstrap: HTMLSelectElement | null =
+                document.querySelector('#bootstrap option:checked');
+              if (newBootstrap)
+                setBootstrap(newBootstrap.value.replace('_', ':'));
+            }}
+          >
             <option className='serverOption'></option>
             {serverListArr}
           </select>
@@ -293,7 +292,13 @@ const Selector = ({
 
         <div className='topicSelector'>
           Select your topic:
-          <select name='topics' id='topics' onChange={changeTopics}>
+          <select
+            name='topics'
+            id='topics'
+            onChange={() => {
+              changeTopics();
+            }}
+          >
             <option className='topicOption'></option>
             {topicListArr}
           </select>

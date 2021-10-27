@@ -10,7 +10,7 @@ const App = (): JSX.Element => {
   const [yScale, setYScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
-  const [consumerList, setConsumerList] = React.useState<any>([]);
+  const [consumerList, setConsumerList] = React.useState<any>(null);
   const [graphIntervalId, setGraphInvervalId] =
     React.useState<NodeJS.Timeout | null>(null);
   const [tableIntervalId, setTableIntervalId] =
@@ -93,58 +93,58 @@ const App = (): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
-  React.useEffect(() => {
-    setRendering(false);
-  }, []);
-  if (!rendering) {
-    if (loginStatus === false) {
-      return (
-        <div key='loginPage'>
-          <LoginPage
-            loginButton={loginButton}
-            signUp={signUp}
-            loginAttempt={loginAttempt}
-          />
-        </div>
-      );
-    } else if (loginStatus === true) {
-      return (
-        <div key='selector'>
-          <Selector
-            data={data}
-            topic={topic}
-            graphIntervalId={graphIntervalId}
-            setGraphIntervalId={setGraphInvervalId}
-            tableIntervalId={tableIntervalId}
-            setTableIntervalId={setTableIntervalId}
-            setData={setData}
-            setTopic={setTopic}
+
+  if (loginStatus === false) {
+    return (
+      <div key='loginPageContainer'>
+        <LoginPage
+          key='loginPage'
+          loginButton={loginButton}
+          signUp={signUp}
+          loginAttempt={loginAttempt}
+        />
+      </div>
+    );
+  } else if (loginStatus === true) {
+    return (
+      <div key='container'>
+        <Selector
+          key='selector'
+          data={data}
+          topic={topic}
+          graphIntervalId={graphIntervalId}
+          setGraphIntervalId={setGraphInvervalId}
+          tableIntervalId={tableIntervalId}
+          setTableIntervalId={setTableIntervalId}
+          setData={setData}
+          setTopic={setTopic}
+          bootstrap={bootstrap}
+          setBootstrap={setBootstrap}
+          topicList={topicList}
+          setTopicList={setTopicList}
+          serverList={serverList}
+          setServerList={setServerList}
+          setXScale={setXScale}
+          consumerList={consumerList}
+          setConsumerList={setConsumerList}
+        />
+        <div>
+          <Graph
+            yScale={yScale}
+            setYScale={setYScale}
             bootstrap={bootstrap}
-            setBootstrap={setBootstrap}
             topicList={topicList}
-            setTopicList={setTopicList}
-            serverList={serverList}
-            setServerList={setServerList}
+            consumerList={consumerList}
+            topic={topic}
+            xScale={xScale}
             setXScale={setXScale}
-            setConsumerList={setConsumerList}
+            data={data}
           />
-          {!!bootstrap.length && (
-            <Graph
-              yScale={yScale}
-              setYScale={setYScale}
-              bootstrap={bootstrap}
-              topicList={topicList}
-              consumerList={consumerList}
-              topic={topic}
-              xScale={xScale}
-              setXScale={setXScale}
-              data={data}
-            />
-          )}
         </div>
-      );
-    }
+      </div>
+    );
   }
+
   return <div key='loadingMessage'>Loading, please wait!</div>;
 };
 

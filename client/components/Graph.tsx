@@ -5,8 +5,7 @@ import { transition as d3Transition } from 'd3-transition';
 import axios from 'axios';
 import '../../client/scss/Graph.scss';
 import { Event } from 'electron';
-
-d3Select.prototype.transition = d3Transition;
+import useInterval from './useInterval';
 interface Props {
   topic: string;
   yScale: d3.ScaleLinear<number, number, never>;
@@ -24,8 +23,8 @@ const Graph = ({
   xScale,
   topicList,
   setXScale,
-  yScale,
-  setYScale,
+  // yScale,
+  // setYScale,
   topic,
   consumerList,
 }: Props): JSX.Element => {
@@ -35,21 +34,51 @@ const Graph = ({
   console.log(xScale?.range());
   //if there is data, we actually make the graph
 
-  const margin: {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  } = {
-    top: 40,
-    bottom: 40,
-    left: 40,
-    right: 40,
-  };
-  const height = 600 - margin.top - margin.bottom;
-  const width = 600 - margin.left - margin.right;
-  //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
-  const calculateYScale = () => {
+  const renderGraph = () => {
+    const margin: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } = {
+      top: 40,
+      bottom: 40,
+      left: 40,
+      right: 40,
+    };
+    const height = 600 - margin.top - margin.bottom;
+    const width = 600 - margin.left - margin.right;
+    //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
+    // const calculateYScale = () => {
+    //   const dataValueMax: number = data.reduce(
+    //     (acc, val) => {
+    //       if (val.value > acc.value) return val;
+    //       else return acc;
+    //     },
+    //     { value: 0 }
+    //   ).value;
+    //   const newYScale = d3
+    //     .scaleLinear()
+    //     .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
+    //     .range([height, 0]);
+    //   setYScale(() => newYScale);
+    //   // d3.select('.yAxis').call()
+    //   const yAxisTicks = newYScale
+    //     .ticks()
+    //     .filter((tick) => Number.isInteger(tick));
+    //   d3.select<any, any>('.yAxis').call(
+    //     d3.axisLeft(newYScale).tickValues(yAxisTicks).tickFormat(d3.format('d'))
+    //   );
+    //   console.log(yScale?.range());
+    // };
+    const dataTimeMax: number = data.reduce(
+      (acc, val) => {
+        //checking if value is null -> means partition does not exist
+        if (val.value !== null && val.time > acc.time) return val;
+        else return acc;
+      },
+      { time: 0 }
+    ).time;
     const dataValueMax: number = data.reduce(
       (acc, val) => {
         if (val.value > acc.value) return val;
@@ -57,44 +86,18 @@ const Graph = ({
       },
       { value: 0 }
     ).value;
-    const newYScale = d3
-      .scaleLinear()
-      .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
-      .range([height, 0]);
-    setYScale(() => newYScale);
-    // d3.select('.yAxis').call()
-    const yAxisTicks = newYScale
-      .ticks()
-      .filter((tick) => Number.isInteger(tick));
-    d3.select<any, any>('.yAxis').call(
-      d3.axisLeft(newYScale).tickValues(yAxisTicks).tickFormat(d3.format('d'))
-    );
-    console.log(yScale?.range());
-  };
-  const dataTimeMax: number = data.reduce(
-    (acc, val) => {
-      //checking if value is null -> means partition does not exist
-      if (val.value !== null && val.time > acc.time) return val;
-      else return acc;
-    },
-    { time: 0 }
-  ).time;
-  const dataValueMax: number = data.reduce(
-    (acc, val) => {
-      if (val.value > acc.value) return val;
-      else return acc;
-    },
-    { value: 0 }
-  ).value;
 
-  //defining the limits for the binning function (each partition should have its own group)
-  const newArr: number[] = [];
-  for (let i = 0; i <= dataTimeMax; i++) {
-    newArr.push(i);
-  }
-  const barWidth = width / (dataTimeMax + 1);
-  const renderGraph = () => {
+    //defining the limits for the binning function (each partition should have its own group)
+    const newArr: number[] = [];
+    for (let i = 0; i <= dataTimeMax; i++) {
+      newArr.push(i);
+    }
+    const barWidth = width / (dataTimeMax + 1) - 1;
     if (data.length) {
+      console.log('rendering graph');
+      d3.select('.xAxis').remove();
+      d3.select('.yAxis').remove();
+      d3.select('text').remove();
       //transforming data from backend to be in correct form (frequency array)
       const newData: number[] = [];
       data.forEach((el) => {
@@ -127,11 +130,7 @@ const Graph = ({
           //   },
           //   { value: 0 }
           // ).value;
-          xScale.range(
-            [margin.left, width - margin.right].map((d) =>
-              event.transform.applyX(d)
-            )
-          );
+          xScale.range([0, width].map((d) => event.transform.applyX(d)));
           // const newYScale = d3
           //   .scaleLinear()
           //   .domain([0, Math.ceil(newDataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
@@ -147,7 +146,7 @@ const Graph = ({
               //updating x-y coords for each bar
               return `translate(${xScale(d!.x0)} ,${yScale(d.length)})`;
             })
-            .attr('height', (d: any) => `${height - yScale(d.length)}`);
+            .attr('height', (d: any) => `${height - yScale(d.length) - 2}`);
           d3.select<any, any>('.xAxis').call(
             d3
               .axisBottom(xScale)
@@ -181,6 +180,10 @@ const Graph = ({
         .scaleLinear()
         .domain([-0.5, dataTimeMax + 0.5]) //need to have +- 0.5 on each half because the partition is centered on each bar
         .range([0, width]);
+      const yScale = d3
+        .scaleLinear()
+        .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
+        .range([height, 0]);
       //creating the binning function that will group the data into bins according to the newArr(e.g. [0,1,2,3,4]) thresholds
       const histogram = d3
         .bin()
@@ -288,11 +291,13 @@ const Graph = ({
     const nodes: any = [];
     const links: any = [];
     if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
-    if (topicList.length && consumerList.length) {
+    if (topicList.length) {
       topicList.forEach((el) => {
         nodes.push({ id: el, group: 'topic' });
         links.push({ source: el, target: bootstrap, value: 10 });
       });
+    }
+    if (consumerList && consumerList.length) {
       consumerList.forEach(
         (el2: {
           groups: [
@@ -335,6 +340,9 @@ const Graph = ({
         }
       );
     }
+    console.log(topicList);
+    console.log(nodes);
+    console.log(links);
     const svg = d3.select('svg');
     const width = 480;
     const height = 480;
@@ -428,6 +436,64 @@ const Graph = ({
   //   setXScale(() => newXScale);
   // }, [topic]);
   const updateGraph = () => {
+    const margin: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } = {
+      top: 40,
+      bottom: 40,
+      left: 40,
+      right: 40,
+    };
+    const height = 600 - margin.top - margin.bottom;
+    // const width = 600 - margin.left - margin.right;
+    //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
+    // const calculateYScale = () => {
+    //   const dataValueMax: number = data.reduce(
+    //     (acc, val) => {
+    //       if (val.value > acc.value) return val;
+    //       else return acc;
+    //     },
+    //     { value: 0 }
+    //   ).value;
+    //   const newYScale = d3
+    //     .scaleLinear()
+    //     .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
+    //     .range([height, 0]);
+    //   setYScale(() => newYScale);
+    //   // d3.select('.yAxis').call()
+    //   const yAxisTicks = newYScale
+    //     .ticks()
+    //     .filter((tick) => Number.isInteger(tick));
+    //   d3.select<any, any>('.yAxis').call(
+    //     d3.axisLeft(newYScale).tickValues(yAxisTicks).tickFormat(d3.format('d'))
+    //   );
+    //   console.log(yScale?.range());
+    // };
+    const dataTimeMax: number = data.reduce(
+      (acc, val) => {
+        //checking if value is null -> means partition does not exist
+        if (val.value !== null && val.time > acc.time) return val;
+        else return acc;
+      },
+      { time: 0 }
+    ).time;
+    const dataValueMax: number = data.reduce(
+      (acc, val) => {
+        if (val.value > acc.value) return val;
+        else return acc;
+      },
+      { value: 0 }
+    ).value;
+
+    //defining the limits for the binning function (each partition should have its own group)
+    const newArr: number[] = [];
+    for (let i = 0; i <= dataTimeMax; i++) {
+      newArr.push(i);
+    }
+    // const barWidth = width / (dataTimeMax + 1);
     // const yScale = d3
     //   .scaleLinear()
     //   .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
@@ -438,6 +504,10 @@ const Graph = ({
         newData.push(el.time);
       }
     });
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
+      .range([height, 0]);
     const histogram = d3
       .bin()
       .value((d) => d)
@@ -465,7 +535,7 @@ const Graph = ({
       })
       // .attr('width', `${barWidth - 1}`)
       .attr('height', function (d: any) {
-        return height - yScale(d.length);
+        return height - yScale(d.length) - 2;
       })
       .style('fill', '#69b3a2');
   };
@@ -573,22 +643,27 @@ const Graph = ({
       node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
     });
   };
-  React.useEffect(calculateYScale);
-  React.useEffect(renderGraph, [topic]);
+  // React.useEffect(calculateYScale);
   React.useEffect(() => {
+    renderGraph();
+    // updateGraph();
+  }, [topic]);
+  React.useEffect(() => {
+    console.log('data has been changed');
     if (d3.selectAll('.bar').size() > 0) {
       updateGraph();
     }
   }, [data]);
   React.useEffect(() => {
-    updateChart();
+    console.log('consumerList changed');
+    chart();
   }, [consumerList]);
-  React.useEffect(() => {
-    console.log('charting');
-    chart();
-  }, [bootstrap]);
+  // React.useEffect(() => {
+  //   console.log('charting');
+  //   chart();
+  // }, [bootstrap]);
   try {
-    chart();
+    // chart();
   } catch (error) {
     console.log(error);
   }
