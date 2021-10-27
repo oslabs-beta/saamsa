@@ -714,9 +714,10 @@ const Graph = ({
   //   updateChart();
   // }, [consumerList]);
   React.useEffect(() => {
+    // d3.select('.nodeyChart').remove();
     d3.selectAll('circle').remove();
     d3.selectAll('line').remove();
-    chart();
+    // chart();
   }, [topicList, consumerList]);
   // React.useEffect(() => {
   //   console.log('charting');
