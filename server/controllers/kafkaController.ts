@@ -3,6 +3,7 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
+import * as path from 'path';
 // const { StringDecoder } = require('string_decoder');
 interface controller {
   refresh: (
@@ -102,13 +103,15 @@ const controller: controller = {
   },
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
-    console.log(bootstrap, topic, numPartitions);
-    const child = exec(
-      `java -jar /Users/adam/Documents/Codesmith/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+    exec(
+      `java -jar ${path.join(
+        __dirname,
+        '../../Exec.jar'
+      )} ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
-        console.log('Output -> ' + stdout);
-        if (error !== null) {
-          console.log('Error -> ' + error);
+        console.log(stdout);
+        if (error) {
+          console.log(error);
         }
       }
     );
@@ -117,10 +120,8 @@ const controller: controller = {
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
     const { bootstrap } = req.body;
-    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
-    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -145,7 +146,6 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            console.log('these are the table rows', result);
             res.locals.result = result;
             next();
             // res.json(result);
@@ -326,7 +326,6 @@ const controller: controller = {
       results.groups.forEach((item: Item) => {
         consumerGroupNames.push(item.groupId);
       });
-      console.log(consumerGroupNames);
       //declare a variable consumergroups that holds each consumer group
       const groupsDescribed = consumerGroupNames.map((consumerGroup: string) =>
         admin.describeGroups([consumerGroup])
@@ -360,7 +359,6 @@ const controller: controller = {
             if (member.memberId.includes('saamsaLoadBalancer')) {
               const stringifiedMetaData =
                 cloned[index].groups[0].groupId.split('%%%')[1];
-              console.log(stringifiedMetaData);
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
                 stringifiedMetaData ? stringifiedMetaData : 'topic_not_found';
               cloned[index].groups[0].groupId = 'saamsaLoadBalancer';
@@ -373,7 +371,6 @@ const controller: controller = {
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
                 member.memberMetadata.filter((el) => el > 32).toString();
             }
-            // console.log(atob(member.memberMetadata));
           });
         }
       );
