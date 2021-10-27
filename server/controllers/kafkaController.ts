@@ -3,7 +3,6 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
-import * as path from 'path';
 // const { StringDecoder } = require('string_decoder');
 interface controller {
   refresh: (
@@ -58,7 +57,7 @@ const controller: controller = {
         (db) => {
           data.forEach((el) => {
             db.all(
-              `SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`
+              `SELECT topic FROM '${bootstrapSanitized}' WHERE topic='${el}';`
             )
               .then((result) => {
                 if (result.length === 0) {
@@ -73,14 +72,16 @@ const controller: controller = {
                     colString = colString.slice(0, colString.length - 1);
                     try {
                       db.exec(
-                        `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
+                        `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valString});`
                       ).catch(() => {
-                        db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
-                          return res.redirect(
-                            307,
-                            'http://localhost:3001/kafka/createTable'
-                          );
-                        });
+                        db.exec(`DROP TABLE '${bootstrapSanitized}'`).then(
+                          () => {
+                            return res.redirect(
+                              307,
+                              'http://localhost:3001/kafka/createTable'
+                            );
+                          }
+                        );
                       });
                     } catch (error) {
                       return next(error);
@@ -103,15 +104,13 @@ const controller: controller = {
   },
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
-    exec(
-      `java -jar ${path.join(
-        __dirname,
-        '../../Exec.jar'
-      )} ${bootstrap} ${topic} ${numPartitions.toString()}`,
+    console.log(bootstrap, topic, numPartitions);
+    const child = exec(
+      `java -jar /Users/adam/Documents/Codesmith/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
-        console.log(stdout);
-        if (error) {
-          console.log(error);
+        console.log('Output -> ' + stdout);
+        if (error !== null) {
+          console.log('Error -> ' + error);
         }
       }
     );
@@ -120,8 +119,10 @@ const controller: controller = {
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
     const { bootstrap } = req.body;
+    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
+    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -129,7 +130,7 @@ const controller: controller = {
         driver: sqlite3.Database,
       }).then((db) =>
         db
-          .all(`SELECT topic FROM ${bootstrapSanitized}`)
+          .all(`SELECT topic FROM '${bootstrapSanitized}'`)
           .then((result) => res.json(result))
       );
     } catch (error) {
@@ -146,6 +147,7 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
+            console.log('these are the table rows', result);
             res.locals.result = result;
             next();
             // res.json(result);
@@ -165,6 +167,7 @@ const controller: controller = {
       if (!bootstrap.length) res.sendStatus(403);
       //sanitizing for sql
       const bootstrapSanitized = bootstrap.replace(':', '_');
+      console.log(bootstrap);
       const instance = new kafka.Kafka({
         clientId: 'testing2',
         brokers: [`${bootstrap}`], //must be unsanitized form
@@ -205,7 +208,7 @@ const controller: controller = {
         open({ filename: '/tmp/database.db', driver: sqlite3.Database })
           .then((db) => {
             db.exec(
-              `CREATE TABLE ${bootstrapSanitized} (topic varchar(255), ${partitionString});`
+              `CREATE TABLE '${bootstrapSanitized}' (topic varchar(255), ${partitionString});`
             );
             return db;
           })
@@ -222,7 +225,7 @@ const controller: controller = {
               valueString = valueString.slice(0, valueString.length - 1);
               colString = colString.slice(0, colString.length - 1);
               db.exec(
-                `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valueString});`
+                `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valueString});`
               );
             });
           })
@@ -266,14 +269,14 @@ const controller: controller = {
           })
             .then((db) => {
               db.exec(
-                `UPDATE ${bootstrapSanitized} SET ${setString} WHERE topic='${topic}';`
+                `UPDATE '${bootstrapSanitized}' SET ${setString} WHERE topic='${topic}';`
               );
               return db;
             })
             //here we grab topic data from sqldb (after updated)
             .then((db) => {
               db.all(
-                `SELECT * FROM ${bootstrapSanitized} WHERE topic='${topic}'`
+                `SELECT * FROM '${bootstrapSanitized}' WHERE topic='${topic}'`
               ).then((result) => {
                 //new arr which holds the correctly formated data for d3
                 const arr: { time: number; value: number }[] = [];
@@ -326,6 +329,7 @@ const controller: controller = {
       results.groups.forEach((item: Item) => {
         consumerGroupNames.push(item.groupId);
       });
+      console.log(consumerGroupNames);
       //declare a variable consumergroups that holds each consumer group
       const groupsDescribed = consumerGroupNames.map((consumerGroup: string) =>
         admin.describeGroups([consumerGroup])
@@ -359,6 +363,7 @@ const controller: controller = {
             if (member.memberId.includes('saamsaLoadBalancer')) {
               const stringifiedMetaData =
                 cloned[index].groups[0].groupId.split('%%%')[1];
+              console.log(stringifiedMetaData);
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
                 stringifiedMetaData ? stringifiedMetaData : 'topic_not_found';
               cloned[index].groups[0].groupId = 'saamsaLoadBalancer';
@@ -371,6 +376,7 @@ const controller: controller = {
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
                 member.memberMetadata.filter((el) => el > 32).toString();
             }
+            // console.log(atob(member.memberMetadata));
           });
         }
       );
