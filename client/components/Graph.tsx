@@ -350,7 +350,11 @@ const Graph = ({
                   target: innerInnerEl.memberId,
                   value: 10,
                 });
-                if (innerInnerEl && innerInnerEl.stringifiedMetadata.length)
+                if (
+                  innerInnerEl &&
+                  innerInnerEl.stringifiedMetadata.length &&
+                  innerInnerEl.stringifiedMetadata !== 'topic_not_found'
+                )
                   links.push({
                     source: innerInnerEl.memberId,
                     target: innerInnerEl.stringifiedMetadata,
