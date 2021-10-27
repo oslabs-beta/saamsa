@@ -354,12 +354,15 @@ const Graph = ({
                   innerInnerEl &&
                   innerInnerEl.stringifiedMetadata.length &&
                   innerInnerEl.stringifiedMetadata !== 'topic_not_found'
-                )
+                ) {
                   links.push({
                     source: innerInnerEl.memberId,
                     target: innerInnerEl.stringifiedMetadata,
                     value: 4,
                   });
+                } else {
+                  console.log('topic_not_found');
+                }
               });
             }
           });
