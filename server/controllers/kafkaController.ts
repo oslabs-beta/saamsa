@@ -106,7 +106,10 @@ const controller: controller = {
     const { bootstrap, topic, numPartitions } = req.body;
     console.log(bootstrap, topic, numPartitions);
     const child = exec(
-      `java -jar /Users/adam/Documents/Codesmith/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+      `java -jar ${path.join(
+        __dirname,
+        '../../Exec.jar'
+      )} ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
         console.log('Output -> ' + stdout);
         if (error !== null) {
