@@ -7,66 +7,69 @@ const controller: Record<string, MiddlewareFunction> = {};
 
 controller.updateTables = (req, res, next) => {
   try{
-    const { bootstrap } = req.body;
-    const bootstrapSanitized = bootstrap.replace(':', '_');
-    const instance = new kafka.Kafka({
-      clientId: 'testing2',
-      brokers: [`${bootstrap}`],
-    });
-    const admin = instance.admin();
-    admin.connect();
-    admin.listTopics().then((data) => {
-      open({ filename: '/tmp/database.db', driver: sqlite3.Database })
-        .then( (db) => {
-          data.forEach((el) => {
-            db.all(`SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`)
-              .then((result) => {
-                if (result.length === 0) {
-                  admin.fetchTopicOffsets(el).then((response) => {
-                    let colString = 'topic, ';
-                    let valString = `'${el}', `;
-                    response.forEach((partition) => {
-                      valString += `${partition.offset},`;
-                      colString += `partition_${partition.partition},`;
-                    });
-                    valString = valString.slice(0, valString.length - 1);
-                    colString = colString.slice(0, colString.length - 1);
-                    try {
-                      db.exec(`INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`)
-                      .catch(() => {
-                        db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
-                          return res.redirect(307, 'http://localhost:3001/kafka/createTable');
-                        });
-                      });
-                    } catch (error) {
-                      return next(error);
-                    }
+  console.log('did i make it to update tables?');
+  const { bootstrap } = req.body;
+  const bootstrapSanitized = bootstrap.replace(':', '_');
+  const instance = new kafka.Kafka({
+    clientId: 'testing2',
+    brokers: [`${bootstrap}`],
+  });
+  const admin = instance.admin();
+  admin.connect();
+  admin.listTopics().then((data) => {
+    open({ filename: '/tmp/database.db', driver: sqlite3.Database })
+      .then( (db) => {
+        data.forEach((el) => {
+          db.all(`SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`)
+            .then((result) => {
+              if (result.length === 0) {
+                admin.fetchTopicOffsets(el).then((response) => {
+                  let colString = 'topic, ';
+                  let valString = `'${el}', `;
+                  response.forEach((partition) => {
+                    valString += `${partition.offset},`;
+                    colString += `partition_${partition.partition},`;
                   });
-                }
-              })
-              .catch(() => {
-                return res.redirect(307, 'http://localhost:3001/kafka/createTable');
-              });
-          });
+                  valString = valString.slice(0, valString.length - 1);
+                  colString = colString.slice(0, colString.length - 1);
+                  try {
+                    db.exec(`INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`)
+                    .catch(() => {
+                      db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
+                        console.log('am i making it to this catch block?');
+                        return res.redirect(307, 'http://localhost:3001/kafka/createTable');
+                        // return next();
+                      });
+                    });
+                  } catch (error) {
+                    return next(error);
+                  }
+                });
+              }
+            })
+            .catch(() => {
+              return res.redirect(307, 'http://localhost:3001/kafka/createTable');
+            });
+        });
+      }
+    );
+  });
+  admin.disconnect();
+  return next();
+      } catch (err) {
+        const defaultErr = {
+          log: 'Express error handler caught an error in controller.updateTables middleware',
+          status: 500,
+          message: { err: `An error occurred inside a middleware named controller.updateTables : ${err}` },
         }
-      );
-    });
-    admin.disconnect();
-    next();
-  } catch(err) {
-    const defaultErr = {
-      log: 'Express error handler caught an error in controller.updateTables middleware',
-      status: 500,
-      message: { err: `An error occurred inside a middleware named controller.updateTables : ${err}` },
-    }
-    return next(defaultErr);
-  }
-}
+        return next(defaultErr);
+      }
+    };
 
 //fetches all topics for a given broker (taken from frontend broker selection)
 controller.fetchTopics = (req, res, next) => {
   const { bootstrap } = req.body;
-  console.log('Bootstrap in FETCH TOPICS', bootstrap);
+  // console.log('Bootstrap in FETCH TOPICS', bootstrap);
   //cleaning it up for SQL, which can't have colons
   const bootstrapSanitized = bootstrap.replace(':', '_');
   // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
@@ -78,7 +81,15 @@ controller.fetchTopics = (req, res, next) => {
     }).then((db) =>
       db
         .all(`SELECT topic FROM ${bootstrapSanitized}`)
-        .then((result) => res.json(result))
+        // .then(result => console.log('Topics from db for given broker', result))
+        .then((result) => {
+          let allTopics = result.map(obj => obj.topic);
+          allTopics = allTopics.filter(topic => {
+            if (topic !== '__consumer_offsets') return topic;
+          });
+          res.locals.allTopics = allTopics;
+          return next();
+        })
     );
   } catch (err) {
     const defaultErr = {
@@ -88,7 +99,7 @@ controller.fetchTopics = (req, res, next) => {
     }
     return next(defaultErr);
   }
-}
+};
 
 //fetches all tables currently in database, each table corresponds to a broker, each entry in that broker-table is a topic and it's partitions
 controller.fetchTables = (req, res, next) => {
@@ -114,7 +125,7 @@ controller.fetchTables = (req, res, next) => {
     }
     return next(defaultErr);
   }
-}
+};
 
 //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
 controller.createTable = async (req, res, next) => {
@@ -198,7 +209,7 @@ controller.createTable = async (req, res, next) => {
     }
     return next(defaultErr);
   }
-}
+};
   
 //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
 controller.refresh = (req, res, next) => {
@@ -262,7 +273,7 @@ controller.refresh = (req, res, next) => {
     }
     return next(defaultErr);
   }
-}
+};
 
 controller.fetchConsumers = async (req, res, next)  => {
   try {
@@ -295,7 +306,7 @@ controller.fetchConsumers = async (req, res, next)  => {
     results.groups.forEach( (item: Item) => {
       consumerGroupNames.push(item.groupId);
     })
-    console.log(consumerGroupNames);
+    // console.log(consumerGroupNames);
     //declare a variable consumergroups that holds each consumer group
     const groupsDescribed = consumerGroupNames.map((consumerGroup: string) => admin.describeGroups([consumerGroup]));
     
@@ -310,7 +321,7 @@ controller.fetchConsumers = async (req, res, next)  => {
         cloned[index].groups[0].members[memberIndex].stringifiedMetadata = member.memberMetadata.toString();
       });
     })
-    console.log(cloned[0].groups[0].members[0]);
+    // console.log(cloned[0].groups[0].members[0]);
     res.locals.consumerGroups = [...cloned];
     next();
   } catch(err) {
@@ -321,6 +332,6 @@ controller.fetchConsumers = async (req, res, next)  => {
     }
     return next(defaultErr);
   }
-}
+};
 
 export default controller;
