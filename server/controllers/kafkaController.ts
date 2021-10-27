@@ -3,6 +3,7 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
+import * as path from 'path';
 // const { StringDecoder } = require('string_decoder');
 interface controller {
   refresh: (
