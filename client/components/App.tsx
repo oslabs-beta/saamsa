@@ -16,10 +16,22 @@ const App = (): JSX.Element => {
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
+  const [freshCookies, getCookies] = React.useState<boolean>(false);
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
+
+  // check / fetch fresh cookies from browser 
+  React.useEffect(() => {
+    if(!freshCookies) {
+      async () => {
+        const res = await (await fetch('/sessions')).json();
+
+      }
+    }
+  })
+
 
   // login button function
   const loginButton = () => {

@@ -1,9 +1,14 @@
 import express from 'express';
-import userController from './userController';
-import kafkaRouter from './kafkaRouter';
+import userController from './controllers/userController';
+import cookieController from './controllers/cookieController';
+import sessionController from './controllers/sessionController';
+import router from './routers/kafkaRouter';
+import cookieParser from 'cookie-parser';
+
 function createServer(): express.Application {
   const app = express();
 
+  app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -13,10 +18,14 @@ function createServer(): express.Application {
     next();
   });
 
+  app.get('/sessions')
+
   //logging in
   app.post(
     '/login',
     userController.verifyUser,
+    cookieController.setCookie,
+  sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).json(res.locals.user);
     }
@@ -31,7 +40,7 @@ function createServer(): express.Application {
     }
   );
 
-  app.use('/kafka', kafkaRouter);
+  app.use('/kafka', router);
 
   //type of error object
   type errorType = {
