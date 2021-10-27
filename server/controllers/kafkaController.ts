@@ -3,7 +3,6 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
-import * as path from 'path';
 // const { StringDecoder } = require('string_decoder');
 interface controller {
   refresh: (
@@ -106,11 +105,8 @@ const controller: controller = {
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
     console.log(bootstrap, topic, numPartitions);
-    const child = exec(
-      `java -jar ${path.join(
-        __dirname,
-        './Exec.jar'
-      )} ${bootstrap} ${topic} ${numPartitions.toString()}`,
+    exec(
+      `java -jar /root/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
       function (error, stdout, stderr) {
         console.log('Output -> ' + stdout);
         if (error !== null) {
