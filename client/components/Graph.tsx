@@ -1,12 +1,10 @@
 import * as React from 'react';
 import * as d3 from 'd3';
-import { select as d3Select } from 'd3-selection';
-import { transition as d3Transition } from 'd3-transition';
-import axios from 'axios';
 import '../../client/scss/Graph.scss';
-import { Event } from 'electron';
-import useInterval from './useInterval';
+import axios from 'axios';
+import * as _ from 'lodash';
 interface Props {
+  setData: (arg: any) => void;
   topic: string;
   yScale: d3.ScaleLinear<number, number, never>;
   setYScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
@@ -16,8 +14,10 @@ interface Props {
   consumerList: any;
   bootstrap: string;
   topicList: string[];
+  setTopic: (arg: any) => void;
 }
 const Graph = ({
+  setData,
   bootstrap,
   data,
   xScale,
@@ -27,6 +27,7 @@ const Graph = ({
   // setYScale,
   topic,
   consumerList,
+  setTopic,
 }: Props): JSX.Element => {
   //below always remove old graph on render/re-render
   // d3.select('svg').remove();
@@ -107,6 +108,7 @@ const Graph = ({
       });
 
       //grabbing container to hold graph and axes, then appending a smaller g to hold only graph
+
       d3.select('#mainContainer')
         .append('svg')
         .attr('width', width + margin.left + margin.right)
@@ -282,6 +284,25 @@ const Graph = ({
   //loop through consumer groups and create link for all consumers in that group
   //loop through consumers and create a node for each topics subscribed to
   const chart = () => {
+    const margin: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } = {
+      top: 40,
+      bottom: 40,
+      left: 40,
+      right: 40,
+    };
+    const height = 600 - margin.top - margin.bottom;
+    const width = 600 - margin.left - margin.right;
+    d3.select('#mainContainer')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
     const colorDict: { [key: string]: string } = {
       broker: 'red',
       consumer: 'blue',
@@ -289,6 +310,7 @@ const Graph = ({
       topic: 'yellow',
     };
     const nodes: any = [];
+    console.log('topic list is', topicList);
     const links: any = [];
     if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
     if (topicList.length) {
@@ -344,8 +366,7 @@ const Graph = ({
     console.log(nodes);
     console.log(links);
     const svg = d3.select('svg');
-    const width = 480;
-    const height = 480;
+
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -372,12 +393,38 @@ const Graph = ({
       .selectAll('circle')
       .data(nodes)
       .join('circle')
+      .attr('class', (d: any) => d.group)
       .attr('r', 5)
       .attr('fill', (d: any) => {
         return colorDict[d.group];
       })
       .call(drag(simulation));
-
+    d3.selectAll('.topic').on('click', (event) => {
+      const selectedText = event.target.childNodes[0].innerHTML;
+      if (bootstrap.length && selectedText) {
+        //making initial request so we instantly update the data
+        axios({
+          method: 'POST',
+          url: 'http://localhost:3001/kafka/refresh',
+          data: { topic: selectedText, bootstrap },
+        })
+          .then((response: { data: [{ value: number; time: number }] }) => {
+            return response;
+          })
+          .then((response) => {
+            console.log(
+              topic,
+              selectedText,
+              'alksdjflkajsflkjasflaksjdflkajsf'
+            );
+            if (!_.isEqual(response.data, data)) {
+              d3.selectAll('.bar').remove();
+              setData(response.data);
+              setTopic(selectedText);
+            } //checking if user selected blank topic (if so, graph should disappear)
+          });
+      }
+    });
     node.append('title').text((d: any) => d.id);
 
     simulation.on('tick', () => {
@@ -548,12 +595,15 @@ const Graph = ({
     };
     const nodes: any = [];
     const links: any = [];
+    console.log('topics are', topicList);
     if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
-    if (topicList.length && consumerList.length) {
+    if (topicList.length) {
       topicList.forEach((el) => {
         nodes.push({ id: el, group: 'topic' });
         links.push({ source: el, target: bootstrap, value: 10 });
       });
+    }
+    if (consumerList && consumerList.length) {
       consumerList.forEach(
         (el2: {
           groups: [
@@ -623,6 +673,7 @@ const Graph = ({
       .data(nodes)
       .join('circle')
       .append('g')
+      .attr('class', (d: any) => `${d.group}`)
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
       .attr('r', 5)
@@ -639,7 +690,6 @@ const Graph = ({
         .attr('y1', (d: any) => d.source.y)
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
-
       node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
     });
   };
@@ -654,10 +704,15 @@ const Graph = ({
       updateGraph();
     }
   }, [data]);
+  // React.useEffect(() => {
+  //   console.log('consumerList changed');
+  //   updateChart();
+  // }, [consumerList]);
   React.useEffect(() => {
-    console.log('consumerList changed');
+    d3.selectAll('circle').remove();
+    d3.selectAll('line').remove();
     chart();
-  }, [consumerList]);
+  }, [topicList, consumerList]);
   // React.useEffect(() => {
   //   console.log('charting');
   //   chart();
@@ -667,7 +722,7 @@ const Graph = ({
   } catch (error) {
     console.log(error);
   }
-  return <div id='mainContainer'>{!!data.length && <h2>Graph</h2>}</div>;
+  return <div id='mainContainer'>{!!data.length && <h2>{topic}</h2>}</div>;
 };
 
 export default Graph;

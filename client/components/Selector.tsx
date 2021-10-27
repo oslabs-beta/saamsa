@@ -86,7 +86,8 @@ const Selector = ({
     }).then((response) => {
       console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
+      const resultArr = temp.map((el) => el.topic);
+      if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
 
@@ -170,7 +171,7 @@ const Selector = ({
         console.log(bootstrap);
         console.log(topic);
         if (topic.length) {
-          changeTopics();
+          // changeTopics();
         }
       }
     }, 3000);
@@ -185,7 +186,8 @@ const Selector = ({
     }).then((response) => {
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
+      const resultArr = temp.map((el) => el.topic);
+      if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
   //method that sends request to backend to grab all consumers of passed in bootstrap server
@@ -281,8 +283,10 @@ const Selector = ({
             onChange={() => {
               const newBootstrap: HTMLSelectElement | null =
                 document.querySelector('#bootstrap option:checked');
-              if (newBootstrap)
+              if (newBootstrap) {
+                fetchTopics(newBootstrap.value);
                 setBootstrap(newBootstrap.value.replace('_', ':'));
+              }
             }}
           >
             <option className='serverOption'></option>
@@ -296,7 +300,8 @@ const Selector = ({
             name='topics'
             id='topics'
             onChange={() => {
-              changeTopics();
+              // changeTopics();
+              return;
             }}
           >
             <option className='topicOption'></option>

@@ -130,6 +130,8 @@ const App = (): JSX.Element => {
         />
         <div>
           <Graph
+            setData={setData}
+            setTopic={setTopic}
             yScale={yScale}
             setYScale={setYScale}
             bootstrap={bootstrap}
