@@ -70,17 +70,15 @@ const App = (): JSX.Element => {
             // had this be an alert window and reload because signup wasn't working after incorrect entry
             const result = ('Incorrect username or password. Please try again.');
             changeAttempt(result);
-            // location.reload();
           }
           // otherwise store the user in state and change login status to true
           else { 
-            
             changeUser(username);
             changeLoginStatus(true);
           }
         })
         .catch((err) => {
-          changeAttempt('Error logging in. Please try again.');
+          changeAttempt('Incorrect username or password. Please try again.');
           console.log(err);
         });
     }
@@ -120,6 +118,19 @@ const App = (): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
+
+  const logOut = async() => {
+    fetch('http://localhost:3001/logout'),{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentUser),
+    }
+    changeUser('');
+    changeLoginStatus(false);
+    changeAttempt(null);
+  };
+
+
   React.useEffect(() => {
     setRendering(false);
   }, []);
@@ -139,6 +150,8 @@ const App = (): JSX.Element => {
       return (
         <div key='selector'>
           <Selector
+            logOut = {logOut}
+            currentUser = {currentUser}
             graphIntervalId={graphIntervalId}
             setGraphIntervalId={setGraphInvervalId}
             tableIntervalId={tableIntervalId}

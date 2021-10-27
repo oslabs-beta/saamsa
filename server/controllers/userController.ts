@@ -1,22 +1,10 @@
-import * as express from 'express';
+
 const bcrypt = require('bcryptjs');
-import userModels from './userModels';
-import * as cookiePa from 'cookie-parser';
+import userModels from '../models/userModels';
+import MiddlewareFunction from '../types';
 
-type userController = {
-  createUser: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  verifyUser: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-};
 
-const userController = <userController>{};
+const userController: Record<string, MiddlewareFunction> = {};
 
 userController.createUser = async (req, res, next) => {
   try {
@@ -52,13 +40,10 @@ userController.verifyUser = async (req, res, next) => {
       compare = bcrypt.compareSync(password, hashedPW);
     }
     if (!compare || !user){
-      res.locals.message = 'Incorrect username or password. Please try again.';
-      res.status(401).json(res.locals.message)
-      console.log(res.locals.message);
+      throw Error('Incorrect username or password. Please try again.');
     }
       else{
         res.locals.user = username;
-        res.status(200).json(res.locals.user);
       }
     next();
   } catch (err) {

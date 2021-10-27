@@ -2,6 +2,8 @@ import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
 interface Props {
+  logOut: () => void;
+  currentUser: string;
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
@@ -20,6 +22,8 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  logOut,
+  currentUser,
   graphIntervalId,
   setGraphIntervalId,
   setTableIntervalId,
@@ -33,20 +37,6 @@ const Selector = ({
   bootstrap,
   setBootstrap,
 }: Props): JSX.Element => {
-  const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
-    if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
-    axios({
-      method: 'post',
-      url: 'http://localhost:3001/kafka/updateTables',
-      data: { bootstrap: arg },
-    }).then((response) => {
-      console.log(response.data);
-      const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
-    });
-  };
 
   //below creates an array filled with options for the bootstrap servers
   const serverListArr: JSX.Element[] = [];
@@ -61,6 +51,7 @@ const Selector = ({
       </option>
     );
   }
+
   //below creates an array filled with options for the topics of selected bootstrap
   const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
@@ -74,23 +65,30 @@ const Selector = ({
       </option>
     );
   }
+  
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
-    const bootstrap: HTMLInputElement | null =
-      //change this to be compatible with  enzyme testing, use event.target.etcetc
-      document.querySelector('#bootstrapInput');
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
+    const bootstrap: HTMLInputElement | null = document.querySelector('#bootstrapInput');
     axios({
       url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value },
     }) //if successful, we then repopulate all of our tables, as db has been updated
-      .then(() => {
-        fetchTables();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then(() => fetchTables())
+      .catch((error) => console.log(error));
   };
+
+  //Update the SQL database 
+  const updateTables = (arg: string | undefined): void => {
+    if (!arg || !arg.length) arg = bootstrap;
+    axios({
+      method: 'post',
+      url: 'http://localhost:3001/kafka/updateTables',
+      data: { bootstrap: arg },
+    })
+  };
+
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
     axios
@@ -101,40 +99,22 @@ const Selector = ({
         setServerList(response.data.map((el) => el.name));
       });
   };
+
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
+    //reset the table interval
+    if (tableIntervalId) clearInterval(tableIntervalId);
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const newBootstrap: HTMLSelectElement | null = document.querySelector(
-      '#bootstrap option:checked'
-    );
-    console.log(newBootstrap?.value);
-    if (newBootstrap?.value.length) {
-      //updating state here to cause rerender
-      setBootstrap(newBootstrap?.value.replace('_', ':'));
-      fetchTopics(newBootstrap?.value);
-
-      if (tableIntervalId) {
-        clearInterval(tableIntervalId);
-      }
-      const intervalId = setInterval(() => {
-        if (newBootstrap?.value.length) {
-          updateTables(newBootstrap?.value.replace('_', ':'));
-          fetchTopics(newBootstrap?.value);
-        }
-      }, 3000);
-      setTableIntervalId(intervalId);
-    } else {
-      setTopicList([]);
-      if (tableIntervalId) clearInterval(tableIntervalId);
-    }
+    const newBootstrap: HTMLSelectElement | null = document.querySelector('#bootstrap option:checked');
+    console.log('boostrap we grabbed from user', newBootstrap?.value);
+    //updating state here to cause rerender
+    if (newBootstrap?.value.length) setBootstrap(newBootstrap?.value.replace('_', ':'));
+    else setTopicList([]);
   };
 
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       if (bootstrap.length) {
-        console.log('made it to useEffect after bootstrap changed', bootstrap);
-        fetchTopics(bootstrap);
-        fetchConsumers(bootstrap);
         const intervalId = setInterval(() => {
           console.log('inside of setinterval bootstrap', bootstrap);
           updateTables(bootstrap);
@@ -154,10 +134,11 @@ const Selector = ({
       data: { bootstrap: arg },
     }).then((response) => {
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
-      const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
+      console.log('Response from BE with all topics', response.data);
+      setTopicList(response.data);
     });
   };
+
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
@@ -165,9 +146,10 @@ const Selector = ({
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
-      console.log(response);
+      console.log('fetch consumers response data', response);
     });
   };
+
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -177,10 +159,10 @@ const Selector = ({
       setGraphIntervalId(null);
     }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const newTopic: HTMLSelectElement | null = document.querySelector(
-      '#topics option:checked'
-    ); //grabbing current selected topic
-    if (newTopic?.value.length) setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
+    const newTopic: HTMLSelectElement | null = document.querySelector('#topics option:checked'); 
+    //grabbing current selected topic
+    if (newTopic?.value.length) setTopic(newTopic?.value); 
+    //checking if user selected blank topic (if so, graph should disappear)
     if (bootstrap.length && newTopic?.value.length) {
       //making initial request so we instantly update the data
       axios({
@@ -217,18 +199,24 @@ const Selector = ({
       setData([]);
     }
   };
+
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
       console.log('literally anything');
     }, []);
   }
+
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa </h1>
+        <h1 className='heading'>Saamsa 
+        <div id = 'loggedIn'> Logged in as {currentUser}
+        <button id="logOutBtn" onClick={logOut}>Log Out </button>)
+        </div>
+        </h1>
       </div>
-
+ 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label htmlFor='topicInput'>Enter a new broker address</label>
@@ -237,6 +225,7 @@ const Selector = ({
         <button className='submitBtn' onClick={createTable}>
           Submit
         </button>
+        
         <div className='or'>OR</div>
 
         <div className='brokerSelector'>
