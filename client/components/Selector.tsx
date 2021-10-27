@@ -14,6 +14,7 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
+
 }
 interface TableList {
   name: string;
@@ -33,12 +34,15 @@ const Selector = ({
   setBootstrap,
 }: Props): JSX.Element => {
   const updateTables = (arg: string | undefined): void => {
+    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
+    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg },
     }).then((response) => {
+      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       setTopicList(temp.map((el) => el.topic));
     });
@@ -103,11 +107,22 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log('boostrap we grabbed from user', newBootstrap?.value);
+    console.log(newBootstrap?.value);
     if (newBootstrap?.value.length) {
       //updating state here to cause rerender
       setBootstrap(newBootstrap?.value.replace('_', ':'));
-      if (tableIntervalId) clearInterval(tableIntervalId);
+      fetchTopics(newBootstrap?.value);
+
+      if (tableIntervalId) {
+        clearInterval(tableIntervalId);
+      }
+      const intervalId = setInterval(() => {
+        if (newBootstrap?.value.length) {
+          updateTables(newBootstrap?.value.replace('_', ':'));
+          fetchTopics(newBootstrap?.value);
+        }
+      }, 3000);
+      setTableIntervalId(intervalId);
     } else {
       setTopicList([]);
       if (tableIntervalId) clearInterval(tableIntervalId);
@@ -205,12 +220,13 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
+      console.log('literally anything');
     }, []);
   }
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa</h1>
+        <h1 className='heading'>Saamsa </h1>
       </div>
 
       <div className='brokersDiv'>
