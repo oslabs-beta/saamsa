@@ -57,7 +57,7 @@ const controller: controller = {
         (db) => {
           data.forEach((el) => {
             db.all(
-              `SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`
+              `SELECT topic FROM '${bootstrapSanitized}' WHERE topic='${el}';`
             )
               .then((result) => {
                 if (result.length === 0) {
@@ -72,14 +72,16 @@ const controller: controller = {
                     colString = colString.slice(0, colString.length - 1);
                     try {
                       db.exec(
-                        `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`
+                        `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valString});`
                       ).catch(() => {
-                        db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
-                          return res.redirect(
-                            307,
-                            'http://localhost:3001/kafka/createTable'
-                          );
-                        });
+                        db.exec(`DROP TABLE '${bootstrapSanitized}'`).then(
+                          () => {
+                            return res.redirect(
+                              307,
+                              'http://localhost:3001/kafka/createTable'
+                            );
+                          }
+                        );
                       });
                     } catch (error) {
                       return next(error);
@@ -128,7 +130,7 @@ const controller: controller = {
         driver: sqlite3.Database,
       }).then((db) =>
         db
-          .all(`SELECT topic FROM ${bootstrapSanitized}`)
+          .all(`SELECT topic FROM '${bootstrapSanitized}'`)
           .then((result) => res.json(result))
       );
     } catch (error) {
@@ -165,6 +167,7 @@ const controller: controller = {
       if (!bootstrap.length) res.sendStatus(403);
       //sanitizing for sql
       const bootstrapSanitized = bootstrap.replace(':', '_');
+      console.log(bootstrap);
       const instance = new kafka.Kafka({
         clientId: 'testing2',
         brokers: [`${bootstrap}`], //must be unsanitized form
@@ -205,7 +208,7 @@ const controller: controller = {
         open({ filename: '/tmp/database.db', driver: sqlite3.Database })
           .then((db) => {
             db.exec(
-              `CREATE TABLE ${bootstrapSanitized} (topic varchar(255), ${partitionString});`
+              `CREATE TABLE '${bootstrapSanitized}' (topic varchar(255), ${partitionString});`
             );
             return db;
           })
@@ -222,7 +225,7 @@ const controller: controller = {
               valueString = valueString.slice(0, valueString.length - 1);
               colString = colString.slice(0, colString.length - 1);
               db.exec(
-                `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valueString});`
+                `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valueString});`
               );
             });
           })
@@ -266,14 +269,14 @@ const controller: controller = {
           })
             .then((db) => {
               db.exec(
-                `UPDATE ${bootstrapSanitized} SET ${setString} WHERE topic='${topic}';`
+                `UPDATE '${bootstrapSanitized}' SET ${setString} WHERE topic='${topic}';`
               );
               return db;
             })
             //here we grab topic data from sqldb (after updated)
             .then((db) => {
               db.all(
-                `SELECT * FROM ${bootstrapSanitized} WHERE topic='${topic}'`
+                `SELECT * FROM '${bootstrapSanitized}' WHERE topic='${topic}'`
               ).then((result) => {
                 //new arr which holds the correctly formated data for d3
                 const arr: { time: number; value: number }[] = [];

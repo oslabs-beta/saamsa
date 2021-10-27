@@ -86,7 +86,8 @@ const Selector = ({
     }).then((response) => {
       console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
+      const resultArr = temp.map((el) => el.topic);
+      if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
 
@@ -185,7 +186,8 @@ const Selector = ({
     }).then((response) => {
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
-      setTopicList(temp.map((el) => el.topic));
+      const resultArr = temp.map((el) => el.topic);
+      if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
   //method that sends request to backend to grab all consumers of passed in bootstrap server
@@ -211,15 +213,15 @@ const Selector = ({
       setGraphIntervalId(null);
     }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const newTopic: HTMLSelectElement | null = document.querySelector(
-      '#topics option:checked'
-    ); //grabbing current selected topic
-    if (bootstrap.length && newTopic?.value.length) {
+    // const newTopic: HTMLSelectElement | null = document.querySelector(
+    //   '#topics option:checked'
+    // ); //grabbing current selected topic
+    if (bootstrap.length && topic.length) {
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
         url: 'http://localhost:3001/kafka/refresh',
-        data: { topic: newTopic?.value, bootstrap },
+        data: { topic: topic, bootstrap },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
           //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -242,11 +244,11 @@ const Selector = ({
           // console.log(response.data);
           // console.log(_.isEqual(response.data, data));
           if (!_.isEqual(response.data, data)) setData(response.data);
-          if (newTopic?.value.length && newTopic?.value !== topic)
-            setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
+          // if (newTopic?.value.length && newTopic?.value !== topic)
+          // setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
         });
       //setting interval of same request above so we autorefresh it (pull model)
-    } else if (!newTopic?.value.length) {
+    } else if (!topic.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }
@@ -281,8 +283,10 @@ const Selector = ({
             onChange={() => {
               const newBootstrap: HTMLSelectElement | null =
                 document.querySelector('#bootstrap option:checked');
-              if (newBootstrap)
+              if (newBootstrap) {
+                fetchTopics(newBootstrap.value);
                 setBootstrap(newBootstrap.value.replace('_', ':'));
+              }
             }}
           >
             <option className='serverOption'></option>
@@ -296,7 +300,8 @@ const Selector = ({
             name='topics'
             id='topics'
             onChange={() => {
-              changeTopics();
+              // changeTopics();
+              return;
             }}
           >
             <option className='topicOption'></option>
