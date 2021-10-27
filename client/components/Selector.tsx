@@ -171,7 +171,7 @@ const Selector = ({
         console.log(bootstrap);
         console.log(topic);
         if (topic.length) {
-          // changeTopics();
+          changeTopics();
         }
       }
     }, 3000);
@@ -213,15 +213,15 @@ const Selector = ({
       setGraphIntervalId(null);
     }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const newTopic: HTMLSelectElement | null = document.querySelector(
-      '#topics option:checked'
-    ); //grabbing current selected topic
-    if (bootstrap.length && newTopic?.value.length) {
+    // const newTopic: HTMLSelectElement | null = document.querySelector(
+    //   '#topics option:checked'
+    // ); //grabbing current selected topic
+    if (bootstrap.length && topic.length) {
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
         url: 'http://localhost:3001/kafka/refresh',
-        data: { topic: newTopic?.value, bootstrap },
+        data: { topic: topic, bootstrap },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
           //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -244,11 +244,11 @@ const Selector = ({
           // console.log(response.data);
           // console.log(_.isEqual(response.data, data));
           if (!_.isEqual(response.data, data)) setData(response.data);
-          if (newTopic?.value.length && newTopic?.value !== topic)
-            setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
+          // if (newTopic?.value.length && newTopic?.value !== topic)
+          // setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
         });
       //setting interval of same request above so we autorefresh it (pull model)
-    } else if (!newTopic?.value.length) {
+    } else if (!topic.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }
