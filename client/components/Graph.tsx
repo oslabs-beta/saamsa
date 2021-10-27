@@ -405,7 +405,7 @@ const Graph = ({
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
-          url: 'http://localhost:3001/kafka/refresh',
+          url: '/kafka/refresh',
           data: { topic: selectedText, bootstrap },
         })
           .then((response: { data: [{ value: number; time: number }] }) => {

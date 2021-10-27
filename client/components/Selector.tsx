@@ -54,7 +54,7 @@ const Selector = ({
     axios({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
-      url: 'http://localhost:3001/kafka/balanceLoad',
+      url: '/kafka/balanceLoad',
     }).then((response) => {
       console.log(response.status);
     });
@@ -81,7 +81,7 @@ const Selector = ({
     console.log(arg);
     axios({
       method: 'post',
-      url: 'http://localhost:3001/kafka/updateTables',
+      url: '/kafka/updateTables',
       data: { bootstrap: arg },
     }).then((response) => {
       console.log(response.data);
@@ -123,7 +123,7 @@ const Selector = ({
       //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
-      url: 'http://localhost:3001/kafka/createTable',
+      url: '/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value },
     }) //if successful, we then repopulate all of our tables, as db has been updated
@@ -136,13 +136,11 @@ const Selector = ({
   };
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
-    axios
-      .get<TableList[]>('http://localhost:3001/kafka/fetchTables')
-      .then((response) => {
-        //updating state to force rerender, so option appears on dropdown of bootstrap servers
-        console.log('front end response in fetch tables', response);
-        setServerList(response.data.map((el) => el.name));
-      });
+    axios.get<TableList[]>('/kafka/fetchTables').then((response) => {
+      //updating state to force rerender, so option appears on dropdown of bootstrap servers
+      console.log('front end response in fetch tables', response);
+      setServerList(response.data.map((el) => el.name));
+    });
   };
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
@@ -180,7 +178,7 @@ const Selector = ({
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
-      url: 'http://localhost:3001/kafka/fetchTopics',
+      url: '/kafka/fetchTopics',
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
@@ -193,7 +191,7 @@ const Selector = ({
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url: 'http://localhost:3001/kafka/fetchConsumers',
+      url: '/kafka/fetchConsumers',
       method: 'post',
       data: { bootstrap: arg },
     }).then((response) => {
@@ -220,7 +218,7 @@ const Selector = ({
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
-        url: 'http://localhost:3001/kafka/refresh',
+        url: '/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
