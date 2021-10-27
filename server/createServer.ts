@@ -18,14 +18,17 @@ function createServer(): express.Application {
     next();
   });
 
-  app.get('/sessions')
+  // make sure no one is logged in before 
+  app.get('/sessions',
+  sessionController.isLoggedIn,(req, res) => {
+    res.status(200).json([res.locals.user, res.locals.data]);
+  });
 
   //logging in
-  app.post(
-    '/login',
+  app.post('/login',
     userController.verifyUser,
     cookieController.setCookie,
-  sessionController.startSession,
+    sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).json(res.locals.user);
     }
@@ -34,7 +37,9 @@ function createServer(): express.Application {
   //signing up
   app.post(
     '/signup',
-    userController.createUser,
+    userController.createUser, 
+    cookieController.setCookie,
+    sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).send(res.locals.user);
     }

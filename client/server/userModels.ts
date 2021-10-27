@@ -8,7 +8,7 @@ interface Users {
 }
 
 const userSchema: Schema<Users> = new Schema({
-  username: { type: String },
+  username: { type: String , unique: true},
   password: { type: String },
 });
 // the below method runs right before the document is saved on the db.
