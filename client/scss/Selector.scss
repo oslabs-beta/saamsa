@@ -13,7 +13,17 @@
     // align-items: center;
     // text-align:center;
   }
-  
+  .loadBalanceBtn{
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: $saamsaYellow;
+    border: 1px solid black;
+    height: 30px;
+    font-size: 15px;
+    font-family: $buttonTitle;
+    color: $saamsaBlack;
+    width: 200px;
+  }
   .heading{
     font-size: 60px;
     color: $saamsaBlack ;
@@ -60,7 +70,7 @@
     font-size: 15px;
     font-family: $buttonTitle;
     color: $saamsaBlack;
-    width: 100px;
+    width: 200px;
 }
 .topicSelector{
     margin-top:10px;

@@ -308,7 +308,7 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-        <button onClick={balanceLoad}>Balance Load on Topic</button>
+        <button className="loadBalanceBtn" onClick={balanceLoad}>Balance Load on Topic</button>
       </div>
     </div>
   );

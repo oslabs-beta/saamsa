@@ -303,8 +303,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+    const width = 400 - margin.left - margin.right;
     const colorDict: { [key: string]: string } = {
       broker: 'red',
       consumer: 'blue',
@@ -734,7 +734,7 @@ const Graph = ({
   } catch (error) {
     console.log(error);
   }
-  return <div id='mainContainer'>{!!data.length && <h2>{topic}</h2>}</div>;
+  return <div id='mainContainer'>{!!data.length && <h2 id="title">Topic name: {topic}</h2>}</div>;
 };
 
 export default Graph;

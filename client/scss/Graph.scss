@@ -12,15 +12,31 @@ body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 .nodeyChart{
-  background-color:yellowgreen;
-  margin-top: 1px;
-  margin-right:5%
+  background-color: #CED4DA;
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  border-radius: 8px;
+  border: 8px solid $saamsaYellow ;
 }
 .graphSvg{
-  background-color: rgb(211, 43, 226);
-  // position: absolute;
-  // right: 2%;
-  // top: 50%;
+  background-color: $saamsaGrey;
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  border-radius: 8px;
+  border: 8px solid $saamsaYellow ;
+}
+h2{
+  font-size: 30px;
+  position: absolute;
+  right: 1px;
+  top: 40%;
+}
+#mainContainer{
+  height: 800px;
+  width: 1000px;
+  background-color: $saamsaGrey;
 }
 svg {
   width: 400px;
