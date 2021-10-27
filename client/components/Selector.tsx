@@ -14,6 +14,7 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
+
 }
 interface TableList {
   name: string;
@@ -198,13 +199,14 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     React.useEffect(() => {
       fetchTables();
+      console.log('literally anything');
     }, []);
   }
 
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa</h1>
+        <h1 className='heading'>Saamsa </h1>
       </div>
 
       <div className='brokersDiv'>

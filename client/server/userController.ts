@@ -1,10 +1,22 @@
-
+import * as express from 'express';
 const bcrypt = require('bcryptjs');
-import userModels from '../models/userModels';
-import MiddlewareFunction from '../types';
+import userModels from './userModels';
+// import * as cookieParser from 'cookie-parser';
 
+type userController = {
+  createUser: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+  verifyUser: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void;
+};
 
-const userController: Record<string, MiddlewareFunction> = {};
+const userController = <userController>{};
 
 userController.createUser = async (req, res, next) => {
   try {
