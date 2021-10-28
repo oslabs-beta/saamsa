@@ -2,6 +2,8 @@ import * as React from 'react';
 import axios from 'axios';
 import '../../client/scss/Selector.scss';
 interface Props {
+  logOut: () => void;
+  currentUser: string;
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
@@ -20,6 +22,8 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  logOut,
+  currentUser,
   graphIntervalId,
   setGraphIntervalId,
   setTableIntervalId,
@@ -206,15 +210,19 @@ const Selector = ({
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa </h1>
+        <h1 className='heading'>Saamsa 
+        <div id = 'loggedIn'> Logged in as {currentUser}
+        <button className="Btn" onClick={logOut}> Log Out </button>
+        </div>
+        </h1>
       </div>
-
+ 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label htmlFor='topicInput'>Enter a new broker address</label>
           <input id='bootstrapInput' placeholder='localhost:00000' value='localhost:29092'></input>
         </div>
-        <button className='submitBtn' onClick={createTable}>
+        <button className='Btn' onClick={createTable}>
           Submit
         </button>
         

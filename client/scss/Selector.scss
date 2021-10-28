@@ -51,7 +51,7 @@
 }
 
 
-.submitBtn{
+.Btn{
     margin-top: 10px;
     border-radius: 4px;
     background-color: $saamsaYellow;
@@ -64,4 +64,9 @@
 }
 .topicSelector{
     margin-top:10px;
+}
+
+#loggedIn{
+    align-content: right; 
+    font-family: $buttonTitle;
 }

@@ -18,12 +18,13 @@ const App = (): JSX.Element => {
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
+  const [freshCookies, getCookies] = React.useState<boolean>(false);
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
 
-  // login button function
+    // login button function
   const loginButton = () => {
     
     // username is input value in usernmae field 
@@ -39,7 +40,7 @@ const App = (): JSX.Element => {
     // if username or password are empty inputs, display error message
     if (username == '' || password == '') {
       const result =
-        'Please fill out the username and password fields to log in';
+        'Please enter your username and password to log in';
       changeAttempt(result);
 
       // if username and password are filled out, send fetch request to backend to see if user/ pw is correct 
@@ -55,22 +56,17 @@ const App = (): JSX.Element => {
         body: JSON.stringify(user),
       })
         // if username or password are empty, have user try again
-        .then((res) => {
-          if (res.status === 401){
-            // had this be an alert window and reload because signup wasn't working after incorrect entry
-            const result = ('Incorrect username or password. Please try again.');
-            changeAttempt(result);
-            // location.reload();
-          }
-          // otherwise store the user in state and change login status to true
-          else { 
-            
+        .then((res) =>{
+          if(res.status === 200){
             changeUser(username);
             changeLoginStatus(true);
           }
+          else{
+            changeAttempt('Incorrect username or password. Please try again.')
+          }
         })
         .catch((err) => {
-          changeAttempt('Error logging in. Please try again.');
+          changeAttempt('Incorrect username or password. Please try again.');
           console.log(err);
         });
     }
@@ -110,10 +106,39 @@ const App = (): JSX.Element => {
         .catch((err) => console.log(err));
     }
   };
+
+  const logOut = async() => {
+    fetch('http://localhost:3001/logout'),{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentUser),
+    }
+    changeUser('');
+    changeLoginStatus(false);
+    changeAttempt(null);
+  };
+
+
   React.useEffect(() => {
     setRendering(false);
   }, []);
   if (!rendering) {
+
+    // check / fetch fresh cookies from browser 
+
+    // if(!freshCookies) {
+    //   (async () => {
+    //     try{
+    //     const res = await (await fetch('http://localhost:3001/sessions')).json();
+    //     getCookies(true);
+    //     if (res !== []) {
+    //       const username: string = res;
+    //       changeLoginStatus(true);
+    //       changeUser(username);
+    //     }
+    //   } ;
+    // }
+
     if (loginStatus === false) {
       return (
         <div key='loginPage'>
@@ -143,6 +168,8 @@ const App = (): JSX.Element => {
       return (
         <div key='selector'>
           <Selector
+            logOut = {logOut}
+            currentUser = {currentUser}
             graphIntervalId={graphIntervalId}
             setGraphIntervalId={setGraphInvervalId}
             tableIntervalId={tableIntervalId}
@@ -159,9 +186,11 @@ const App = (): JSX.Element => {
           <Graph data={data} />
         </div>
       );
+    }else {
+    return <div key='loadingMessage'>Loading, please wait!</div>;
     }
   }
-  return <div key='loadingMessage'>Loading, please wait!</div>;
-};
+}
+  
 
 export default App;
