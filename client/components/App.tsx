@@ -4,19 +4,23 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 import * as d3 from 'd3';
-
+import SignUpPage from './SignUpPage';
 const App = (): JSX.Element => {
+  // defining state variables and functions
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
-  const [currentUser, changeUser] = React.useState<string>('');
-  const [topic, setTopic] = React.useState<string>('');
+  const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
+  const [currentUser, changeUser] = React.useState<string>("");
+  const [rendering, setRendering] = React.useState<boolean>(false);
+  const [topic, setTopic] = React.useState<string>("");
   const [topicList, setTopicList] = React.useState<string[]>([]);
-  const [bootstrap, setBootstrap] = React.useState<string>('');
+  const [bootstrap, setBootstrap] = React.useState<string>("");
   const [serverList, setServerList] = React.useState<string[]>([]);
+
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
@@ -26,18 +30,17 @@ const App = (): JSX.Element => {
   const loginButton = () => {
     // username is input value in usernmae field
     const username: string | null = (
-      document.querySelector('#username') as HTMLInputElement
+      document.querySelector("#username") as HTMLInputElement
     ).value;
 
     // password is input value in password field
     const password: string | null = (
-      document.querySelector('#password') as HTMLInputElement
+      document.querySelector("#password") as HTMLInputElement
     ).value;
 
     // if username or password are empty inputs, display error message
-    if (username == '' || password == '') {
-      const result =
-        'Please fill out the username and password fields to log in';
+    if (username == "" || password == "") {
+      const result = "Please enter your username and password to log in";
       changeAttempt(result);
 
       // if username and password are filled out, send fetch request to backend to see if user/ pw is correct
@@ -47,55 +50,54 @@ const App = (): JSX.Element => {
         password,
       };
 
-      fetch('http://localhost:3001/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("http://localhost:3001/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       })
         // if username or password are empty, have user try again
         .then((res) => {
-          if (res.status === 401) {
-            // had this be an alert window and reload because signup wasn't working after incorrect entry
-            const result = 'Incorrect username or password. Please try again.';
-            changeAttempt(result);
-            // location.reload();
-          }
-          // otherwise store the user in state and change login status to true
-          else {
+          if (res.status === 200) {
             changeUser(username);
             changeLoginStatus(true);
+          } else {
+            changeAttempt("Incorrect username or password. Please try again.");
           }
         })
         .catch((err) => {
-          changeAttempt('Error logging in. Please try again.');
+          changeAttempt("Incorrect username or password. Please try again.");
           console.log(err);
         });
     }
   };
 
+  const signUpButton = () => {
+    changeSignUpStatus(!signUpStatus);
+  };
+
   // Sign Up functionality
   const signUp = () => {
     const username: string | null = (
-      document.querySelector('#username') as HTMLInputElement
+      document.querySelector("#username") as HTMLInputElement
     ).value;
     const password: string | null = (
-      document.querySelector('#password') as HTMLInputElement
+      document.querySelector("#password") as HTMLInputElement
     ).value;
 
-    if (username == '' || password == '') {
-      const result = 'Please fill out the username and password fields';
+    if (username == "" || password == "") {
+      const result = "Please fill out the username and password fields";
       changeAttempt(result);
     } else if (password.length < 6) {
-      const result = 'Please create a strong password longer than 6 characters';
+      const result = "Please create a strong password longer than 6 characters";
       changeAttempt(result);
     } else {
       const user: { username: string; password: string } = {
         username: username,
         password: password,
       };
-      fetch('http://localhost:3001/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("http://localhost:3001/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       })
         .then((res) => {
@@ -103,27 +105,55 @@ const App = (): JSX.Element => {
             alert('Signup Successful! Please login to proceed.');
             location.reload();
           }
+          else changeAttempt('User already exists. Please try a different username.')
         })
         .catch((err) => console.log(err));
     }
   };
 
-  if (loginStatus === false) {
-    return (
-      <div key='loginPage'>
-        <LoginPage
-          loginButton={loginButton}
-          signUp={signUp}
-          loginAttempt={loginAttempt}
-          // currentUser = {currentUser}
-        />
-      </div>
-    );
-  } else if (loginStatus === true) {
-    return (
-      <div key='container'>
-        <Selector
-          currentUser={currentUser}
+  const logOut = async () => {
+    fetch("http://localhost:3001/logout"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(currentUser),
+      };
+    changeUser("");
+    changeLoginStatus(false);
+    changeAttempt(null);
+  };
+
+  React.useEffect(() => {
+    setRendering(false);
+  }, []);
+  if (!rendering) {
+
+    if (signUpStatus === true) {
+      return (
+        <div key="signUpPage">
+          <SignUpPage
+            signUp={signUp}
+            loginAttempt={loginAttempt}
+          />
+        </div>
+      );
+    } 
+    if (loginStatus === false) {
+      return (
+        <div key="loginPage">
+          <LoginPage
+            loginAttempt={loginAttempt}
+            loginButton={loginButton}
+            signUpButton={signUpButton}
+          />
+        </div>
+      );
+    } else if (loginStatus === true) {
+      return (
+        <div key="selector">
+          <Selector
+            logOut={logOut}
+            currentUser={currentUser}
           key='selector'
           data={data}
           topic={topic}
@@ -160,9 +190,10 @@ const App = (): JSX.Element => {
         </div>
       </div>
     );
+    } else {
+      return <div key="loadingMessage">Loading, please wait!</div>;
+    }
   }
-
-  return <div key='loadingMessage'>Loading, please wait!</div>;
 };
 
 export default App;

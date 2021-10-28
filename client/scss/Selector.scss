@@ -35,7 +35,15 @@
     font-family: $fontTitle;
     line-height:51px;
     vertical-align:middle;
-  }
+}
+
+#loggedIn{
+    margin-left: 40%;
+}
+
+#heading, #loggedIn{
+        display:inline;
+    }
   .brokersDiv{
     background-color: $saamsaGrey;
     display: flex;
@@ -77,7 +85,7 @@
 //   border: 1px solid black;
 // }
 
-.submitBtn{
+.Btn{
     margin-top: 10px;
     border-radius: 4px;
     background-color: $saamsaYellow;
@@ -87,6 +95,18 @@
     font-family: $buttonTitle;
     color: $saamsaBlack;
     width: 150px;
+}
+
+#logOutBtn{
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: $saamsaGrey;
+    border: 1px solid black;
+    height: 30px;
+    font-size: 15px;
+    font-family: $buttonTitle;
+    color: $saamsaBlack;
+    width: 90px;
 }
 .topicSelector{
     margin-top:10px;
@@ -127,4 +147,9 @@ option {
   color: $saamsaBlack;
   text-align: center;
   width: 150px;
+}
+
+#loggedIn{
+    align-content: right; 
+    font-family: $buttonTitle;
 }

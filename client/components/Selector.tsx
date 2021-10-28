@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
 interface Props {
+  logOut: () => void;
   currentUser: string;
   data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
@@ -20,6 +21,7 @@ interface Props {
   setConsumerList: (arg: any) => void;
 }
 const Selector = ({
+  logOut,
   currentUser,
   consumerList,
   data,
@@ -226,15 +228,18 @@ const Selector = ({
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa </h1>
+        <h1 id='heading'>Saamsa </h1>
+        <div id = 'loggedIn'> Logged in as {currentUser}
+        <button className="logOutBtn" onClick={logOut}> Log Out </button>
+        </div>
       </div>
-
+ 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
           <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
         </div>
-        <button className='submitBtn' onClick={createTable}>
+        <button className='Btn' onClick={createTable}>
           Submit
         </button>
 
