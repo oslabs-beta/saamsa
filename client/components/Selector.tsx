@@ -253,6 +253,19 @@ const Selector = ({
 
         <div className='topicSelector'>
           <p className="inputLabels">Current topic: </p>
+ 
+        {/* const topicListArr: JSX.Element[] = [];
+  for (let i = 0; i < topicList.length; i++) {
+    topicListArr.push(
+      <a
+        key={topicList[i] + i.toString()}
+        className='topicOption'
+        value={topicList[i]}
+      >
+        {topicList[i]}
+      </a>
+    );
+  } */}
           <select className="dropDown"
             name='topics'
             id='topics'

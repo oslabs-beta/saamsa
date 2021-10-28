@@ -41,8 +41,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     //calculating max for x and y axis
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
@@ -246,8 +246,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     d3.select('#chartContainer')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
@@ -455,7 +455,7 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
+    const height = 300 - margin.top - margin.bottom;
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
         //checking if value is null -> means partition does not exist

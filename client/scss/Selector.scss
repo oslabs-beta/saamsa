@@ -22,7 +22,7 @@
     color: $saamsaBlack;
     width: 200px;
     position: absolute;
-    top: 570px;
+    top: 5px;
     right: 70px;
     z-index: 1;
   }
@@ -63,10 +63,19 @@
     align-items: center;
     position: absolute;
     top: 200px;
-    left: 25px;
+    left: 0px;
     z-index: 1;
+    text-align: center;
+    align-content:center;
 }
-
+// #topicOption{
+//   background-color: $saamsaYellow;
+//   padding: 0.2px 0.2px;
+//   height: 30px;
+//   width: 200px;
+//   border-radius: 4px;
+//   border: 1px solid black;
+// }
 
 .submitBtn{
     margin-top: 10px;
@@ -89,21 +98,28 @@
     top: 200px;
     right: 25px;
     z-index: 1;
+    text-align: center;
+    align-content:center;
 }
 .dropDown{
   background-color: $saamsaYellow;
   padding: 0.2px 0.2px;
-  height: 30px;
+  height: 25px;
   width: 200px;
   border-radius: 4px;
   border: 1px solid black;
+  align-content: center;
   // z-index: 3;
 }
-.dropdownOptions{
-  background-color: $saamsaYellow;
-  padding: 0.2px 0.2px;
-  height: 30px;
-  width: 200px;
+// .dropdownOptions{
+//   background-color: $saamsaYellow;
+//   padding: 0.2px 0.2px;
+//   height: 30px;
+//   width: 200px;
+// }
+option { 
+  /* Whatever color  you want */
+  background-color: #82caff;
 }
 .inputLabels{
   font-size: 14px;

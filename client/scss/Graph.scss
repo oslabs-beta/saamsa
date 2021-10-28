@@ -9,31 +9,15 @@ body {
   fill: #000;
   font-size: 12px;
   text-anchor: middle;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: $TextFont;
 }
-// .nodeyChart{
-//   background-color: $saamsaGrey;
-//   position: absolute;
-//   left: 10px;
-//   top: 260px;
-//   border-radius: 8px;
-//   border: 4px solid $saamsaYellow ;
 
-// }
-// .graphSvg{
-//   background-color: $saamsaGrey;
-//   position: absolute;
-//   right: 10px;
-//   top: 260px;
-//   border-radius: 8px;
-//   border: 4px solid $saamsaYellow ;
-// }
 h2{
   font-size: 15px;
   font-family: $fontTitle;
   position: absolute;
-  right: 120px;
-  top: 300px;
+  right: 165px;
+  top: 275px;
   z-index:1;
 }
 // #mainContainer{
@@ -61,7 +45,7 @@ svg {
 .node text {
   display: none;
   color: black;
-  font: 10px sans-serif;
+  font: 10px $TextFont;
 }
 .node:hover {
   text {
