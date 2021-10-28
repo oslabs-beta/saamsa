@@ -43,6 +43,7 @@ const controller: Record<string, MiddlewareFunction> = {};
                 )}' WHERE topic='${el}';`
               )
                 .then((result) => {
+                  console.log(result);
                   if (result.length === 0) {
                     admin.fetchTopicOffsets(el).then((response) => {
                       let colString = 'topic, ';

@@ -132,19 +132,6 @@ const Selector = ({
     }
   };
 
-  if (process.env.NODE_ENV !== 'testing') {
-    useInterval(() => {
-      if (bootstrap.length) {
-        updateTables(bootstrap);
-        fetchTopics(bootstrap);
-        fetchConsumers(bootstrap);
-        if (topic.length) {
-          changeTopics();
-        }
-      }
-    }, 3000);
-  }
-
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
