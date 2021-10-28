@@ -155,9 +155,9 @@ const Graph = ({
         .attr('height', height + 10)
         .attr('x', margin.left)
         .attr('y', margin.top)
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
-        .text("Value vs Date Graph");
+        .style('font-size', '16px')
+        .style('text-decoration', 'underline')
+        .text('Value vs Date Graph');
       //making sure that x-axis and y-axis ticks are integers only!
       const xAxisTicks = xScale
         .ticks()
@@ -380,7 +380,7 @@ const Graph = ({
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
-          url: 'http://localhost:3001/kafka/refresh',
+          url: 'http://saamsa.io/kafka/refresh',
           data: { topic: selectedText, bootstrap, currentUser },
         })
           .then((response: { data: [{ value: number; time: number }] }) => {

@@ -10,10 +10,8 @@ const controller: Record<string, MiddlewareFunction> = {};
 (controller.balanceLoad = (req, res, next) => {
   const { bootstrap, topic, numPartitions } = req.body;
   exec(
-    `java -jar ${path.join(
-      __dirname,
-      '../../../loadBalancer.jar'
-    )} ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
+    `java -jar /root/saamsa/loadBalancer.jar
+    ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
     function (error, stdout) {
       console.log('Output: ' + stdout);
       if (error !== null) {
@@ -66,7 +64,7 @@ const controller: Record<string, MiddlewareFunction> = {};
                           ).then(() => {
                             return res.redirect(
                               307,
-                              'http://localhost:3001/kafka/createTable'
+                              'http://saamsa.io/kafka/createTable'
                             );
                           });
                         });
@@ -79,7 +77,7 @@ const controller: Record<string, MiddlewareFunction> = {};
                 .catch(() => {
                   return res.redirect(
                     307,
-                    'http://localhost:3001/kafka/createTable'
+                    'http://saamsa.io/kafka/createTable'
                   );
                 });
             });
