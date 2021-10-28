@@ -11,8 +11,10 @@ try{
         httpOnly: true
     };
     const user = res.locals.user;
+    res.cookie('test', user);
+    // console.log("user in setCookie controller", user);
     res.cookie('user', user, cookieOptions); 
-    next();
+    return next();
 }
 catch (err){
     const Error = {

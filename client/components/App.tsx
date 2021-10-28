@@ -124,19 +124,18 @@ const App = (): JSX.Element => {
 
     // check / fetch fresh cookies from browser 
 
-    if(!freshCookies) {
-      (async () => {
-        try{
-        const res = await (await fetch('http://localhost:3001/sessions')).json();
-        getCookies(true);
-        if (res !== []) {
-          const username: string = res;
-          changeLoginStatus(true);
-          changeUser(username);
-        }
-      } catch Err{ }
-      )();
-    }
+    // if(!freshCookies) {
+    //   (async () => {
+    //     try{
+    //     const res = await (await fetch('http://localhost:3001/sessions')).json();
+    //     getCookies(true);
+    //     if (res !== []) {
+    //       const username: string = res;
+    //       changeLoginStatus(true);
+    //       changeUser(username);
+    //     }
+    //   } ;
+    // }
 
     if (loginStatus === false) {
       return (
