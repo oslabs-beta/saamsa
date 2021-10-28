@@ -36,7 +36,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('/login', {
+      fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -74,7 +74,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('/signup', {
+      fetch('http://localhost:3001/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),

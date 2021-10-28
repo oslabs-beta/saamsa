@@ -3,7 +3,7 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { exec } from 'child_process';
-// const { StringDecoder } = require('string_decoder');
+import * as path from 'path';
 interface controller {
   refresh: (
     req: express.Request,
@@ -107,11 +107,14 @@ const controller: controller = {
     admin.disconnect();
     next();
   },
-  //executes load balancing binary on requested server (note: at /root because this is for cloud server)
+  //executes load balancing binary on requested server
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
     exec(
-      `java -jar /root/saamsa/loadBalancer.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+      `java -jar ${path.join(
+        __dirname,
+        '../../../loadBalancer.jar'
+      )} ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
       function (error, stdout) {
         console.log('Output: ' + stdout);
         if (error !== null) {

@@ -46,20 +46,17 @@ const Selector = ({
       data: { bootstrap, topic, numPartitions },
       url: 'http://localhost:3001/kafka/balanceLoad',
     }).then((response) => {
-      console.log(response.status);
+      return;
     });
   };
 
   const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
-      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       const resultArr = temp.map((el) => el.topic);
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
@@ -117,7 +114,6 @@ const Selector = ({
       data: { currentUser },
     }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
-      console.log('front end response in fetch tables', response);
       setServerList(response.data.map((el) => el.name));
     });
   };
@@ -132,20 +128,6 @@ const Selector = ({
       setBootstrap(newBootstrap.value.replace('_', ':'));
     }
   };
-
-  if (process.env.NODE_ENV !== 'testing') {
-    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
-    useInterval(() => {
-      if (bootstrap.length) {
-        updateTables(bootstrap);
-        fetchTopics(bootstrap);
-        fetchConsumers(bootstrap);
-        if (topic.length) {
-          changeTopics();
-        }
-      }
-    }, 3000);
-  }
 
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
@@ -207,6 +189,18 @@ const Selector = ({
     React.useEffect(() => {
       fetchTables();
     }, []);
+
+    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
+    useInterval(() => {
+      if (bootstrap.length) {
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
   }
   return (
     <div id='mainWrapper'>
