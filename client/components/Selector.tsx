@@ -61,9 +61,7 @@ const Selector = ({
     }).then((response) => {
       const temp: { topic: string }[] = [...response.data];
       let resultArr = temp.map((el) => el.topic);
-      resultArr = resultArr.filter((topic) => {
-        if (topic !== '__consumer_offsets') return topic;
-      });
+      resultArr = resultArr.filter((topic) => topic !== '__consumer_offsets');
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
@@ -157,9 +155,7 @@ const Selector = ({
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
       let resultArr = temp.map((el) => el.topic);
-      resultArr = resultArr.filter((topic) => {
-        if (topic !== '__consumer_offsets') return topic;
-      });
+      resultArr = resultArr.filter((topic) => topic !== '__consumer_offsets');
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
