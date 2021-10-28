@@ -11,23 +11,23 @@ body {
   text-anchor: middle;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-.nodeyChart{
-  background-color: $saamsaGrey;
-  position: absolute;
-  left: 10px;
-  top: 260px;
-  border-radius: 8px;
-  border: 4px solid $saamsaYellow ;
+// .nodeyChart{
+//   background-color: $saamsaGrey;
+//   position: absolute;
+//   left: 10px;
+//   top: 260px;
+//   border-radius: 8px;
+//   border: 4px solid $saamsaYellow ;
 
-}
-.graphSvg{
-  background-color: $saamsaGrey;
-  position: absolute;
-  right: 10px;
-  top: 260px;
-  border-radius: 8px;
-  border: 4px solid $saamsaYellow ;
-}
+// }
+// .graphSvg{
+//   background-color: $saamsaGrey;
+//   position: absolute;
+//   right: 10px;
+//   top: 260px;
+//   border-radius: 8px;
+//   border: 4px solid $saamsaYellow ;
+// }
 h2{
   font-size: 15px;
   font-family: $fontTitle;
