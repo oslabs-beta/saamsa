@@ -7,8 +7,6 @@ interface Props {
   currentUser: string;
   setData: (arg: any) => void;
   topic: string;
-  yScale: d3.ScaleLinear<number, number, never>;
-  setYScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   xScale: d3.ScaleLinear<number, number, never>;
   setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   data: Array<{ time: number; value: number }>;
@@ -25,19 +23,13 @@ const Graph = ({
   xScale,
   topicList,
   setXScale,
-  // yScale,
-  // setYScale,
   topic,
   consumerList,
   setTopic,
 }: Props): JSX.Element => {
-  //below always remove old graph on render/re-render
-  // d3.select('svg').remove();
-  // d3.select('svg').remove();
-  // console.log(xScale?.range());
-  //if there is data, we actually make the graph
-
+  //method to render bar graph of current data
   const renderGraph = () => {
+    //defining dimensions
     const margin: {
       top: number;
       bottom: number;
@@ -51,29 +43,7 @@ const Graph = ({
     };
     const height = 600 - margin.top - margin.bottom;
     const width = 600 - margin.left - margin.right;
-    //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
-    // const calculateYScale = () => {
-    //   const dataValueMax: number = data.reduce(
-    //     (acc, val) => {
-    //       if (val.value > acc.value) return val;
-    //       else return acc;
-    //     },
-    //     { value: 0 }
-    //   ).value;
-    //   const newYScale = d3
-    //     .scaleLinear()
-    //     .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
-    //     .range([height, 0]);
-    //   setYScale(() => newYScale);
-    //   // d3.select('.yAxis').call()
-    //   const yAxisTicks = newYScale
-    //     .ticks()
-    //     .filter((tick) => Number.isInteger(tick));
-    //   d3.select<any, any>('.yAxis').call(
-    //     d3.axisLeft(newYScale).tickValues(yAxisTicks).tickFormat(d3.format('d'))
-    //   );
-    //   console.log(yScale?.range());
-    // };
+    //calculating max for x and y axis
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
         //checking if value is null -> means partition does not exist
@@ -89,7 +59,6 @@ const Graph = ({
       },
       { value: 0 }
     ).value;
-
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
@@ -97,7 +66,7 @@ const Graph = ({
     }
     const barWidth = width / (dataTimeMax + 1) - 1;
     if (data.length) {
-      // console.log('rendering graph');
+      //removing old x and y axis and labels to make room for new axes
       d3.select('.xAxis').remove();
       d3.select('.yAxis').remove();
       d3.select('.axis-label').remove();
@@ -108,9 +77,7 @@ const Graph = ({
           newData.push(el.time);
         }
       });
-
-      //grabbing container to hold graph and axes, then appending a smaller g to hold only graph
-
+      //setting dimensions of main container and subcontainer
       d3.select('#graphContainer')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom);
@@ -118,7 +85,6 @@ const Graph = ({
         'transform',
         `translate(${margin.left}, ${margin.top})`
       );
-
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
         arg: d3.Selection<Element, unknown, HTMLElement, unknown>
@@ -128,27 +94,15 @@ const Graph = ({
           [width - margin.right, height - margin.top], //new max width and height after zoom
         ];
         const zoomed = (event: d3.D3ZoomEvent<any, number>) => {
-          // const newDataValueMax: number = data.reduce(
-          //   (acc, val) => {
-          //     if (val.value > acc.value) return val;
-          //     else return acc;
-          //   },
-          //   { value: 0 }
-          // ).value;
-          xScale.range([0, width].map((d) => event.transform.applyX(d)));
-          // const newYScale = d3
-          //   .scaleLinear()
-          //   .domain([0, Math.ceil(newDataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
-          //   .range([height, 0]);
+          xScale.range([0, width].map((d) => event.transform.applyX(d))); //applying transform from user
           const newBarWidth =
             (Math.abs(xScale.range()[1] - xScale.range()[0]) / width) *
-            barWidth;
-          // newBarWidth *= 2;
+            barWidth; //not perfectly correct, off by 1, which is noticeable for small partition size, probably something to do with domain being +- 0.5 on x-axis
           arg
             .selectAll('.bar')
             .attr('width', newBarWidth - 1)
             .attr('transform', (d: any): string => {
-              //updating x-y coords for each bar
+              //updating x-y coords for each bar and width
               return `translate(${xScale(d!.x0)} ,${yScale(d.length)})`;
             })
             .attr('height', (d: any) => `${height - yScale(d.length) - 2}`);
@@ -158,13 +112,7 @@ const Graph = ({
               .tickValues(xAxisTicks)
               .tickFormat(d3.format('d'))
           ); //resetting x-axis to use new range
-          setXScale(() => xScale);
-          // d3.select<any, any>('.yAxis').call(
-          //   d3
-          //     .axisLeft(newYScale)
-          //     .tickValues(yAxisTicks)
-          //     .tickFormat(d3.format('d'))
-          // );
+          setXScale(() => xScale); //saving new xScale
         };
         //actually applying the d3.zoom event onto the passed in element
         arg.call(
@@ -279,14 +227,11 @@ const Graph = ({
         .attr('opacity', 0);
     }
   };
-  // nodes: {id: string, group: numorString}
-  // links: {source: string, target: string, value: num}
-  //loop through topics, and create a node for each topic
-  //loop through consumer groups and create a node for each consumer group
-  //loop through conusmer and create a node for each consumer
-  //loop through consumer groups and create link for all consumers in that group
-  //loop through consumers and create a node for each topics subscribed to
+  // nodes: {id: string, group: numorString}[] -> each of the circles (brokers, topics, consumer(groups))
+  // links: {source: string, target: string, value: num}[] -> connections between each node, value is strength of force attraction
+  //method that actually renders chart
   const chart = () => {
+    //dimensions for chart
     const margin: {
       top: number;
       bottom: number;
@@ -301,7 +246,6 @@ const Graph = ({
     const height = 600 - margin.top - margin.bottom;
     const width = 600 - margin.left - margin.right;
     d3.select('#chartContainer')
-
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
     d3.select('.charty').attr(
@@ -315,8 +259,8 @@ const Graph = ({
       topic: 'yellow',
     };
     const nodes: any = [];
-
     const links: any = [];
+    //adding bootstraps, topics, consumers(groups) to nodes array and the corresponding connections links array
     if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
     if (topicList.length) {
       topicList.forEach((el) => {
@@ -326,7 +270,7 @@ const Graph = ({
     }
     if (consumerList && consumerList.length) {
       consumerList.forEach(
-        (el2: {
+        (consumerGroupArray: {
           groups: [
             {
               groupId: string;
@@ -340,29 +284,34 @@ const Graph = ({
             }
           ];
         }) => {
-          el2.groups.forEach((innerEl) => {
-            if (innerEl.members.length) {
+          consumerGroupArray.groups.forEach((consumerGroup) => {
+            if (consumerGroup.members.length) {
+              //below, each saamsaLoadBalancer stream has groupid of saamsaLoadBalancer%%%topic_name -> want to consolidate all of these onto individual node for viz purposes
               if (
                 !nodes.some(
+                  //only push that node once
                   (el: { id: string }) => el.id === 'saamsaLoadBalancer'
                 )
               )
-                nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
-              innerEl.members.forEach((innerInnerEl) => {
-                nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
+                nodes.push({
+                  id: consumerGroup.groupId,
+                  group: 'consumerGroup',
+                });
+              consumerGroup.members.forEach((consumer) => {
+                nodes.push({ id: consumer.memberId, group: 'consumer' });
                 links.push({
-                  source: innerEl.groupId,
-                  target: innerInnerEl.memberId,
+                  source: consumerGroup.groupId,
+                  target: consumer.memberId,
                   value: 10,
                 });
                 if (
-                  innerInnerEl &&
-                  innerInnerEl.stringifiedMetadata.length &&
-                  innerInnerEl.stringifiedMetadata !== 'topic_not_found'
+                  consumer &&
+                  consumer.stringifiedMetadata.length && //stringifiedMetadata is the assigned topic
+                  consumer.stringifiedMetadata !== 'topic_not_found' //for unattached consumers, if so, then do not connect to a topic
                 ) {
                   links.push({
-                    source: innerInnerEl.memberId,
-                    target: innerInnerEl.stringifiedMetadata,
+                    source: consumer.memberId,
+                    target: consumer.stringifiedMetadata,
                     value: 4,
                   });
                 } else {
@@ -375,7 +324,7 @@ const Graph = ({
       );
     }
     const svg = d3.select('.charty');
-
+    //the physics behind how the nodes interact with each other
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -384,7 +333,7 @@ const Graph = ({
       )
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(width / 2, height / 2));
-
+    //constructing lines between nodes
     const link = svg
       .append('g')
       .attr('stroke', '#999')
@@ -394,23 +343,14 @@ const Graph = ({
       .join('line')
       .attr('stroke-width', (d: any) => Math.sqrt(d.value))
       .attr('stroke-width', 2);
-
+    //constucting node holders (hold circle and it's text)
     const node: any = svg
       .selectAll('.node')
       .data(nodes)
       .join('g')
       .attr('class', 'node')
-      // .on('mouseover', (event) => {
-      //   // event.target.children[0].style.display = 'inline';
-      //   // console.log(event.target.childrend[0].style.display);
-      //   console.log(event);
-      //   console.log(event.target.children[0]);
-      //   event.target.children[0].style = 'display="inline"';
-      // })
-      // .on('mouseout', (event) => {
-      //   event.target.children[0].style.display = 'none';
-      // })
       .call(drag(simulation));
+    //constructing circles
     const circles = node
       .append('circle')
       .attr('class', (d: any) => d.group)
@@ -418,14 +358,14 @@ const Graph = ({
       .attr('fill', (d: any) => {
         return colorDict[d.group];
       });
-
+    //constructing text for each node
     const labels = node
       .append('text')
       .attr('dy', '.35em')
       .text(function (d: any) {
         return d.id;
       });
-
+    //adding changetopic functionality to node map on click of a node
     d3.selectAll('.topic').on('click', (event) => {
       const selectedText = event.target.nextElementSibling.innerHTML;
       if (bootstrap.length && selectedText && selectedText !== topic) {
@@ -439,26 +379,28 @@ const Graph = ({
             return response;
           })
           .then((response) => {
+            //ensuring data is not the same so we do not rerender unecessarily
             if (!_.isEqual(response.data, data)) {
               if (topic !== selectedText) {
+                //removing old bars in bar graph
                 d3.selectAll('.bar').remove();
               }
               setData(response.data);
               setTopic(selectedText);
+              //changing topic in selector to match the clicked node
               document.querySelector<HTMLSelectElement>('#topics')!.value =
                 selectedText;
-            } //checking if user selected blank topic (if so, graph should disappear)
+            }
           });
       }
     });
-
+    //adding event listener to simulation to update x/y-coords of nodes, connecting lines, and text upon dragging
     simulation.on('tick', () => {
       link
         .attr('x1', (d: any) => d.source.x)
         .attr('y1', (d: any) => d.source.y)
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
-
       circles.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
       labels
         .attr('x', function (d: any) {
@@ -468,14 +410,12 @@ const Graph = ({
           return d.y;
         });
     });
-
-    // invalidation.then(() => simulation.stop());
-
     return svg.node();
   };
-
+  //actual method which applies drag functionality
   const drag = (simulation: any) => {
     function dragstarted(event: any) {
+      //reequilibrates connection network to normal pattern slowly
       if (!event.active) simulation.alphaTarget(0.3).restart();
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
@@ -487,6 +427,7 @@ const Graph = ({
     }
 
     function dragended(event: any) {
+      //reequilibrates connection network to normal pattern more quickly
       if (!event.active) simulation.alphaTarget(0);
       event.subject.fx = null;
       event.subject.fy = null;
@@ -498,22 +439,7 @@ const Graph = ({
       .on('drag', dragged)
       .on('end', dragended);
   };
-
-  // }
-  // const rects = d3.selectAll('.bar').data(data);
-  // rects.enter().append('rect').attr('class', 'bar');
-  // rects.attr('height', function (d) {
-  //   return 520 - yScale(d.length);
-  // }));
-  // React.useEffect(() => {
-  //   console.log('updating xScale');
-  //   const newXScale = d3
-  //     .scaleLinear()
-  //     .range([0, 520])
-  //     .domain([-0.5, data.length + 0.5]);
-  //   console.log(newXScale.range());
-  //   setXScale(() => newXScale);
-  // }, [topic]);
+  //method to update graph and move bars/axes around upon new data being saved in state
   const updateGraph = () => {
     const margin: {
       top: number;
@@ -527,30 +453,6 @@ const Graph = ({
       right: 40,
     };
     const height = 600 - margin.top - margin.bottom;
-    // const width = 600 - margin.left - margin.right;
-    //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
-    // const calculateYScale = () => {
-    //   const dataValueMax: number = data.reduce(
-    //     (acc, val) => {
-    //       if (val.value > acc.value) return val;
-    //       else return acc;
-    //     },
-    //     { value: 0 }
-    //   ).value;
-    //   const newYScale = d3
-    //     .scaleLinear()
-    //     .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
-    //     .range([height, 0]);
-    //   setYScale(() => newYScale);
-    //   // d3.select('.yAxis').call()
-    //   const yAxisTicks = newYScale
-    //     .ticks()
-    //     .filter((tick) => Number.isInteger(tick));
-    //   d3.select<any, any>('.yAxis').call(
-    //     d3.axisLeft(newYScale).tickValues(yAxisTicks).tickFormat(d3.format('d'))
-    //   );
-    //   console.log(yScale?.range());
-    // };
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
         //checking if value is null -> means partition does not exist
@@ -566,17 +468,11 @@ const Graph = ({
       },
       { value: 0 }
     ).value;
-
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
       newArr.push(i);
     }
-    // const barWidth = width / (dataTimeMax + 1);
-    // const yScale = d3
-    //   .scaleLinear()
-    //   .domain([0, Math.ceil(dataValueMax * 1.2)]) //this is just so the bar doesn't hit the very top of the graph, just for looks
-    //   .range([height, 0]);
     const newData: number[] = [];
     data.forEach((el) => {
       for (let i = 0; i < el.value; i++) {
@@ -612,212 +508,27 @@ const Graph = ({
           return 'translate(0,0)';
         }
       })
-      // .attr('width', `${barWidth - 1}`)
       .attr('height', function (d: any) {
         return height - yScale(d.length) - 2;
       })
       .style('fill', '#69b3a2');
   };
-  // const updateChart = () => {
-  //   const colorDict: { [key: string]: string } = {
-  //     broker: 'red',
-  //     consumer: 'blue',
-  //     consumerGroup: 'green',
-  //     topic: 'yellow',
-  //   };
-  //   const nodes: any = [];
-  //   const links: any = [];
-  //   console.log('topics are', topicList);
-  //   if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
-  //   if (topicList.length) {
-  //     topicList.forEach((el) => {
-  //       nodes.push({ id: el, group: 'topic' });
-  //       links.push({ source: el, target: bootstrap, value: 10 });
-  //     });
-  //   }
-  //   if (consumerList && consumerList.length) {
-  //     consumerList.forEach(
-  //       (el2: {
-  //         groups: [
-  //           {
-  //             groupId: string;
-  //             members: [
-  //               {
-  //                 clientId: string;
-  //                 memberId: string;
-  //                 stringifiedMetadata: string;
-  //               }
-  //             ];
-  //           }
-  //         ];
-  //       }) => {
-  //         el2.groups.forEach((innerEl) => {
-  //           if (innerEl.members.length) {
-  //             if (
-  //               !nodes.some(
-  //                 (el: { id: string }) => el.id === 'saamsaLoadBalancer'
-  //               )
-  //             )
-  //               nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
-  //             innerEl.members.forEach((innerInnerEl) => {
-  //               nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
-  //               links.push({
-  //                 source: innerEl.groupId,
-  //                 target: innerInnerEl.memberId,
-  //                 value: 10,
-  //               });
-  //               if (innerInnerEl && innerInnerEl.stringifiedMetadata.length)
-  //                 links.push({
-  //                   source: innerInnerEl.memberId,
-  //                   target: innerInnerEl.stringifiedMetadata,
-  //                   value: 4,
-  //                 });
-  //             });
-  //           }
-  //         });
-  //       }
-  //     );
-  //   }
-  //   const svg = d3.select('svg');
-  //   const width = 480;
-  //   const height = 480;
-  //   const simulation = d3
-  //     .forceSimulation(nodes)
-  //     .force(
-  //       'link',
-  //       d3.forceLink(links).id((d: any) => d.id)
-  //     )
-  //     .force('charge', d3.forceManyBody())
-  //     .force('center', d3.forceCenter(width / 2, height / 2));
-
-  //   const link = svg
-  //     .selectAll('line')
-  //     .data(links)
-  //     .join('line')
-  //     .append('g')
-  //     .attr('stroke', '#999')
-  //     .attr('stroke-opacity', 0.6)
-  //     .attr('stroke-width', (d: any) => Math.sqrt(d.value))
-  //     .attr('stroke-width', 2);
-
-  //   const node: any = svg
-  //     .selectAll('circle')
-  //     .data(nodes)
-  //     .join('circle')
-  //     .append('g')
-  //     .attr('class', (d: any) => `${d.group}`)
-  //     .attr('stroke', '#fff')
-  //     .attr('stroke-width', 1.5)
-  //     .attr('r', 5)
-  //     .attr('fill', (d: any) => {
-  //       return colorDict[d.group];
-  //     })
-  //     .call(drag(simulation));
-
-  //   node.append('title').text((d: any) => d.id);
-
-  //   simulation.on('tick', () => {
-  //     link
-  //       .attr('x1', (d: any) => d.source.x)
-  //       .attr('y1', (d: any) => d.source.y)
-  //       .attr('x2', (d: any) => d.target.x)
-  //       .attr('y2', (d: any) => d.target.y);
-  //     node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
-  //   });
-  // };
-  // React.useEffect(calculateYScale);
   React.useEffect(() => {
+    //draws new graph when new topic selected
     renderGraph();
-    // updateGraph();
   }, [topic]);
   React.useEffect(() => {
+    //updates graph when data changes if graph is rendered
     if (d3.selectAll('.bar').size() > 0) {
       updateGraph();
     }
   }, [data]);
-  // React.useEffect(() => {
-  //   console.log('consumerList changed');
-  //   updateChart();
-  // }, [consumerList]);
   React.useEffect(() => {
+    //removes old node map and redraws it when new topic added or new consumer added
     d3.selectAll('.charty g').remove();
-    // d3.selectAll('.charty').remove();
     chart();
   }, [topicList, consumerList]);
-  // React.useEffect(() => {
-  //   console.log('charting');
-  //   chart();
-  // }, [bootstrap]);
-  try {
-    // chart();
-  } catch (error) {
-    console.log(error);
-  }
   return <div>{!!data.length && <h2>{topic}</h2>}</div>;
 };
 
 export default Graph;
-
-//old stuff
-//creating the function that will take in the data and produce the path element
-// const line = d3
-//   .line<typeof data[0]>()
-//   .defined((d) => d.value !== null)
-//   .curve(d3.curveBasis)
-//   .x((d) => xScale(d.time))
-//   .y((d) => yScale(d.value));
-// .data(data)
-// .attr('transform', `translate(${margin.left}, ${margin.bottom})`)
-// .attr('fill', 'none')
-// .attr('stroke', '#000')
-// .attr('stroke-width', '2px')
-// .attr('class', 'line');
-// .attr('d', line(data));
-//defining the xaxis from the scales
-//this is for brush instead of zoom, as an alternate approach, doesn't work, and a little bit more finnicky
-// const updateChart = (event: d3.D3BrushEvent<number[]>): void => {
-//   if (event.selection) {
-//     const extent = event.selection;
-//     xScale.domain([
-//       xScale.invert(
-//         typeof extent[0] === 'number' ? extent[0] : extent[0][0]
-//       ),
-//       xScale.invert(
-//         typeof extent[1] === 'number' ? extent[1] : extent[1][1]
-//       ),
-//     ]);
-//     const newRange = xScale.domain()[1] - xScale.domain()[0];
-//     const newBarWidth = width / newRange;
-//     d3.select<any, any>('.brush').call(brush.move, null);
-//     d3.select<any, any>('.xAxis')
-//       .transition()
-//       .duration(1000)
-//       .call(d3.axisBottom(xScale));
-//     svg
-//       .selectAll('rect')
-//       .transition()
-//       .duration(1000)
-//       .attr('transform', function (d) {
-//         return (
-//           'translate(' +
-//           (d.x0! * newBarWidth + margin.left) +
-//           ',' +
-//           yScale(d.length) +
-//           ')'
-//         );
-//       })
-//       .attr('width', newBarWidth);
-//   }
-// };
-// const brush = d3
-//   .brushX()
-//   .extent([
-//     [0, 0],
-//     [width, height + 20],
-//   ])
-//   .on('end', updateChart);
-// svg
-//   .append('g')
-//   .attr('class', 'brush')
-//   .call(brush)
-//   .attr('transform', `translate(${margin.left}, ${margin.top})`);

@@ -6,13 +6,8 @@ import * as _ from 'lodash';
 import useInterval from './useInterval';
 interface Props {
   currentUser: string;
-  graphIntervalId: NodeJS.Timeout | null;
-  setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
-  tableIntervalId: NodeJS.Timeout | null;
-  setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
   data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
-  setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   topic: string;
   setTopic: (arg: string) => void;
   serverList: string[];
@@ -30,12 +25,7 @@ interface TableList {
 const Selector = ({
   currentUser,
   consumerList,
-  setXScale,
-  graphIntervalId,
   data,
-  setGraphIntervalId,
-  setTableIntervalId,
-  tableIntervalId,
   setData,
   setTopic,
   topic,
@@ -47,6 +37,7 @@ const Selector = ({
   setBootstrap,
   setConsumerList,
 }: Props): JSX.Element => {
+  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
   const balanceLoad = (): void => {
     const numPartitions: number = data.reduce((acc, val) => {
       //checking if value is null -> means partition does not exist
@@ -60,21 +51,6 @@ const Selector = ({
     }).then((response) => {
       console.log(response.status);
     });
-    /**
-     * in here we need to grab the selected server
-     * need to create a new topic -> (originalTopicName_balanced) (same number of partitions)
-     * need to instatiate a stream onto that topic(do this probably with Java KafkaStreamAPI)
-     * stream should then take each message
-     * apply someway to key it/partition it in the requested load balance way
-     * then write it to that topic
-     * stream should then sit on that topic and continue doing this operation until stream is terminated
-     * also need to write a way to terminate that stream
-     *
-     *
-     *
-     */
-
-    return;
   };
 
   const updateTables = (arg: string | undefined): void => {
@@ -154,26 +130,19 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log('boostrap we grabbed from user', newBootstrap?.value);
-    if (newBootstrap?.value.length) {
-      //updating state here to cause rerender
-      setBootstrap(newBootstrap?.value.replace('_', ':'));
-      if (tableIntervalId) clearInterval(tableIntervalId);
-    } else {
-      setTopicList([]);
-      if (tableIntervalId) clearInterval(tableIntervalId);
+    if (newBootstrap) {
+      fetchTopics(newBootstrap.value);
+      setBootstrap(newBootstrap.value.replace('_', ':'));
     }
   };
 
   if (process.env.NODE_ENV !== 'testing') {
+    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
     useInterval(() => {
       if (bootstrap.length) {
-        console.log('inside of setinterval bootstrap', bootstrap);
         updateTables(bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-        console.log(bootstrap);
-        console.log(topic);
         if (topic.length) {
           changeTopics();
         }
@@ -201,21 +170,13 @@ const Selector = ({
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
-      console.log('from fetch consumers');
-      console.log(response.data);
-      console.log(_.isEqual(consumerList, response.data));
+      //checking if consumerList is equal, as we do not need to needlessly set state and rerender
       if (!_.isEqual(consumerList, response.data))
         setConsumerList(response.data);
     });
   };
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
-    //change this to be compatible with  enzyme testing, use event.target.etcetc
-    // if (graphIntervalId) {
-    //   //checking if the maincontainer has an interval already set on it, and if it does, we clear it
-    //   clearInterval(graphIntervalId);
-    //   setGraphIntervalId(null);
-    // }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
     const newTopic: HTMLSelectElement | null = document.querySelector(
       '#topics option:checked'
@@ -231,11 +192,6 @@ const Selector = ({
           return response;
         })
         .then((response) => {
-          console.log(
-            topic,
-            newTopic?.value,
-            'alksdjflkajsflkjasflaksjdflkajsf'
-          );
           if (!_.isEqual(response.data, data)) {
             if (topic !== newTopic?.value) {
               d3.selectAll('.bar').remove();
@@ -244,17 +200,15 @@ const Selector = ({
             if (newTopic?.value !== topic) setTopic(newTopic?.value);
           } //checking if user selected blank topic (if so, graph should disappear)
         });
-
-      //setting interval of same request above so we autorefresh it (pull model)
     } else if (!newTopic?.value.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }
   };
   if (process.env.NODE_ENV !== 'testing') {
+    //geting past tables once component renders
     React.useEffect(() => {
       fetchTables();
-      console.log('literally anything');
     }, []);
   }
   return (
@@ -278,17 +232,7 @@ const Selector = ({
           <select
             name='bootstrap'
             id='bootstrap'
-            onChange={() => {
-              const newBootstrap: HTMLSelectElement | null =
-                document.querySelector('#bootstrap option:checked');
-              if (newBootstrap) {
-                fetchTopics(newBootstrap.value);
-                setBootstrap(
-                  newBootstrap.value.replace('_', ':')
-                  // .replace(`_${currentUser}_`, '')
-                );
-              }
-            }}
+            onChange={() => changeServer()}
           >
             <option className='serverOption'></option>
             {serverListArr}
@@ -302,7 +246,6 @@ const Selector = ({
             id='topics'
             onChange={() => {
               changeTopics();
-              return;
             }}
           >
             <option className='topicOption'></option>

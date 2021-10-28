@@ -3,26 +3,18 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 import * as d3 from 'd3';
+
 const App = (): JSX.Element => {
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
-  const [yScale, setYScale] = React.useState<
-    d3.ScaleLinear<number, number, never>
-  >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [graphIntervalId, setGraphInvervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
-  const [tableIntervalId, setTableIntervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [currentUser, changeUser] = React.useState<string>('');
-  const [rendering, setRendering] = React.useState<boolean>(false);
   const [topic, setTopic] = React.useState<string>('');
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
-  const [newBootstrap, setNewBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
   //graph rendering state ->
   const [data, setData] = React.useState<
@@ -116,10 +108,6 @@ const App = (): JSX.Element => {
           key='selector'
           data={data}
           topic={topic}
-          graphIntervalId={graphIntervalId}
-          setGraphIntervalId={setGraphInvervalId}
-          tableIntervalId={tableIntervalId}
-          setTableIntervalId={setTableIntervalId}
           setData={setData}
           setTopic={setTopic}
           bootstrap={bootstrap}
@@ -128,7 +116,6 @@ const App = (): JSX.Element => {
           setTopicList={setTopicList}
           serverList={serverList}
           setServerList={setServerList}
-          setXScale={setXScale}
           consumerList={consumerList}
           setConsumerList={setConsumerList}
         />
@@ -137,8 +124,6 @@ const App = (): JSX.Element => {
             currentUser={currentUser}
             setData={setData}
             setTopic={setTopic}
-            yScale={yScale}
-            setYScale={setYScale}
             bootstrap={bootstrap}
             topicList={topicList}
             consumerList={consumerList}

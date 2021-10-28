@@ -41,11 +41,10 @@ interface controller {
     next: express.NextFunction
   ) => void;
 }
-// const decoder = new StringDecoder('utf-8');
 const controller: controller = {
   updateTables: function (req, res, next) {
     const { bootstrap, currentUser } = req.body;
-    const bootstrapSanitized = bootstrap.replace(':', '_');
+    const bootstrapSanitized = bootstrap.replace(':', '_'); //sanitizing because of reserved characters in SQL (can circumvent by wrapping table name in quotes)
     const instance = new kafka.Kafka({
       clientId: 'saamsa',
       brokers: [`${bootstrap}`],
@@ -58,7 +57,7 @@ const controller: controller = {
           data.forEach((el) => {
             db.all(
               `SELECT topic FROM '${bootstrapSanitized.concat(
-                `_${currentUser}_`
+                `_${currentUser}_` //this is to differentiate each bootstrap server for each individual user
               )}' WHERE topic='${el}';`
             )
               .then((result) => {
@@ -108,15 +107,15 @@ const controller: controller = {
     admin.disconnect();
     next();
   },
+  //executes load balancing binary on requested server (note: at /root because this is for cloud server)
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
-    console.log(bootstrap, topic, numPartitions);
     exec(
-      `java -jar /root/saamsa/Exec.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
-      function (error, stdout, stderr) {
-        console.log('Output -> ' + stdout);
+      `java -jar /root/saamsa/loadBalancer.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+      function (error, stdout) {
+        console.log('Output: ' + stdout);
         if (error !== null) {
-          console.log('Error -> ' + error);
+          console.log('Error: ' + error);
         }
       }
     );
@@ -125,10 +124,8 @@ const controller: controller = {
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
     const { bootstrap, currentUser } = req.body;
-    console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
-    // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
     //opening connection to sqlite db
     try {
       open({
@@ -141,7 +138,8 @@ const controller: controller = {
               `_${currentUser}_`
             )}'`
           )
-          .then((result) => res.json(result))
+          .then((result) => (res.locals.result = result))
+          .then(() => next())
       );
     } catch (error) {
       console.log(error);
@@ -158,22 +156,12 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            console.log(
-              'these are the table rows',
-              result.filter((el) => el.name.includes(`_${currentUser}_`)),
-              result
-                .filter((el) => el.name.includes(`_${currentUser}_`))
-                .map((el) => {
-                  return el.name.replace(`_${currentUser}_`, '');
-                })
-            );
             res.locals.result = result
               .filter((el) => el.name.includes(`_${currentUser}_`))
               .map((el) => {
                 return { name: el.name.replace(`_${currentUser}_`, '') };
               });
             next();
-            // res.json(result);
           });
         }
       );
@@ -186,11 +174,10 @@ const controller: controller = {
   createTable: async function (req, res, next) {
     try {
       const { bootstrap, currentUser } = req.body;
-      //if there is no server given, we send an error page
+      //if there is no server given, we send an error status
       if (!bootstrap.length) res.sendStatus(403);
       //sanitizing for sql
       const bootstrapSanitized = bootstrap.replace(':', '_');
-      console.log(bootstrap);
       const instance = new kafka.Kafka({
         clientId: 'testing2',
         brokers: [`${bootstrap}`], //must be unsanitized form
@@ -320,7 +307,8 @@ const controller: controller = {
                     });
                   }
                 });
-                res.json(arr);
+                res.locals.result = arr;
+                next();
               });
             });
         });
@@ -333,7 +321,7 @@ const controller: controller = {
     try {
       const { bootstrap } = req.body;
 
-      //if there is no server, send an error page
+      //if there is no server, send an error status
       if (!bootstrap.length) res.sendStatus(403);
 
       //create a new instance of kafka
@@ -360,7 +348,6 @@ const controller: controller = {
       results.groups.forEach((item: Item) => {
         consumerGroupNames.push(item.groupId);
       });
-      console.log(consumerGroupNames);
       //declare a variable consumergroups that holds each consumer group
       const groupsDescribed = consumerGroupNames.map((consumerGroup: string) =>
         admin.describeGroups([consumerGroup])
@@ -392,22 +379,16 @@ const controller: controller = {
         (consumerGroup: kafka.GroupDescriptions, index: number) => {
           consumerGroup.groups[0].members.forEach((member, memberIndex) => {
             if (member.memberId.includes('saamsaLoadBalancer')) {
+              //testing if the consumer is from our loadbalancer, in which case, we need to parse the topic name from the group id, which is saved as saamsaLoadBalancer%%%topic_name
               const stringifiedMetaData =
                 cloned[index].groups[0].groupId.split('%%%')[1];
-              console.log(stringifiedMetaData);
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
                 stringifiedMetaData ? stringifiedMetaData : 'topic_not_found';
-              cloned[index].groups[0].groupId = 'saamsaLoadBalancer';
+              cloned[index].groups[0].groupId = 'saamsaLoadBalancer'; //reseting consumer groupId to consolidate all our loadbalancers into one consumer group for viz
             } else {
-              cloned[index].groups[0].members[
-                memberIndex
-              ].stringifiedAssignment = member.memberAssignment
-                .filter((el) => el > 32)
-                .toString();
               cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
-                member.memberMetadata.filter((el) => el > 32).toString();
+                member.memberMetadata.filter((el) => el > 28).toString(); //filtering out null characters
             }
-            // console.log(atob(member.memberMetadata));
           });
         }
       );

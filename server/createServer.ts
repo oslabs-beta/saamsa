@@ -8,11 +8,6 @@ function createServer(): express.Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use('/build', express.static(path.join(__dirname, '../../build')));
-  // app.all('/', (req, res, next) => {
-  //   res.header('Access-Control-Allow-Origin', '*');
-  //   res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-  //   next();
-  // });
 
   //logging in
   app.post(
@@ -43,9 +38,11 @@ function createServer(): express.Application {
     status: number;
     message: { err: string };
   };
+  //404 error handler
   app.use('*', (req, res) => {
     res.sendStatus(404);
   });
+  //global error handler
   app.use(
     (
       err: express.ErrorRequestHandler,
