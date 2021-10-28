@@ -65,12 +65,9 @@ Saamsa has the following features:
   
 ## Feature Roadmap
  The development team intends to continue improving saamsa and adding more features.
- [Head to our roadmap](https://github.com/oslabs-beta/saamsa/projects/1) to see our upcoming planned features.
-  
-## Contribute
- Want to contribute to Saamsa? Head over to our [Contributions page](www.google.com).
+ [Head to our roadmap](https://github.com/oslabs-beta/saamsa/issues) to see our upcoming planned features. 
  
- ## Contributors
+## Contributors
   [Adam Thibodeaux](https://github.com/adam-thibodeaux) - [LinkedIn](https://www.linkedin.com/in/adam-thibodeaux-b0812b210/)
   <br>
   [Shamilah Faria](https://github.com/shamilahfaria) - [LinkedIn](https://www.linkedin.com/in/shamilah-faria/)
