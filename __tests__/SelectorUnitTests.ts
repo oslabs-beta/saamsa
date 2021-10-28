@@ -6,10 +6,6 @@ configure({ adapter: new Adapter() });
 
 describe('Selector unit tests', () => {
   const props = {
-    setGraphIntervalId: jest.fn(),
-    setTableIntervalId: jest.fn(),
-    tableIntervalId: null,
-    graphIntervalId: null,
     setData: jest.fn(),
     setTopic: jest.fn(),
     serverList: ['test_test'],
@@ -18,6 +14,11 @@ describe('Selector unit tests', () => {
     setTopicList: jest.fn(),
     bootstrap: 'test:test',
     setBootstrap: jest.fn(),
+    currentUser: 'testUser',
+    data: [],
+    topic: 'testTopic',
+    consumerList: [],
+    setConsumerList: jest.fn(),
   };
   it('should populate the server drop down with the server list', () => {
     const wrapper = shallow(Selector(props));
@@ -34,7 +35,7 @@ describe('Selector unit tests', () => {
     const wrapper = shallow(Selector(props));
     const input = wrapper.find('input');
     expect(input.props().placeholder).toBe('localhost:00000');
-    const submitBtn = wrapper.find('button');
+    const submitBtn = wrapper.find('.submitBtn');
     expect(typeof submitBtn.props().onClick).toBe('function');
   });
 });

@@ -17,7 +17,7 @@ describe('user login/signup unit tests', () => {
     connection.close();
   });
   it('should send 404 page to invalid url', async () => {
-    await request(app).get('/asdfasdfasdf').send().expect(404);
+    await request(app).post('/asdfasdfasdf/asdfas').send().expect(404);
   });
   it('should send ok status code with valid user login information', async () => {
     const result = await request(app)
