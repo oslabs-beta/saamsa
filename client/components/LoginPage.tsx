@@ -1,24 +1,17 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import * as React from 'react';
-import signUpPage from './SignUpPage';
 import '../../client/scss/LoginPage.scss';
 
 type Props = {
-  // loginStatus: boolean;
-  // changeLoginStatus: (loginStatus: boolean) => void;
   loginAttempt: string | null;
-  // changeAttempt: (loginAttempt: string | null) => void;
   loginButton: () => void;
-  signUp: () => void;
+  signUpButton: () => void;
 };
 
 const LoginPage = ({
-  // loginStatus,
-  // changeLoginStatus,
   loginAttempt,
-  // changeAttempt,
   loginButton,
-  signUp,
+  signUpButton,
 }: Props): JSX.Element => {
   return (
     <div className='mainWrapper'>
@@ -64,10 +57,10 @@ const LoginPage = ({
 
         <div id='signUpArea'>
         <h2 id='noAccount'>Don&apos;t have an account?</h2>
-        <button type='button' onClick={signUp} id='signUpBtn' value='Sign-Up'>
+      </div>
+        <button type='button' onClick={signUpButton} id='signUpButton' value='Sign-Up'>
           Sign up now!
         </button>
-      </div>
       </div>
     </div>
     </div>

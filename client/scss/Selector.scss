@@ -10,11 +10,13 @@
     top: 0px;
     width: 100%;
     height: 60px;
+    float: left; 
+    // width: 50%;
     // align-items: center;
     // text-align:center;
-  }
-  
-  .heading{
+}
+
+#heading {
     font-size: 60px;
     color: $saamsaBlack ;
     opacity: 1;
@@ -23,7 +25,15 @@
     font-family: $fontTitle;
     line-height:51px;
     vertical-align:middle;
-  }
+}
+
+#loggedIn{
+    margin-left: 40%;
+}
+
+#heading, #loggedIn{
+        display:inline;
+    }
   .brokersDiv{
     background-color: $saamsaGrey;
     display: flex;
@@ -61,6 +71,18 @@
     font-family: $buttonTitle;
     color: $saamsaBlack;
     width: 100px;
+}
+
+#logOutBtn{
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: $saamsaGrey;
+    border: 1px solid black;
+    height: 30px;
+    font-size: 15px;
+    font-family: $buttonTitle;
+    color: $saamsaBlack;
+    width: 90px;
 }
 .topicSelector{
     margin-top:10px;

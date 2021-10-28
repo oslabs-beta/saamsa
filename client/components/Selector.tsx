@@ -210,11 +210,10 @@ const Selector = ({
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa 
+        <h1 id='heading'>Saamsa </h1>
         <div id = 'loggedIn'> Logged in as {currentUser}
-        <button className="Btn" onClick={logOut}> Log Out </button>
+        <button className="logOutBtn" onClick={logOut}> Log Out </button>
         </div>
-        </h1>
       </div>
  
       <div className='brokersDiv'>

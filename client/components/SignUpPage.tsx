@@ -2,49 +2,14 @@ import * as React from 'react';
 import '../../client/scss/LoginPage.scss';
 
 type Props = {
-signUpAttempt: string | null;
-signUp: () => void;
+  signUp: () => void;
+  loginAttempt: string | null;
+
 }
 
-// Sign Up functionality
-const signUp = () => {
-
-    const username: string | null = (
-      document.querySelector('#username') as HTMLInputElement
-    ).value;
-    const password: string | null = (
-      document.querySelector('#password') as HTMLInputElement
-    ).value;
-
-    if (username == '' || password == '') {
-      const result = 'Please fill out the username and password fields';
-      signUpAttempt(result);
-    } else if (password.length < 6) {
-      const result = 'Please create a strong password longer than 6 characters';
-      signUpAttempt(result);
-    } else {
-      const user: { username: string; password: string } = {
-        username: username,
-        password: password,
-      };
-      fetch('http://localhost:3001/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      })
-        .then((res) => {
-          if (res.status == 200) {
-            alert ('Signup Successful! Please login to proceed.');
-            location.reload();
-          }
-        })
-        .catch((err) => console.log(err));
-    }
-  };
-
-  const SignUpPage = ({
-    signUpAttempt, 
-    signUp
+  const SignUpPage = ({ 
+    signUp,
+    loginAttempt
 }: Props): JSX.Element => {
     return (
       <div className='mainWrapper'>
@@ -86,7 +51,7 @@ const signUp = () => {
             Sign Up
           </button>
           {/* <button id='forgotPassword'> Forgot password? </button> */}
-          <div id='loginAttemptMessage'>{signUpAttempt}</div>
+          <div id='loginAttemptMessage'>{loginAttempt}</div>
         </div>
       </div>
       </div>
