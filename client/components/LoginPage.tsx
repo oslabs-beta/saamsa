@@ -55,9 +55,9 @@ const LoginPage = ({
           <button id='forgotPassword'> Forgot password? </button>
           <div id='loginAttemptMessage'>{loginAttempt}</div>
 
-          <div id='signUpArea'>
+          {/* <div id='signUpArea'>
             <h2 id='noAccount'>Don&apos;t have an account?</h2>
-          </div>
+          </div> */}
           <button
             type='button'
             onClick={signUpButton}
