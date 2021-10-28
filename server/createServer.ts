@@ -1,17 +1,13 @@
 import express from 'express';
 import userController from './controllers/userController';
 import kafkaRouter from './routers/kafkaRouter';
+import * as path from 'path';
 function createServer(): express.Application {
   const app = express();
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  app.all('/', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-    next();
-  });
+  app.use('/build', express.static(path.join(__dirname, '../../build')));
 
   //logging in
   app.post(
@@ -31,17 +27,23 @@ function createServer(): express.Application {
     }
   );
 
+  //all kafka related routes like fetching topics, fetching consumers etc
   app.use('/kafka', kafkaRouter);
 
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../index.html'));
+  });
   //type of error object
   type errorType = {
     log: string;
     status: number;
     message: { err: string };
   };
+  //404 error handler
   app.use('*', (req, res) => {
     res.sendStatus(404);
   });
+  //global error handler
   app.use(
     (
       err: express.ErrorRequestHandler,
@@ -59,6 +61,7 @@ function createServer(): express.Application {
       return res.status(errorObj.status).json(errorObj.message);
     }
   );
+
   return app;
 }
 

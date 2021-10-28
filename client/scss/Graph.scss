@@ -58,3 +58,16 @@ svg {
   height: 350px;
   background-color: rgb(109, 165, 162);
 }
+.node text {
+  display: none;
+  color: black;
+  font: 10px sans-serif;
+}
+.node:hover {
+  text {
+    display: inline;
+  }
+  circle {
+    fill: gray;
+  }
+}

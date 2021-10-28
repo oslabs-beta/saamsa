@@ -7,10 +7,6 @@ configure({ adapter: new Adapter() });
 
 describe('LoginPage unit tests', () => {
   describe('user signup', () => {
-    const userObj = {
-      username: 'weewee',
-      password: 'booboo',
-    };
     const props = {
       loginStatus: false,
       loginAttempt: null,
@@ -44,8 +40,3 @@ describe('LoginPage unit tests', () => {
     });
   });
 });
-// describe('test test', () => {
-//   it('tests stuff :)', () => {
-//     expect(2).toBe(2);
-//   });
-// });

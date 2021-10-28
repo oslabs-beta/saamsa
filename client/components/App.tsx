@@ -4,63 +4,76 @@ import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
 import * as d3 from 'd3';
+
 const App = (): JSX.Element => {
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
-  const [yScale, setYScale] = React.useState<
-    d3.ScaleLinear<number, number, never>
-  >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [graphIntervalId, setGraphInvervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
-  const [tableIntervalId, setTableIntervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
-  const [currentUser, changeUser] = React.useState<string>();
-  const [rendering, setRendering] = React.useState<boolean>(false);
+  const [currentUser, changeUser] = React.useState<string>('');
   const [topic, setTopic] = React.useState<string>('');
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
-  const [newBootstrap, setNewBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
+
+  // login button function
   const loginButton = () => {
+    // username is input value in usernmae field
     const username: string | null = (
       document.querySelector('#username') as HTMLInputElement
     ).value;
+
+    // password is input value in password field
     const password: string | null = (
       document.querySelector('#password') as HTMLInputElement
     ).value;
+
+    // if username or password are empty inputs, display error message
     if (username == '' || password == '') {
       const result =
         'Please fill out the username and password fields to log in';
       changeAttempt(result);
+
+      // if username and password are filled out, send fetch request to backend to see if user/ pw is correct
     } else {
       const user: { username: string; password: string } = {
-        username: username,
-        password: password,
+        username,
+        password,
       };
+
       fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
       })
-        .then((res) => res.json())
-        .then(() => {
-          changeLoginStatus(true);
+        // if username or password are empty, have user try again
+        .then((res) => {
+          if (res.status === 401) {
+            // had this be an alert window and reload because signup wasn't working after incorrect entry
+            const result = 'Incorrect username or password. Please try again.';
+            changeAttempt(result);
+            // location.reload();
+          }
+          // otherwise store the user in state and change login status to true
+          else {
+            changeUser(username);
+            changeLoginStatus(true);
+          }
         })
         .catch((err) => {
-          changeAttempt('Incorrect Username or password');
+          changeAttempt('Error logging in. Please try again.');
           console.log(err);
         });
     }
   };
 
+  // Sign Up functionality
   const signUp = () => {
     const username: string | null = (
       document.querySelector('#username') as HTMLInputElement
@@ -87,8 +100,8 @@ const App = (): JSX.Element => {
       })
         .then((res) => {
           if (res.status == 200) {
-            changeLoginStatus(true);
-            changeUser(username);
+            alert('Signup Successful! Please login to proceed.');
+            location.reload();
           }
         })
         .catch((err) => console.log(err));
@@ -97,12 +110,12 @@ const App = (): JSX.Element => {
 
   if (loginStatus === false) {
     return (
-      <div key='loginPageContainer'>
+      <div key='loginPage'>
         <LoginPage
-          key='loginPage'
           loginButton={loginButton}
           signUp={signUp}
           loginAttempt={loginAttempt}
+          // currentUser = {currentUser}
         />
       </div>
     );
@@ -110,13 +123,10 @@ const App = (): JSX.Element => {
     return (
       <div key='container'>
         <Selector
+          currentUser={currentUser}
           key='selector'
           data={data}
           topic={topic}
-          graphIntervalId={graphIntervalId}
-          setGraphIntervalId={setGraphInvervalId}
-          tableIntervalId={tableIntervalId}
-          setTableIntervalId={setTableIntervalId}
           setData={setData}
           setTopic={setTopic}
           bootstrap={bootstrap}
@@ -125,16 +135,14 @@ const App = (): JSX.Element => {
           setTopicList={setTopicList}
           serverList={serverList}
           setServerList={setServerList}
-          setXScale={setXScale}
           consumerList={consumerList}
           setConsumerList={setConsumerList}
         />
         <div className="graph">
           <Graph
+            currentUser={currentUser}
             setData={setData}
             setTopic={setTopic}
-            yScale={yScale}
-            setYScale={setYScale}
             bootstrap={bootstrap}
             topicList={topicList}
             consumerList={consumerList}
@@ -143,6 +151,12 @@ const App = (): JSX.Element => {
             setXScale={setXScale}
             data={data}
           />
+          <svg id='graphContainer'>
+            <g className='graphy'></g>
+          </svg>
+          <svg id='chartContainer'>
+            <g className='charty'></g>
+          </svg>
         </div>
       </div>
     );

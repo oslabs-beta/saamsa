@@ -5,13 +5,9 @@ import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
 interface Props {
-  graphIntervalId: NodeJS.Timeout | null;
-  setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
-  tableIntervalId: NodeJS.Timeout | null;
-  setTableIntervalId: (arg: NodeJS.Timeout | null) => void;
+  currentUser: string;
   data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
-  setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   topic: string;
   setTopic: (arg: string) => void;
   serverList: string[];
@@ -23,17 +19,10 @@ interface Props {
   consumerList: any;
   setConsumerList: (arg: any) => void;
 }
-interface TableList {
-  name: string;
-}
 const Selector = ({
+  currentUser,
   consumerList,
-  setXScale,
-  graphIntervalId,
   data,
-  setGraphIntervalId,
-  setTableIntervalId,
-  tableIntervalId,
   setData,
   setTopic,
   topic,
@@ -45,6 +34,7 @@ const Selector = ({
   setBootstrap,
   setConsumerList,
 }: Props): JSX.Element => {
+  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
   const balanceLoad = (): void => {
     const numPartitions: number = data.reduce((acc, val) => {
       //checking if value is null -> means partition does not exist
@@ -56,35 +46,17 @@ const Selector = ({
       data: { bootstrap, topic, numPartitions },
       url: 'http://localhost:3001/kafka/balanceLoad',
     }).then((response) => {
-      console.log(response.status);
+      return;
     });
-    /**
-     * in here we need to grab the selected server
-     * need to create a new topic -> (originalTopicName_balanced) (same number of partitions)
-     * need to instatiate a stream onto that topic(do this probably with Java KafkaStreamAPI)
-     * stream should then take each message
-     * apply someway to key it/partition it in the requested load balance way
-     * then write it to that topic
-     * stream should then sit on that topic and continue doing this operation until stream is terminated
-     * also need to write a way to terminate that stream
-     *
-     *
-     *
-     */
-
-    return;
   };
-
+  //update SQL tables
   const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
     axios({
       method: 'post',
       url: 'http://localhost:3001/kafka/updateTables',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
-      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       const resultArr = temp.map((el) => el.topic);
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
@@ -104,6 +76,7 @@ const Selector = ({
       </option>
     );
   }
+
   //below creates an array filled with options for the topics of selected bootstrap
   const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
@@ -117,47 +90,42 @@ const Selector = ({
       </option>
     );
   }
+
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const bootstrap: HTMLInputElement | null =
-      //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
       url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
-      data: { bootstrap: bootstrap?.value },
+      data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
-      .then(() => {
-        fetchTables();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then(() => fetchTables())
+      .catch((error) => console.log(error));
   };
+
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
-    axios
-      .get<TableList[]>('http://localhost:3001/kafka/fetchTables')
-      .then((response) => {
-        //updating state to force rerender, so option appears on dropdown of bootstrap servers
-        console.log('front end response in fetch tables', response);
-        setServerList(response.data.map((el) => el.name));
-      });
+    axios({
+      method: 'post',
+      url: 'http://localhost:3001/kafka/fetchTables',
+      data: { currentUser },
+    }).then((response: { data: { name: string }[] }) => {
+      //updating state to force rerender, so option appears on dropdown of bootstrap servers
+      setServerList(response.data.map((el) => el.name));
+    });
   };
+
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    console.log('boostrap we grabbed from user', newBootstrap?.value);
-    if (newBootstrap?.value.length) {
-      //updating state here to cause rerender
-      setBootstrap(newBootstrap?.value.replace('_', ':'));
-      if (tableIntervalId) clearInterval(tableIntervalId);
-    } else {
-      setTopicList([]);
-      if (tableIntervalId) clearInterval(tableIntervalId);
+    if (newBootstrap) {
+      fetchTopics(newBootstrap.value);
+      setBootstrap(newBootstrap.value.replace('_', ':'));
     }
   };
 
@@ -182,7 +150,7 @@ const Selector = ({
     axios({
       url: 'http://localhost:3001/kafka/fetchTopics',
       method: 'post',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
@@ -190,79 +158,75 @@ const Selector = ({
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
+
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
       url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
-      console.log('from fetch consumers');
-      console.log(response.data);
-      console.log(_.isEqual(consumerList, response.data));
+      //checking if consumerList is equal, as we do not need to needlessly set state and rerender
       if (!_.isEqual(consumerList, response.data))
         setConsumerList(response.data);
     });
   };
+
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    if (graphIntervalId) {
-      //checking if the maincontainer has an interval already set on it, and if it does, we clear it
-      clearInterval(graphIntervalId);
-      setGraphIntervalId(null);
-    }
-    //change this to be compatible with  enzyme testing, use event.target.etcetc
-    // const newTopic: HTMLSelectElement | null = document.querySelector(
-    //   '#topics option:checked'
-    // ); //grabbing current selected topic
-    if (bootstrap.length && topic.length) {
+    const newTopic: HTMLSelectElement | null = document.querySelector(
+      '#topics option:checked'
+    ); //grabbing current selected topic
+    if (bootstrap.length && newTopic?.value.length) {
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
         url: 'http://localhost:3001/kafka/refresh',
-        data: { topic: topic, bootstrap },
+        data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
-          //change this to be compatible with  enzyme testing, use event.target.etcetc
-          // document.querySelector('svg')?.remove();
           return response;
         })
         .then((response) => {
-          // const dataTimeMax: number = response.data.reduce((acc, val) => {
-          //   //checking if value is null -> means partition does not exist
-          //   if (val.value !== null && val.time > acc.time) return val;
-          //   else return acc;
-          // }).time;
-          // const newXScale = d3
-          //   .scaleLinear()
-          //   .range([0, 520])
-          //   .domain([-0.5, dataTimeMax + 0.5]);
-          // console.log(newXScale.range());
-          // setXScale(() => newXScale);
-          // console.log(data);
-          // console.log(response.data);
-          // console.log(_.isEqual(response.data, data));
-          if (!_.isEqual(response.data, data)) setData(response.data);
-          // if (newTopic?.value.length && newTopic?.value !== topic)
-          // setTopic(newTopic?.value); //checking if user selected blank topic (if so, graph should disappear)
+          if (!_.isEqual(response.data, data)) {
+            if (topic !== newTopic?.value) {
+              d3.selectAll('.bar').remove();
+            }
+            setData(response.data);
+            if (newTopic?.value !== topic) setTopic(newTopic?.value);
+          } //checking if user selected blank topic (if so, graph should disappear)
         });
-      //setting interval of same request above so we autorefresh it (pull model)
-    } else if (!topic.length) {
+    } else if (!newTopic?.value.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }
   };
+
   if (process.env.NODE_ENV !== 'testing') {
+    //geting past tables once component renders
     React.useEffect(() => {
       fetchTables();
       console.log('literally anything');
     }, []);
+
+    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
+    useInterval(() => {
+      if (bootstrap.length) {
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
   }
+
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa</h1>
+        <h1 className='heading'>Saamsa </h1>
       </div>
 
       <div className='brokersDiv'>
@@ -280,15 +244,7 @@ const Selector = ({
           className="dropDown"
             name='bootstrap'
             id='bootstrap'
-            onChange={() => {
-              const newBootstrap: HTMLSelectElement | null =
-                document.querySelector('#bootstrap option:checked');
-              if (newBootstrap) {
-                fetchTopics(newBootstrap.value);
-                setBootstrap(newBootstrap.value.replace('_', ':'));
-                //call the svg square
-              }
-            }}
+            onChange={() => changeServer()}
           >
             <option className="dropdownOptions"></option>
             {serverListArr}
@@ -301,8 +257,7 @@ const Selector = ({
             name='topics'
             id='topics'
             onChange={() => {
-              // changeTopics();
-              return;
+              changeTopics();
             }}
           >
             <option className='topicOption'></option>

@@ -10,9 +10,11 @@ describe('kafka unit tests', () => {
       filename: '/tmp/database.db',
       driver: sqlite3.Database,
     }).then((db) => {
-      db.exec('CREATE TABLE test_test (topic, partition_0, partition_1);');
       db.exec(
-        "INSERT INTO test_test (topic, partition_0, partition_1) VALUES ('lets_get_that_meat', 10, 1);"
+        'CREATE TABLE test_test_undefined_ (topic, partition_0, partition_1);'
+      );
+      db.exec(
+        "INSERT INTO test_test_undefined_ (topic, partition_0, partition_1) VALUES ('lets_get_that_meat', 10, 1);"
       );
     });
   });
@@ -21,11 +23,11 @@ describe('kafka unit tests', () => {
       filename: '/tmp/database.db',
       driver: sqlite3.Database,
     }).then((db) => {
-      db.exec('DROP TABLE test_test');
+      db.exec('DROP TABLE test_test_undefined_');
     });
   });
   //cannot test create tables or refresh, as those routes require a running kafka instance
-  it('should fetch all table from local sql database', async () => {
+  it('should fetch all tables from local sql database', async () => {
     const result = await request(app)
       .post('/kafka/fetchTables')
       .send()

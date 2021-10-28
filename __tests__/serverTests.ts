@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const serverURI = 'http://localhost:3000';
-import userModels from '../server/userModels';
+import userModels from '../server/models/userModels';
 describe('user login unit tests', () => {
   const username = 'weewee';
   const password = 'booboo';
