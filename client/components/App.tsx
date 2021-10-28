@@ -1,5 +1,6 @@
 import * as React from 'react';
 import LoginPage from './LoginPage';
+import SignUpPage from './SignUpPage'
 import Graph from './Graph';
 import Selector from './Selector';
 const App = (): JSX.Element => {
@@ -124,7 +125,21 @@ const App = (): JSX.Element => {
           />
         </div>
       );
-    } else if (loginStatus === true) {
+    } 
+    else if (signUpStatus === true) {
+      return (
+        <div key='signUpPage'>
+          <SignUpPage
+            signUp={signUp}
+            loginAttempt={loginAttempt}
+            // currentUser = {currentUser}
+          />
+        </div>
+      )
+    }
+    
+    
+    else if (loginStatus === true) {
       return (
         <div key='selector'>
           <Selector
