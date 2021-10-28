@@ -4,8 +4,8 @@ import * as path from 'path';
 
 function createWindow() {
   const win: BrowserWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 1000,
   });
   win.loadFile('../../index.html');
 }

@@ -267,17 +267,17 @@ const Selector = ({
 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-          <label htmlFor='topicInput'>Enter a new broker address</label>
+          <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
         </div>
         <button className='submitBtn' onClick={createTable}>
           Submit
         </button>
-        <div className='or'>OR</div>
 
         <div className='brokerSelector'>
-          Select your broker:
+          <p className="inputLabels">Current broker: </p>
           <select
+          className="dropDown"
             name='bootstrap'
             id='bootstrap'
             onChange={() => {
@@ -286,17 +286,18 @@ const Selector = ({
               if (newBootstrap) {
                 fetchTopics(newBootstrap.value);
                 setBootstrap(newBootstrap.value.replace('_', ':'));
+                //call the svg square
               }
             }}
           >
-            <option className='serverOption'></option>
+            <option className="dropdownOptions"></option>
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
-          Select your topic:
-          <select
+          <p className="inputLabels">Current topic: </p>
+          <select className="dropDown"
             name='topics'
             id='topics'
             onChange={() => {

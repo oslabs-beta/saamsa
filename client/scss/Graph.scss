@@ -12,34 +12,49 @@ body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 .nodeyChart{
-  background-color: #CED4DA;
+  background-color: $saamsaGrey;
   position: absolute;
-  left: 1px;
-  top: 50%;
+  left: 10px;
+  top: 260px;
   border-radius: 8px;
-  border: 8px solid $saamsaYellow ;
+  border: 4px solid $saamsaYellow ;
+
 }
 .graphSvg{
   background-color: $saamsaGrey;
   position: absolute;
-  right: 1px;
-  top: 50%;
+  right: 10px;
+  top: 260px;
   border-radius: 8px;
-  border: 8px solid $saamsaYellow ;
+  border: 4px solid $saamsaYellow ;
 }
 h2{
-  font-size: 30px;
+  font-size: 15px;
+  font-family: $fontTitle;
   position: absolute;
-  right: 1px;
-  top: 40%;
+  right: 120px;
+  top: 300px;
+  z-index:1;
 }
-#mainContainer{
-  height: 800px;
-  width: 1000px;
-  background-color: $saamsaGrey;
-}
+// #mainContainer{
+//   height: 600px;
+//   width: 1000px;
+//   background-color: $saamsaGrey;
+//   // position: absolute;
+//   // left: 1px;
+//   // top: 300px;
+//   // border-radius: 2px;
+//   // border-style: solid;
+//   // border-color: $saamsaBlack;
+// position: absolute;
+// left: 50%;
+// top: 78%;
+// transform: translate(-50%, -50%);
+// padding: 10px;
+
+// }
 svg {
-  width: 400px;
-  height: 400px;
+  width: 350px;
+  height: 350px;
   background-color: rgb(109, 165, 162);
 }

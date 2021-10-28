@@ -47,8 +47,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
     // const calculateYScale = () => {
     //   const dataValueMax: number = data.reduce(
@@ -260,8 +260,8 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Partition Index')
-        .attr('x', width - 140)
-        .attr('y', 25); // Relative to the x axis.
+        .attr('x', width - 100)
+        .attr('y', 37); // Relative to the x axis.
       //appending y-axis directly to graph, cause we don't want it to be clipped
       svg
         .append('g')
@@ -303,8 +303,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 400 - margin.top - margin.bottom;
-    const width = 400 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     const colorDict: { [key: string]: string } = {
       broker: 'red',
       consumer: 'blue',
@@ -504,7 +504,7 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
+    const height = 300 - margin.top - margin.bottom;
     // const width = 600 - margin.left - margin.right;
     //calculating min and max for x-axis and y-axis, used to adjust the range of the axes
     // const calculateYScale = () => {
@@ -707,12 +707,14 @@ const Graph = ({
   React.useEffect(() => {
     d3.select('svg').remove();
     renderGraph();
+    chart();
     // updateGraph();
   }, [topic]);
   React.useEffect(() => {
     console.log('data has been changed');
     if (d3.selectAll('.bar').size() > 0) {
       updateGraph();
+      updateChart();
     }
   }, [data]);
   // React.useEffect(() => {
@@ -724,6 +726,7 @@ const Graph = ({
     // d3.selectAll('circle').remove();
     // d3.selectAll('line').remove();
     chart();
+    renderGraph();
   }, [topicList, consumerList]);
   // React.useEffect(() => {
   //   console.log('charting');

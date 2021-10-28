@@ -1,4 +1,5 @@
 import * as React from 'react';
+import '../../client/scss/App.scss';
 import LoginPage from './LoginPage';
 import Graph from './Graph';
 import Selector from './Selector';
@@ -128,7 +129,7 @@ const App = (): JSX.Element => {
           consumerList={consumerList}
           setConsumerList={setConsumerList}
         />
-        <div>
+        <div className="graph">
           <Graph
             setData={setData}
             setTopic={setTopic}
