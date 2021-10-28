@@ -38,8 +38,6 @@ function createServer(): express.Application {
   app.post(
     '/signup',
     userController.createUser, 
-    cookieController.setCookie,
-    sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).send(res.locals.user);
     }

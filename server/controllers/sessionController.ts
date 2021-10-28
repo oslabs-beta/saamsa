@@ -6,7 +6,6 @@ const sessionController: Record<string, MiddlewareFunction> = {};
 // start session -- add user from cookie to sessions database to persist user information
 sessionController.startSession = async (req, res, next) => {
   try {
-    console.log('does this have cookies?', req.cookies);
     const session = await Session.findOne({ username: res.locals.user });
 
     if (!session) {

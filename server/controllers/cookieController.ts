@@ -3,17 +3,19 @@ import MiddlewareFunction from '../types';
 const cookieController: Record<string, MiddlewareFunction> = {};
 
 // setting cookies
+
 cookieController.setCookie = (req, res, next) => {
-try{ 
+    try{ 
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     const expirationTime = 600000; // 600000 miliseconds or 10 minutes
-    const cookieOptions = {
-        maxAge: expirationTime,
-        httpOnly: true
-    };
     const user = res.locals.user;
-    res.cookie('test', user);
-    // console.log("user in setCookie controller", user);
-    res.cookie('user', user, cookieOptions); 
+    console.log("user in setCookie controller", user);
+    res.cookie('user', user, {
+        maxAge: expirationTime,
+        httpOnly: true,
+        sameSite: "strict", 
+        secure: true,
+    }); 
     return next();
 }
 catch (err){
