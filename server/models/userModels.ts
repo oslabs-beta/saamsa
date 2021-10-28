@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import * as express from 'express';
 const bcrypt = require('bcryptjs');
 const SALT_WORK_FACTOR = 10;
 

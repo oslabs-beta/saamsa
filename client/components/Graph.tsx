@@ -41,8 +41,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     //calculating max for x and y axis
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
@@ -154,7 +154,10 @@ const Graph = ({
         .attr('width', width)
         .attr('height', height + 10)
         .attr('x', margin.left)
-        .attr('y', margin.top);
+        .attr('y', margin.top)
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Value vs Date Graph");
       //making sure that x-axis and y-axis ticks are integers only!
       const xAxisTicks = xScale
         .ticks()
@@ -203,8 +206,8 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Partition Index')
-        .attr('x', width - 140)
-        .attr('y', 25); // Relative to the x axis.
+        .attr('x', width - 100)
+        .attr('y', 37); // Relative to the x axis.
       //appending y-axis directly to graph, cause we don't want it to be clipped
       svg
         .append('g')
@@ -243,8 +246,8 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
-    const width = 600 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+    const width = 300 - margin.left - margin.right;
     d3.select('#chartContainer')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
@@ -336,6 +339,8 @@ const Graph = ({
     //constructing lines between nodes
     const link = svg
       .append('g')
+      .attr('height', 200)
+      .attr('width', 200)
       .attr('stroke', '#999')
       .attr('stroke-opacity', 0.6)
       .selectAll('line')
@@ -375,7 +380,7 @@ const Graph = ({
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
-          url: '/kafka/refresh',
+          url: 'http://localhost:3001/kafka/refresh',
           data: { topic: selectedText, bootstrap, currentUser },
         })
           .then((response: { data: [{ value: number; time: number }] }) => {
@@ -450,7 +455,7 @@ const Graph = ({
       left: 40,
       right: 40,
     };
-    const height = 600 - margin.top - margin.bottom;
+    const height = 300 - margin.top - margin.bottom;
     const dataTimeMax: number = data.reduce(
       (acc, val) => {
         //checking if value is null -> means partition does not exist

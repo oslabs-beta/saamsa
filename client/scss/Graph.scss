@@ -1,21 +1,51 @@
 @import '_variables';
 body {
   background-color: $saamsaGrey;
+  width: 100%;
+  height: 100%;
 }
 
 .axis-label {
   fill: #000;
   font-size: 12px;
   text-anchor: middle;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: $TextFont;
 }
-.nodeyChart {
-  background-color: aqua;
+
+h2{
+  font-size: 15px;
+  font-family: $fontTitle;
+  position: absolute;
+  right: 165px;
+  top: 275px;
+  z-index:1;
+}
+// #mainContainer{
+//   height: 600px;
+//   width: 1000px;
+//   background-color: $saamsaGrey;
+//   // position: absolute;
+//   // left: 1px;
+//   // top: 300px;
+//   // border-radius: 2px;
+//   // border-style: solid;
+//   // border-color: $saamsaBlack;
+// position: absolute;
+// left: 50%;
+// top: 78%;
+// transform: translate(-50%, -50%);
+// padding: 10px;
+
+// }
+svg {
+  width: 350px;
+  height: 350px;
+  background-color: rgb(109, 165, 162);
 }
 .node text {
   display: none;
   color: black;
-  font: 10px sans-serif;
+  font: 10px $TextFont;
 }
 .node:hover {
   text {

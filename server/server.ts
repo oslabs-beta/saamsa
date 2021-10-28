@@ -1,5 +1,7 @@
 import createServer from './createServer';
 import { connect, ConnectOptions } from 'mongoose';
+import { exec } from 'child_process';
+import * as path from 'path';
 const app = createServer();
 
 const MONGO_URI =

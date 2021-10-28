@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
 interface Props {
+  logOut: () => void;
   currentUser: string;
   data: { time: number; value: number }[];
   setData: (arg: { time: number; value: number }[]) => void;
@@ -20,6 +21,7 @@ interface Props {
   setConsumerList: (arg: any) => void;
 }
 const Selector = ({
+  logOut,
   currentUser,
   consumerList,
   data,
@@ -44,22 +46,19 @@ const Selector = ({
     axios({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
-      url: '/kafka/balanceLoad',
+      url: 'http://localhost:3001/kafka/balanceLoad',
     }).then((response) => {
-      console.log(response.status);
+      return;
     });
   };
-
+  //update SQL tables
   const updateTables = (arg: string | undefined): void => {
-    console.log('from update');
     if (!arg || !arg.length) arg = bootstrap;
-    console.log(arg);
     axios({
       method: 'post',
-      url: '/kafka/updateTables',
+      url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
-      console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
       const resultArr = temp.map((el) => el.topic);
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
@@ -79,6 +78,7 @@ const Selector = ({
       </option>
     );
   }
+
   //below creates an array filled with options for the topics of selected bootstrap
   const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
@@ -92,35 +92,33 @@ const Selector = ({
       </option>
     );
   }
+
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const bootstrap: HTMLInputElement | null =
-      //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
-      url: '/kafka/createTable',
+      url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
-      .then(() => {
-        fetchTables();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then(() => fetchTables())
+      .catch((error) => console.log(error));
   };
+
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
     axios({
       method: 'post',
-      url: '/kafka/fetchTables',
+      url: 'http://localhost:3001/kafka/fetchTables',
       data: { currentUser },
     }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
-      console.log('front end response in fetch tables', response);
       setServerList(response.data.map((el) => el.name));
     });
   };
+
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -133,10 +131,26 @@ const Selector = ({
     }
   };
 
+  if (process.env.NODE_ENV !== 'testing') {
+    useInterval(() => {
+      if (bootstrap.length) {
+        console.log('inside of setinterval bootstrap', bootstrap);
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        console.log(bootstrap);
+        console.log(topic);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
+  }
+
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
-      url: '/kafka/fetchTopics',
+      url: 'http://localhost:3001/kafka/fetchTopics',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -146,10 +160,11 @@ const Selector = ({
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
+
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url: '/kafka/fetchConsumers',
+      url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -158,6 +173,7 @@ const Selector = ({
         setConsumerList(response.data);
     });
   };
+
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -168,7 +184,7 @@ const Selector = ({
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
-        url: '/kafka/refresh',
+        url: 'http://localhost:3001/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
@@ -188,10 +204,12 @@ const Selector = ({
       setData([]);
     }
   };
+
   if (process.env.NODE_ENV !== 'testing') {
     //geting past tables once component renders
     React.useEffect(() => {
       fetchTables();
+      console.log('literally anything');
     }, []);
 
     //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
@@ -206,37 +224,56 @@ const Selector = ({
       }
     }, 3000);
   }
+
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa</h1>
+        <h1 id='heading'>Saamsa </h1>
+        <div id = 'loggedIn'> 
+        <p className='loggedInAs'>Logged in as {currentUser}</p>
+        <button className="logOutBtn" onClick={logOut}> Log Out </button>
+        </div>
       </div>
-
+ 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-          <label htmlFor='topicInput'>Enter a new broker address</label>
+          <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
-        </div>
-        <button className='submitBtn' onClick={createTable}>
+          <button className='Btn' onClick={createTable}>
           Submit
         </button>
-        <div className='or'>OR</div>
+        </div>
+       
 
         <div className='brokerSelector'>
-          Select your broker:
+          <p className="inputLabels">Current broker: </p>
           <select
+          className="dropDown"
             name='bootstrap'
             id='bootstrap'
             onChange={() => changeServer()}
           >
-            <option className='serverOption'></option>
+            <option className="dropdownOptions"></option>
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
-          Select your topic:
-          <select
+          <p className="inputLabels">Current topic: </p>
+ 
+        {/* const topicListArr: JSX.Element[] = [];
+  for (let i = 0; i < topicList.length; i++) {
+    topicListArr.push(
+      <a
+        key={topicList[i] + i.toString()}
+        className='topicOption'
+        value={topicList[i]}
+      >
+        {topicList[i]}
+      </a>
+    );
+  } */}
+          <select className="dropDown"
             name='topics'
             id='topics'
             onChange={() => {
@@ -247,7 +284,7 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-        <button onClick={balanceLoad}>Balance Load on Topic</button>
+        <button className="loadBalanceBtn" onClick={balanceLoad}>Balance Load on Topic</button>
       </div>
     </div>
   );

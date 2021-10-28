@@ -1,21 +1,10 @@
-import * as express from 'express';
+
 const bcrypt = require('bcryptjs');
 import userModels from '../models/userModels';
+import MiddlewareFunction from '../types';
 
-type userController = {
-  createUser: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-  verifyUser: (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => void;
-};
 
-const userController = <userController>{};
+const userController: Record<string, MiddlewareFunction> = {};
 
 userController.createUser = async (req, res, next) => {
   try {
@@ -30,33 +19,40 @@ userController.createUser = async (req, res, next) => {
     res.locals.user = username;
     return next();
   } catch (err) {
-    console.log(err);
-    return next({
-      log: 'Express error handler caught in userController.createUser middleware',
+    const defaultErr = {
+      log: 'Express error handler caught an error in userController.createUser middleware',
       status: 500,
-      message: { err },
-    });
+      message: { err: `An error occurred inside a middleware named userController.createUser : ${err}` },
+    };
+    return next(defaultErr);
   }
 };
 
 userController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    let hashedPW;
+    let compare;
 
     const user = await userModels.findOne({ username });
-
-    const hashedPW = user!.password;
-    const compare = bcrypt.compareSync(password, hashedPW);
-    if (!compare)
+    if(user){
+      hashedPW = user!.password;
+      compare = bcrypt.compareSync(password, hashedPW);
+    }
+    if (!compare || !user){
       throw Error('Incorrect username or password. Please try again.');
-    res.locals.user = username;
+    }
+      else{
+        res.locals.user = username;
+      }
     next();
   } catch (err) {
-    next({
-      log: 'Express error handler caught in userController.verifyUser middleware',
+    const defaultErr = {
+      log: 'Express error handler caught an error in userController.verifyUser middleware',
       status: 401,
-      message: { err },
-    });
+      message: { err: `An error occurred inside a middleware named userController.verifyUser middleware: ${err}` },
+    }
+    return next(defaultErr);
   }
 };
 

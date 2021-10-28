@@ -116,11 +116,11 @@ body {
   justify-content: space-around;
 }
 
-#signUpBtn {
+#signUpButton {
   border-radius: 4px;
   background-color: transparent;
-  border: 0px transparent;
-  width: 70px;
+  border: 1px solid black;
+  width: 90px;
   height: 30px;
   font-size: 10px;
   font-family: $buttonTitle;

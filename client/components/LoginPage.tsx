@@ -5,13 +5,13 @@ import '../../client/scss/LoginPage.scss';
 type Props = {
   loginAttempt: string | null;
   loginButton: () => void;
-  signUp: () => void;
+  signUpButton: () => void;
 };
 
 const LoginPage = ({
   loginAttempt,
   loginButton,
-  signUp,
+  signUpButton,
 }: Props): JSX.Element => {
   return (
     <div className='mainWrapper'>
@@ -57,15 +57,15 @@ const LoginPage = ({
 
           <div id='signUpArea'>
             <h2 id='noAccount'>Don&apos;t have an account?</h2>
-            <button
-              type='button'
-              onClick={signUp}
-              id='signUpBtn'
-              value='Sign-Up'
-            >
-              Sign up now!
-            </button>
           </div>
+          <button
+            type='button'
+            onClick={signUpButton}
+            id='signUpButton'
+            value='Sign-Up'
+          >
+            Sign up now!
+          </button>
         </div>
       </div>
     </div>

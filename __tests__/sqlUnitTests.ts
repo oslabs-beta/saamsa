@@ -27,7 +27,7 @@ describe('kafka unit tests', () => {
     });
   });
   //cannot test create tables or refresh, as those routes require a running kafka instance
-  it('should fetch all table from local sql database', async () => {
+  it('should fetch all tables from local sql database', async () => {
     const result = await request(app)
       .post('/kafka/fetchTables')
       .send()
