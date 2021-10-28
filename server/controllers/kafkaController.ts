@@ -44,7 +44,7 @@ interface controller {
 // const decoder = new StringDecoder('utf-8');
 const controller: controller = {
   updateTables: function (req, res, next) {
-    const { bootstrap } = req.body;
+    const { bootstrap, currentUser } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
       clientId: 'saamsa',
@@ -57,7 +57,9 @@ const controller: controller = {
         (db) => {
           data.forEach((el) => {
             db.all(
-              `SELECT topic FROM '${bootstrapSanitized}' WHERE topic='${el}';`
+              `SELECT topic FROM '${bootstrapSanitized.concat(
+                `_${currentUser}_`
+              )}' WHERE topic='${el}';`
             )
               .then((result) => {
                 if (result.length === 0) {
@@ -72,16 +74,20 @@ const controller: controller = {
                     colString = colString.slice(0, colString.length - 1);
                     try {
                       db.exec(
-                        `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valString});`
+                        `INSERT INTO '${bootstrapSanitized.concat(
+                          `_${currentUser}_`
+                        )}' (${colString}) VALUES (${valString});`
                       ).catch(() => {
-                        db.exec(`DROP TABLE '${bootstrapSanitized}'`).then(
-                          () => {
-                            return res.redirect(
-                              307,
-                              'http://localhost:3001/kafka/createTable'
-                            );
-                          }
-                        );
+                        db.exec(
+                          `DROP TABLE '${bootstrapSanitized.concat(
+                            `_${currentUser}_`
+                          )}'`
+                        ).then(() => {
+                          return res.redirect(
+                            307,
+                            'http://localhost:3001/kafka/createTable'
+                          );
+                        });
                       });
                     } catch (error) {
                       return next(error);
@@ -118,7 +124,7 @@ const controller: controller = {
   },
   //fetches all topics for a given broker (taken from frontend broker selection)
   fetchTopics: function (req, res, next) {
-    const { bootstrap } = req.body;
+    const { bootstrap, currentUser } = req.body;
     console.log('Bootstrap in FETCH TOPICS', bootstrap);
     //cleaning it up for SQL, which can't have colons
     const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -130,7 +136,11 @@ const controller: controller = {
         driver: sqlite3.Database,
       }).then((db) =>
         db
-          .all(`SELECT topic FROM '${bootstrapSanitized}'`)
+          .all(
+            `SELECT topic FROM '${bootstrapSanitized.concat(
+              `_${currentUser}_`
+            )}'`
+          )
           .then((result) => res.json(result))
       );
     } catch (error) {
@@ -140,6 +150,7 @@ const controller: controller = {
   },
   //fetches all tables currently in database, each table corresponds to a broker, each entry in that broker-table is a topic and it's partitions
   fetchTables: function (req, res, next) {
+    const { currentUser } = req.body;
     try {
       //opening db then selecting all table names from master metadata table
       open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
@@ -147,8 +158,20 @@ const controller: controller = {
           db.all(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
           ).then((result) => {
-            console.log('these are the table rows', result);
-            res.locals.result = result;
+            console.log(
+              'these are the table rows',
+              result.filter((el) => el.name.includes(`_${currentUser}_`)),
+              result
+                .filter((el) => el.name.includes(`_${currentUser}_`))
+                .map((el) => {
+                  return el.name.replace(`_${currentUser}_`, '');
+                })
+            );
+            res.locals.result = result
+              .filter((el) => el.name.includes(`_${currentUser}_`))
+              .map((el) => {
+                return { name: el.name.replace(`_${currentUser}_`, '') };
+              });
             next();
             // res.json(result);
           });
@@ -162,7 +185,7 @@ const controller: controller = {
   //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
   createTable: async function (req, res, next) {
     try {
-      const { bootstrap } = req.body;
+      const { bootstrap, currentUser } = req.body;
       //if there is no server given, we send an error page
       if (!bootstrap.length) res.sendStatus(403);
       //sanitizing for sql
@@ -208,7 +231,9 @@ const controller: controller = {
         open({ filename: '/tmp/database.db', driver: sqlite3.Database })
           .then((db) => {
             db.exec(
-              `CREATE TABLE '${bootstrapSanitized}' (topic varchar(255), ${partitionString});`
+              `CREATE TABLE '${bootstrapSanitized.concat(
+                `_${currentUser}_`
+              )}' (topic varchar(255), ${partitionString});`
             );
             return db;
           })
@@ -225,7 +250,9 @@ const controller: controller = {
               valueString = valueString.slice(0, valueString.length - 1);
               colString = colString.slice(0, colString.length - 1);
               db.exec(
-                `INSERT INTO '${bootstrapSanitized}' (${colString}) VALUES (${valueString});`
+                `INSERT INTO '${bootstrapSanitized.concat(
+                  `_${currentUser}_`
+                )}' (${colString}) VALUES (${valueString});`
               );
             });
           })
@@ -242,7 +269,7 @@ const controller: controller = {
   //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
   refresh: function (req, res, next) {
     try {
-      const { bootstrap, topic } = req.body;
+      const { bootstrap, topic, currentUser } = req.body;
       const bootstrapSanitized = bootstrap.replace(':', '_');
       const instance = new kafka.Kafka({
         brokers: [`${bootstrap}`],
@@ -269,14 +296,18 @@ const controller: controller = {
           })
             .then((db) => {
               db.exec(
-                `UPDATE '${bootstrapSanitized}' SET ${setString} WHERE topic='${topic}';`
+                `UPDATE '${bootstrapSanitized.concat(
+                  `_${currentUser}_`
+                )}' SET ${setString} WHERE topic='${topic}';`
               );
               return db;
             })
             //here we grab topic data from sqldb (after updated)
             .then((db) => {
               db.all(
-                `SELECT * FROM '${bootstrapSanitized}' WHERE topic='${topic}'`
+                `SELECT * FROM '${bootstrapSanitized.concat(
+                  `_${currentUser}_`
+                )}' WHERE topic='${topic}'`
               ).then((result) => {
                 //new arr which holds the correctly formated data for d3
                 const arr: { time: number; value: number }[] = [];

@@ -17,7 +17,7 @@ const App = (): JSX.Element => {
     React.useState<NodeJS.Timeout | null>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
-  const [currentUser, changeUser] = React.useState<string>();
+  const [currentUser, changeUser] = React.useState<string>('');
   const [rendering, setRendering] = React.useState<boolean>(false);
   const [topic, setTopic] = React.useState<string>('');
   const [topicList, setTopicList] = React.useState<string[]>([]);
@@ -50,6 +50,9 @@ const App = (): JSX.Element => {
         body: JSON.stringify(user),
       })
         .then((res) => res.json())
+        .then(() => {
+          changeUser(username);
+        })
         .then(() => {
           changeLoginStatus(true);
         })
@@ -109,6 +112,7 @@ const App = (): JSX.Element => {
     return (
       <div key='container'>
         <Selector
+          currentUser={currentUser}
           key='selector'
           data={data}
           topic={topic}
@@ -130,6 +134,7 @@ const App = (): JSX.Element => {
         />
         <div>
           <Graph
+            currentUser={currentUser}
             setData={setData}
             setTopic={setTopic}
             yScale={yScale}
@@ -142,6 +147,12 @@ const App = (): JSX.Element => {
             setXScale={setXScale}
             data={data}
           />
+          <svg id='graphContainer'>
+            <g className='graphy'></g>
+          </svg>
+          <svg id='chartContainer'>
+            <g className='charty'></g>
+          </svg>
         </div>
       </div>
     );

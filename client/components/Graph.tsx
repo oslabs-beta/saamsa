@@ -4,6 +4,7 @@ import '../../client/scss/Graph.scss';
 import axios from 'axios';
 import * as _ from 'lodash';
 interface Props {
+  currentUser: string;
   setData: (arg: any) => void;
   topic: string;
   yScale: d3.ScaleLinear<number, number, never>;
@@ -17,6 +18,7 @@ interface Props {
   setTopic: (arg: any) => void;
 }
 const Graph = ({
+  currentUser,
   setData,
   bootstrap,
   data,
@@ -32,7 +34,7 @@ const Graph = ({
   //below always remove old graph on render/re-render
   // d3.select('svg').remove();
   // d3.select('svg').remove();
-  console.log(xScale?.range());
+  // console.log(xScale?.range());
   //if there is data, we actually make the graph
 
   const renderGraph = () => {
@@ -95,10 +97,10 @@ const Graph = ({
     }
     const barWidth = width / (dataTimeMax + 1) - 1;
     if (data.length) {
-      console.log('rendering graph');
+      // console.log('rendering graph');
       d3.select('.xAxis').remove();
       d3.select('.yAxis').remove();
-      d3.select('text').remove();
+      d3.select('.axis-label').remove();
       //transforming data from backend to be in correct form (frequency array)
       const newData: number[] = [];
       data.forEach((el) => {
@@ -109,12 +111,13 @@ const Graph = ({
 
       //grabbing container to hold graph and axes, then appending a smaller g to hold only graph
 
-      d3.select('#mainContainer')
-        .append('svg')
+      d3.select('#graphContainer')
         .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', `translate(${margin.left}, ${margin.top})`);
+        .attr('height', height + margin.top + margin.bottom);
+      d3.select('.graphy').attr(
+        'transform',
+        `translate(${margin.left}, ${margin.top})`
+      );
 
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
@@ -140,10 +143,10 @@ const Graph = ({
           const newBarWidth =
             (Math.abs(xScale.range()[1] - xScale.range()[0]) / width) *
             barWidth;
-
+          // newBarWidth *= 2;
           arg
             .selectAll('.bar')
-            .attr('width', newBarWidth)
+            .attr('width', newBarWidth - 1)
             .attr('transform', (d: any): string => {
               //updating x-y coords for each bar
               return `translate(${xScale(d!.x0)} ,${yScale(d.length)})`;
@@ -174,7 +177,7 @@ const Graph = ({
         );
       };
       const svg: d3.Selection<Element, unknown, HTMLElement, unknown> =
-        d3.select('g');
+        d3.select('.graphy');
       //appending zoom feature onto the svg
       svg.call(zoom);
       //calculating x-y scales
@@ -297,12 +300,14 @@ const Graph = ({
     };
     const height = 600 - margin.top - margin.bottom;
     const width = 600 - margin.left - margin.right;
-    d3.select('#mainContainer')
-      .append('svg')
+    d3.select('#chartContainer')
+
       .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      .attr('height', height + margin.top + margin.bottom);
+    d3.select('.charty').attr(
+      'transform',
+      `translate(${margin.left}, ${margin.top})`
+    );
     const colorDict: { [key: string]: string } = {
       broker: 'red',
       consumer: 'blue',
@@ -310,7 +315,7 @@ const Graph = ({
       topic: 'yellow',
     };
     const nodes: any = [];
-    console.log('topic list is', topicList);
+
     const links: any = [];
     if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
     if (topicList.length) {
@@ -369,10 +374,7 @@ const Graph = ({
         }
       );
     }
-    console.log(topicList);
-    console.log(nodes);
-    console.log(links);
-    const svg = d3.select('svg');
+    const svg = d3.select('.charty');
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -394,45 +396,61 @@ const Graph = ({
       .attr('stroke-width', 2);
 
     const node: any = svg
-      .append('g')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1.5)
-      .selectAll('circle')
+      .selectAll('.node')
       .data(nodes)
-      .join('circle')
+      .join('g')
+      .attr('class', 'node')
+      // .on('mouseover', (event) => {
+      //   // event.target.children[0].style.display = 'inline';
+      //   // console.log(event.target.childrend[0].style.display);
+      //   console.log(event);
+      //   console.log(event.target.children[0]);
+      //   event.target.children[0].style = 'display="inline"';
+      // })
+      // .on('mouseout', (event) => {
+      //   event.target.children[0].style.display = 'none';
+      // })
+      .call(drag(simulation));
+    const circles = node
+      .append('circle')
       .attr('class', (d: any) => d.group)
       .attr('r', 5)
       .attr('fill', (d: any) => {
         return colorDict[d.group];
-      })
-      .call(drag(simulation));
+      });
+
+    const labels = node
+      .append('text')
+      .attr('dy', '.35em')
+      .text(function (d: any) {
+        return d.id;
+      });
+
     d3.selectAll('.topic').on('click', (event) => {
-      const selectedText = event.target.childNodes[0].innerHTML;
-      if (bootstrap.length && selectedText) {
+      const selectedText = event.target.nextElementSibling.innerHTML;
+      if (bootstrap.length && selectedText && selectedText !== topic) {
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
           url: '/kafka/refresh',
-          data: { topic: selectedText, bootstrap },
+          data: { topic: selectedText, bootstrap, currentUser },
         })
           .then((response: { data: [{ value: number; time: number }] }) => {
             return response;
           })
           .then((response) => {
-            console.log(
-              topic,
-              selectedText,
-              'alksdjflkajsflkjasflaksjdflkajsf'
-            );
             if (!_.isEqual(response.data, data)) {
-              d3.selectAll('.bar').remove();
+              if (topic !== selectedText) {
+                d3.selectAll('.bar').remove();
+              }
               setData(response.data);
               setTopic(selectedText);
+              document.querySelector<HTMLSelectElement>('#topics')!.value =
+                selectedText;
             } //checking if user selected blank topic (if so, graph should disappear)
           });
       }
     });
-    node.append('title').text((d: any) => d.id);
 
     simulation.on('tick', () => {
       link
@@ -441,7 +459,14 @@ const Graph = ({
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
 
-      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+      circles.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+      labels
+        .attr('x', function (d: any) {
+          return d.x + 8;
+        })
+        .attr('y', function (d: any) {
+          return d.y;
+        });
     });
 
     // invalidation.then(() => simulation.stop());
@@ -593,120 +618,119 @@ const Graph = ({
       })
       .style('fill', '#69b3a2');
   };
-  const updateChart = () => {
-    const colorDict: { [key: string]: string } = {
-      broker: 'red',
-      consumer: 'blue',
-      consumerGroup: 'green',
-      topic: 'yellow',
-    };
-    const nodes: any = [];
-    const links: any = [];
-    console.log('topics are', topicList);
-    if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
-    if (topicList.length) {
-      topicList.forEach((el) => {
-        nodes.push({ id: el, group: 'topic' });
-        links.push({ source: el, target: bootstrap, value: 10 });
-      });
-    }
-    if (consumerList && consumerList.length) {
-      consumerList.forEach(
-        (el2: {
-          groups: [
-            {
-              groupId: string;
-              members: [
-                {
-                  clientId: string;
-                  memberId: string;
-                  stringifiedMetadata: string;
-                }
-              ];
-            }
-          ];
-        }) => {
-          el2.groups.forEach((innerEl) => {
-            if (innerEl.members.length) {
-              if (
-                !nodes.some(
-                  (el: { id: string }) => el.id === 'saamsaLoadBalancer'
-                )
-              )
-                nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
-              innerEl.members.forEach((innerInnerEl) => {
-                nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
-                links.push({
-                  source: innerEl.groupId,
-                  target: innerInnerEl.memberId,
-                  value: 10,
-                });
-                if (innerInnerEl && innerInnerEl.stringifiedMetadata.length)
-                  links.push({
-                    source: innerInnerEl.memberId,
-                    target: innerInnerEl.stringifiedMetadata,
-                    value: 4,
-                  });
-              });
-            }
-          });
-        }
-      );
-    }
-    const svg = d3.select('svg');
-    const width = 480;
-    const height = 480;
-    const simulation = d3
-      .forceSimulation(nodes)
-      .force(
-        'link',
-        d3.forceLink(links).id((d: any) => d.id)
-      )
-      .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter(width / 2, height / 2));
+  // const updateChart = () => {
+  //   const colorDict: { [key: string]: string } = {
+  //     broker: 'red',
+  //     consumer: 'blue',
+  //     consumerGroup: 'green',
+  //     topic: 'yellow',
+  //   };
+  //   const nodes: any = [];
+  //   const links: any = [];
+  //   console.log('topics are', topicList);
+  //   if (bootstrap.length) nodes.push({ id: bootstrap, group: 'broker' });
+  //   if (topicList.length) {
+  //     topicList.forEach((el) => {
+  //       nodes.push({ id: el, group: 'topic' });
+  //       links.push({ source: el, target: bootstrap, value: 10 });
+  //     });
+  //   }
+  //   if (consumerList && consumerList.length) {
+  //     consumerList.forEach(
+  //       (el2: {
+  //         groups: [
+  //           {
+  //             groupId: string;
+  //             members: [
+  //               {
+  //                 clientId: string;
+  //                 memberId: string;
+  //                 stringifiedMetadata: string;
+  //               }
+  //             ];
+  //           }
+  //         ];
+  //       }) => {
+  //         el2.groups.forEach((innerEl) => {
+  //           if (innerEl.members.length) {
+  //             if (
+  //               !nodes.some(
+  //                 (el: { id: string }) => el.id === 'saamsaLoadBalancer'
+  //               )
+  //             )
+  //               nodes.push({ id: innerEl.groupId, group: 'consumerGroup' });
+  //             innerEl.members.forEach((innerInnerEl) => {
+  //               nodes.push({ id: innerInnerEl.memberId, group: 'consumer' });
+  //               links.push({
+  //                 source: innerEl.groupId,
+  //                 target: innerInnerEl.memberId,
+  //                 value: 10,
+  //               });
+  //               if (innerInnerEl && innerInnerEl.stringifiedMetadata.length)
+  //                 links.push({
+  //                   source: innerInnerEl.memberId,
+  //                   target: innerInnerEl.stringifiedMetadata,
+  //                   value: 4,
+  //                 });
+  //             });
+  //           }
+  //         });
+  //       }
+  //     );
+  //   }
+  //   const svg = d3.select('svg');
+  //   const width = 480;
+  //   const height = 480;
+  //   const simulation = d3
+  //     .forceSimulation(nodes)
+  //     .force(
+  //       'link',
+  //       d3.forceLink(links).id((d: any) => d.id)
+  //     )
+  //     .force('charge', d3.forceManyBody())
+  //     .force('center', d3.forceCenter(width / 2, height / 2));
 
-    const link = svg
-      .selectAll('line')
-      .data(links)
-      .join('line')
-      .append('g')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
-      .attr('stroke-width', (d: any) => Math.sqrt(d.value))
-      .attr('stroke-width', 2);
+  //   const link = svg
+  //     .selectAll('line')
+  //     .data(links)
+  //     .join('line')
+  //     .append('g')
+  //     .attr('stroke', '#999')
+  //     .attr('stroke-opacity', 0.6)
+  //     .attr('stroke-width', (d: any) => Math.sqrt(d.value))
+  //     .attr('stroke-width', 2);
 
-    const node: any = svg
-      .selectAll('circle')
-      .data(nodes)
-      .join('circle')
-      .append('g')
-      .attr('class', (d: any) => `${d.group}`)
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1.5)
-      .attr('r', 5)
-      .attr('fill', (d: any) => {
-        return colorDict[d.group];
-      })
-      .call(drag(simulation));
+  //   const node: any = svg
+  //     .selectAll('circle')
+  //     .data(nodes)
+  //     .join('circle')
+  //     .append('g')
+  //     .attr('class', (d: any) => `${d.group}`)
+  //     .attr('stroke', '#fff')
+  //     .attr('stroke-width', 1.5)
+  //     .attr('r', 5)
+  //     .attr('fill', (d: any) => {
+  //       return colorDict[d.group];
+  //     })
+  //     .call(drag(simulation));
 
-    node.append('title').text((d: any) => d.id);
+  //   node.append('title').text((d: any) => d.id);
 
-    simulation.on('tick', () => {
-      link
-        .attr('x1', (d: any) => d.source.x)
-        .attr('y1', (d: any) => d.source.y)
-        .attr('x2', (d: any) => d.target.x)
-        .attr('y2', (d: any) => d.target.y);
-      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
-    });
-  };
+  //   simulation.on('tick', () => {
+  //     link
+  //       .attr('x1', (d: any) => d.source.x)
+  //       .attr('y1', (d: any) => d.source.y)
+  //       .attr('x2', (d: any) => d.target.x)
+  //       .attr('y2', (d: any) => d.target.y);
+  //     node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+  //   });
+  // };
   // React.useEffect(calculateYScale);
   React.useEffect(() => {
     renderGraph();
     // updateGraph();
   }, [topic]);
   React.useEffect(() => {
-    console.log('data has been changed');
     if (d3.selectAll('.bar').size() > 0) {
       updateGraph();
     }
@@ -716,8 +740,8 @@ const Graph = ({
   //   updateChart();
   // }, [consumerList]);
   React.useEffect(() => {
-    d3.selectAll('circle').remove();
-    d3.selectAll('line').remove();
+    d3.selectAll('.charty g').remove();
+    // d3.selectAll('.charty').remove();
     chart();
   }, [topicList, consumerList]);
   // React.useEffect(() => {
@@ -729,7 +753,7 @@ const Graph = ({
   } catch (error) {
     console.log(error);
   }
-  return <div id='mainContainer'>{!!data.length && <h2>{topic}</h2>}</div>;
+  return <div>{!!data.length && <h2>{topic}</h2>}</div>;
 };
 
 export default Graph;

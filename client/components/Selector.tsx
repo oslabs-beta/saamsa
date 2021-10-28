@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
 interface Props {
+  currentUser: string;
   graphIntervalId: NodeJS.Timeout | null;
   setGraphIntervalId: (arg: NodeJS.Timeout | null) => void;
   tableIntervalId: NodeJS.Timeout | null;
@@ -27,6 +28,7 @@ interface TableList {
   name: string;
 }
 const Selector = ({
+  currentUser,
   consumerList,
   setXScale,
   graphIntervalId,
@@ -82,7 +84,7 @@ const Selector = ({
     axios({
       method: 'post',
       url: '/kafka/updateTables',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
       console.log(response.data);
       const temp: { topic: string }[] = [...response.data];
@@ -125,7 +127,7 @@ const Selector = ({
     axios({
       url: '/kafka/createTable',
       method: 'post',
-      data: { bootstrap: bootstrap?.value },
+      data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
       .then(() => {
         fetchTables();
@@ -136,7 +138,11 @@ const Selector = ({
   };
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
-    axios.get<TableList[]>('/kafka/fetchTables').then((response) => {
+    axios({
+      method: 'post',
+      url: '/kafka/fetchTables',
+      data: { currentUser },
+    }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
       console.log('front end response in fetch tables', response);
       setServerList(response.data.map((el) => el.name));
@@ -180,7 +186,7 @@ const Selector = ({
     axios({
       url: '/kafka/fetchTopics',
       method: 'post',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
       //have to do this copying for typescript to allow mapping method, as response.data is not always an array
       const temp: { topic: string }[] = [...response.data];
@@ -193,7 +199,7 @@ const Selector = ({
     axios({
       url: '/kafka/fetchConsumers',
       method: 'post',
-      data: { bootstrap: arg },
+      data: { bootstrap: arg, currentUser },
     }).then((response) => {
       console.log('from fetch consumers');
       console.log(response.data);
@@ -211,41 +217,36 @@ const Selector = ({
     //   setGraphIntervalId(null);
     // }
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    // const newTopic: HTMLSelectElement | null = document.querySelector(
-    //   '#topics option:checked'
-    // ); //grabbing current selected topic
-    if (bootstrap.length && topic.length) {
+    const newTopic: HTMLSelectElement | null = document.querySelector(
+      '#topics option:checked'
+    ); //grabbing current selected topic
+    if (bootstrap.length && newTopic?.value.length) {
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
         url: '/kafka/refresh',
-        data: { topic: topic, bootstrap },
+        data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
-          //change this to be compatible with  enzyme testing, use event.target.etcetc
-          // document.querySelector('svg')?.remove();
           return response;
         })
         .then((response) => {
-          // const dataTimeMax: number = response.data.reduce((acc, val) => {
-          //   //checking if value is null -> means partition does not exist
-          //   if (val.value !== null && val.time > acc.time) return val;
-          //   else return acc;
-          // }).time;
-          // const newXScale = d3
-          //   .scaleLinear()
-          //   .range([0, 520])
-          //   .domain([-0.5, dataTimeMax + 0.5]);
-          // console.log(newXScale.range());
-          // setXScale(() => newXScale);
-          // console.log(data);
-          // console.log(response.data);
-          // console.log(_.isEqual(response.data, data));
-          if (!_.isEqual(response.data, data)) setData(response.data);
-          //checking if user selected blank topic (if so, graph should disappear)
+          console.log(
+            topic,
+            newTopic?.value,
+            'alksdjflkajsflkjasflaksjdflkajsf'
+          );
+          if (!_.isEqual(response.data, data)) {
+            if (topic !== newTopic?.value) {
+              d3.selectAll('.bar').remove();
+            }
+            setData(response.data);
+            if (newTopic?.value !== topic) setTopic(newTopic?.value);
+          } //checking if user selected blank topic (if so, graph should disappear)
         });
+
       //setting interval of same request above so we autorefresh it (pull model)
-    } else if (!topic.length) {
+    } else if (!newTopic?.value.length) {
       //this is if the option chosen is the blank option
       setData([]);
     }
@@ -282,7 +283,10 @@ const Selector = ({
                 document.querySelector('#bootstrap option:checked');
               if (newBootstrap) {
                 fetchTopics(newBootstrap.value);
-                setBootstrap(newBootstrap.value.replace('_', ':'));
+                setBootstrap(
+                  newBootstrap.value.replace('_', ':')
+                  // .replace(`_${currentUser}_`, '')
+                );
               }
             }}
           >
@@ -297,7 +301,7 @@ const Selector = ({
             name='topics'
             id='topics'
             onChange={() => {
-              // changeTopics();
+              changeTopics();
               return;
             }}
           >
