@@ -7,8 +7,8 @@ function createWindow() {
   //this compiles but feels janky, how to create browserwindow as a class??
   //can do this with import which automatically transpiles down to a require statement which is sooooooo nice
   const win: BrowserWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 1000,
   });
   win.loadFile('../../index.html');
 }
