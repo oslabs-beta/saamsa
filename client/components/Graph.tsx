@@ -368,7 +368,10 @@ const Graph = ({
     //adding changetopic functionality to node map on click of a node
     d3.selectAll('.topic').on('click', (event) => {
       const selectedText = event.target.nextElementSibling.innerHTML;
-      if (bootstrap.length && selectedText && selectedText !== topic) {
+      const oldTopic =
+        document.querySelector<HTMLSelectElement>('#topics')?.value;
+      if (selectedText === oldTopic) return;
+      if (bootstrap.length && selectedText) {
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
@@ -379,18 +382,13 @@ const Graph = ({
             return response;
           })
           .then((response) => {
-            //ensuring data is not the same so we do not rerender unecessarily
-            if (!_.isEqual(response.data, data)) {
-              if (topic !== selectedText) {
-                //removing old bars in bar graph
-                d3.selectAll('.bar').remove();
-              }
-              setData(response.data);
-              setTopic(selectedText);
-              //changing topic in selector to match the clicked node
-              document.querySelector<HTMLSelectElement>('#topics')!.value =
-                selectedText;
-            }
+            //removing old bars in bar graph
+            d3.selectAll('.bar').remove();
+            setData(response.data);
+            setTopic(selectedText);
+            //changing topic in selector to match the clicked node
+            document.querySelector<HTMLSelectElement>('#topics')!.value =
+              selectedText;
           });
       }
     });

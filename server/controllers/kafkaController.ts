@@ -111,7 +111,9 @@ const controller: controller = {
   balanceLoad: function (req, res, next) {
     const { bootstrap, topic, numPartitions } = req.body;
     exec(
-      `java -jar /root/saamsa/loadBalancer.jar ${bootstrap} ${topic} ${numPartitions.toString()}`,
+      `java -jar /root/saamsa/loadBalancer.jar ${bootstrap} ${topic} ${(
+        Number(numPartitions) + 1
+      ).toString()}`,
       function (error, stdout) {
         console.log('Output: ' + stdout);
         if (error !== null) {
