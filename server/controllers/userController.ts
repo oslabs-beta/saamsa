@@ -40,13 +40,10 @@ userController.verifyUser = async (req, res, next) => {
       compare = bcrypt.compareSync(password, hashedPW);
     }
     if (!compare || !user){
-      res.locals.message = 'Incorrect username or password. Please try again.';
-      res.status(401).json(res.locals.message)
-      console.log(res.locals.message);
+      throw Error('Incorrect username or password. Please try again.');
     }
       else{
         res.locals.user = username;
-        res.status(200).json(res.locals.user);
       }
     next();
   } catch (err) {
