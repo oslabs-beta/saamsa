@@ -47,7 +47,7 @@ const Selector = ({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
       url: 'http://saamsa.io/kafka/balanceLoad',
-    }).then((response) => {
+    }).then(() => {
       return;
     });
   };

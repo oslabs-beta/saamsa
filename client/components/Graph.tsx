@@ -359,7 +359,7 @@ const Graph = ({
     const circles = node
       .append('circle')
       .attr('class', (d: any) => d.group)
-      .attr('r', 5)
+      .attr('r', 7)
       .attr('fill', (d: any) => {
         return colorDict[d.group];
       });

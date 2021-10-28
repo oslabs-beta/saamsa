@@ -4,19 +4,48 @@
 //     width: 1000px;
 //     background-color: $saamsaGrey;
 // }
-#graphContainer{
-    background-color: $saamsaGrey;
-    position: absolute;
-    right: 10px;
-    top: 260px;
-    border-radius: 8px;
-    border: 4px solid $saamsaYellow ;
+
+#graphContainer {
+  background-color: $saamsaGrey;
+  position: absolute;
+  right: 10px;
+  top: 260px;
+  border-radius: 8px;
+  border: 4px solid $saamsaYellow;
 }
-#chartContainer{
-    background-color: $saamsaGrey;
-    position: absolute;
-    left: 10px;
-    top: 260px;
-    border-radius: 8px;
-    border: 4px solid $saamsaYellow ;
+#chartContainer {
+  background-color: $saamsaGrey;
+  position: absolute;
+  left: 10px;
+  top: 260px;
+  border-radius: 8px;
+  border: 4px solid $saamsaYellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  .charty {
+    height: 200px;
+    width: 200px;
+  }
+}
+
+#legend {
+  display: flex;
+  justify-content: space-around;
+  div {
+    height: 10px;
+    width: 10px;
+  }
+  .topicBlock {
+    background-color: yellow;
+  }
+  .brokerBlock {
+    background-color: red;
+  }
+  .consumerBlock {
+    background-color: blue;
+  }
+  .consuemrGroupBlock {
+    background-color: green;
+  }
 }

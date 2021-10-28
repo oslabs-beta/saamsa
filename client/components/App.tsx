@@ -11,7 +11,7 @@ const App = (): JSX.Element => {
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>('');
@@ -123,6 +123,12 @@ const App = (): JSX.Element => {
     changeUser('');
     changeLoginStatus(false);
     changeAttempt(null);
+    setData([]);
+    setTopicList([]);
+    setConsumerList([]);
+    setServerList([]);
+    setTopic('');
+    setBootstrap('');
   };
 
   React.useEffect(() => {
@@ -183,11 +189,22 @@ const App = (): JSX.Element => {
           </svg>
           <svg id='chartContainer'>
             <g className='charty'></g>
+            <g id='legend'>
+              <div className='brokerBlock'></div>
+              <text>broker</text>
+              <div className='consumerBlock'></div>
+              <text>consumer</text>
+              <div className='consumerGroupBlock'></div>
+              <text>consumerGroup</text>
+              <div className='topicBlock'></div>
+              <text>topic</text>
+            </g>
           </svg>
         </div>
       </div>
     );
   }
+  return <div></div>;
 };
 
 export default App;
