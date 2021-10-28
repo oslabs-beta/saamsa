@@ -4,20 +4,15 @@ import cookieController from './controllers/cookieController';
 import sessionController from './controllers/sessionController';
 import router from './routers/kafkaRouter';
 import cookieParser from 'cookie-parser';
+import * as path from 'path';
 
 function createServer(): express.Application {
-
   const app = express();
 
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  app.all('/', (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-  });
+  app.use('/build', express.static(path.join(__dirname, '../../build')));
 
   // make sure no one is logged in before 
   app.get('/sessions',
@@ -54,17 +49,22 @@ function createServer(): express.Application {
 
   app.use('/kafka', router);
 
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../index.html'));
+  });
   //type of error object
   type errorType = {
     log: string;
     status: number;
     message: { err: string };
   };
+  //404 error handler
   app.use('*', (req, res) => {
     res.sendStatus(404);
   });
-
-  app.use((
+  //global error handler
+  app.use(
+    (
       err: express.ErrorRequestHandler,
       req: express.Request,
       res: express.Response,

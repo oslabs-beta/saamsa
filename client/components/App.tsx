@@ -3,12 +3,13 @@ import LoginPage from "./LoginPage";
 import SignUpPage from "./SignUpPage";
 import Graph from "./Graph";
 import Selector from "./Selector";
+import * as d3 from 'd3';
 const App = (): JSX.Element => {
   // defining state variables and functions
-  const [graphIntervalId, setGraphInvervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
-  const [tableIntervalId, setTableIntervalId] =
-    React.useState<NodeJS.Timeout | null>(null);
+  const [xScale, setXScale] = React.useState<
+    d3.ScaleLinear<number, number, never>
+  >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
+    const [consumerList, setConsumerList] = React.useState<any>(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
@@ -18,7 +19,7 @@ const App = (): JSX.Element => {
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>("");
   const [serverList, setServerList] = React.useState<string[]>([]);
-  const [freshCookies, getCookies] = React.useState<boolean>(false);
+
   //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
@@ -100,7 +101,7 @@ const App = (): JSX.Element => {
       })
         .then((res) => {
           if (res.status == 200) {
-            alert("Signup Successful! Please login to proceed.");
+            alert('Signup Successful! Please login to proceed.');
             location.reload();
           }
           else changeAttempt('User already exists. Please try a different username.')
@@ -125,20 +126,6 @@ const App = (): JSX.Element => {
     setRendering(false);
   }, []);
   if (!rendering) {
-    // check / fetch fresh cookies from browser
-
-    // if(!freshCookies) {
-    //   (async () => {
-    //     try{
-    //     const res = await (await fetch('http://localhost:3001/sessions')).json();
-    //     getCookies(true);
-    //     if (res !== []) {
-    //       const username: string = res;
-    //       changeLoginStatus(true);
-    //       changeUser(username);
-    //     }
-    //   } ;
-    // }
 
     if (signUpStatus === true) {
       return (
@@ -166,22 +153,42 @@ const App = (): JSX.Element => {
           <Selector
             logOut={logOut}
             currentUser={currentUser}
-            graphIntervalId={graphIntervalId}
-            setGraphIntervalId={setGraphInvervalId}
-            tableIntervalId={tableIntervalId}
-            setTableIntervalId={setTableIntervalId}
+          key='selector'
+          data={data}
+          topic={topic}
+          setData={setData}
+          setTopic={setTopic}
+          bootstrap={bootstrap}
+          setBootstrap={setBootstrap}
+          topicList={topicList}
+          setTopicList={setTopicList}
+          serverList={serverList}
+          setServerList={setServerList}
+          consumerList={consumerList}
+          setConsumerList={setConsumerList}
+        />
+        <div>
+          <Graph
+            currentUser={currentUser}
             setData={setData}
             setTopic={setTopic}
             bootstrap={bootstrap}
-            setBootstrap={setBootstrap}
             topicList={topicList}
-            setTopicList={setTopicList}
-            serverList={serverList}
-            setServerList={setServerList}
+            consumerList={consumerList}
+            topic={topic}
+            xScale={xScale}
+            setXScale={setXScale}
+            data={data}
           />
-          <Graph data={data} />
+          <svg id='graphContainer'>
+            <g className='graphy'></g>
+          </svg>
+          <svg id='chartContainer'>
+            <g className='charty'></g>
+          </svg>
         </div>
-      );
+      </div>
+    );
     } else {
       return <div key="loadingMessage">Loading, please wait!</div>;
     }

@@ -2,77 +2,109 @@ import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import MiddlewareFunction from '../types';
+import * as path from 'path';
+import { exec } from 'child_process';
 
 const controller: Record<string, MiddlewareFunction> = {};
 
-controller.updateTables = (req, res, next) => {
-  try{
-  console.log('did i make it to update tables?');
-  const { bootstrap } = req.body;
-  const bootstrapSanitized = bootstrap.replace(':', '_');
-  const instance = new kafka.Kafka({
-    clientId: 'testing2',
-    brokers: [`${bootstrap}`],
-  });
-  const admin = instance.admin();
-  admin.connect();
-  admin.listTopics().then((data) => {
-    open({ filename: '/tmp/database.db', driver: sqlite3.Database })
-      .then( (db) => {
-        data.forEach((el) => {
-          db.all(`SELECT topic FROM ${bootstrapSanitized} WHERE topic='${el}';`)
-            .then((result) => {
-              if (result.length === 0) {
-                admin.fetchTopicOffsets(el).then((response) => {
-                  let colString = 'topic, ';
-                  let valString = `'${el}', `;
-                  response.forEach((partition) => {
-                    valString += `${partition.offset},`;
-                    colString += `partition_${partition.partition},`;
-                  });
-                  valString = valString.slice(0, valString.length - 1);
-                  colString = colString.slice(0, colString.length - 1);
-                  try {
-                    db.exec(`INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valString});`)
-                    .catch(() => {
-                      db.exec(`DROP TABLE ${bootstrapSanitized}`).then(() => {
-                        console.log('am i making it to this catch block?');
-                        return res.redirect(307, 'http://localhost:3001/kafka/createTable');
-                        // return next();
-                      });
-                    });
-                  } catch (error) {
-                    return next(error);
-                  }
-                });
-              }
-            })
-            .catch(() => {
-              return res.redirect(307, 'http://localhost:3001/kafka/createTable');
-            });
-        });
+(controller.balanceLoad = (req, res, next) => {
+  const { bootstrap, topic, numPartitions } = req.body;
+  exec(
+    `java -jar ${path.join(
+      __dirname,
+      '../../../loadBalancer.jar'
+    )} ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
+    function (error, stdout) {
+      console.log('Output: ' + stdout);
+      if (error !== null) {
+        console.log('Error: ' + error);
       }
-    );
-  });
-  admin.disconnect();
+    }
+  );
   return next();
-      } catch (err) {
-        const defaultErr = {
-          log: 'Express error handler caught an error in controller.updateTables middleware',
-          status: 500,
-          message: { err: `An error occurred inside a middleware named controller.updateTables : ${err}` },
-        }
-        return next(defaultErr);
-      }
-    };
+}),
+  (controller.updateTables = (req, res, next) => {
+    try {
+      const { bootstrap, currentUser } = req.body;
+      const bootstrapSanitized = bootstrap.replace(':', '_'); //sanitizing because of reserved characters in SQL (can circumvent by wrapping table name in quotes)
+      const instance = new kafka.Kafka({
+        clientId: 'saamsa',
+        brokers: [`${bootstrap}`],
+      });
+      const admin = instance.admin();
+      admin.connect();
+      admin.listTopics().then((data) => {
+        open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
+          (db) => {
+            data.forEach((el) => {
+              db.all(
+                `SELECT topic FROM '${bootstrapSanitized.concat(
+                  `_${currentUser}_` //this is to differentiate each bootstrap server for each individual user
+                )}' WHERE topic='${el}';`
+              )
+                .then((result) => {
+                  if (result.length === 0) {
+                    admin.fetchTopicOffsets(el).then((response) => {
+                      let colString = 'topic, ';
+                      let valString = `'${el}', `;
+                      response.forEach((partition) => {
+                        valString += `${partition.offset},`;
+                        colString += `partition_${partition.partition},`;
+                      });
+                      valString = valString.slice(0, valString.length - 1);
+                      colString = colString.slice(0, colString.length - 1);
+                      try {
+                        db.exec(
+                          `INSERT INTO '${bootstrapSanitized.concat(
+                            `_${currentUser}_`
+                          )}' (${colString}) VALUES (${valString});`
+                        ).catch(() => {
+                          db.exec(
+                            `DROP TABLE '${bootstrapSanitized.concat(
+                              `_${currentUser}_`
+                            )}'`
+                          ).then(() => {
+                            return res.redirect(
+                              307,
+                              'http://localhost:3001/kafka/createTable'
+                            );
+                          });
+                        });
+                      } catch (error) {
+                        return next(error);
+                      }
+                    });
+                  }
+                })
+                .catch(() => {
+                  return res.redirect(
+                    307,
+                    'http://localhost:3001/kafka/createTable'
+                  );
+                });
+            });
+          }
+        );
+      });
+      admin.disconnect();
+      return next();
+    } catch (err) {
+      const defaultErr = {
+        log: 'Express error handler caught an error in controller.updateTables middleware',
+        status: 500,
+        message: {
+          err: `An error occurred inside a middleware named controller.updateTables : ${err}`,
+        },
+      };
+      return next(defaultErr);
+    }
+  });
 
 //fetches all topics for a given broker (taken from frontend broker selection)
 controller.fetchTopics = (req, res, next) => {
-  const { bootstrap } = req.body;
-  // console.log('Bootstrap in FETCH TOPICS', bootstrap);
+  const { bootstrap, currentUser } = req.body;
   //cleaning it up for SQL, which can't have colons
   const bootstrapSanitized = bootstrap.replace(':', '_');
-  // console.log('Bootstrap in FETCH TOPICS after sanitization', bootstrapSanitized);
   //opening connection to sqlite db
   try {
     open({
@@ -80,29 +112,27 @@ controller.fetchTopics = (req, res, next) => {
       driver: sqlite3.Database,
     }).then((db) =>
       db
-        .all(`SELECT topic FROM ${bootstrapSanitized}`)
-        // .then(result => console.log('Topics from db for given broker', result))
-        .then((result) => {
-          let allTopics = result.map(obj => obj.topic);
-          allTopics = allTopics.filter(topic => {
-            if (topic !== '__consumer_offsets') return topic;
-          });
-          res.locals.allTopics = allTopics;
-          return next();
-        })
+        .all(
+          `SELECT topic FROM '${bootstrapSanitized.concat(`_${currentUser}_`)}'`
+        )
+        .then((result) => (res.locals.result = result))
+        .then(() => next())
     );
   } catch (err) {
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.fetchTopics',
       status: 500,
-      message: { err: `An error occurred inside a middleware named controller.fetchTopics: ${err}`},
-    }
+      message: {
+        err: `An error occurred inside a middleware named controller.fetchTopics: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
 
 //fetches all tables currently in database, each table corresponds to a broker, each entry in that broker-table is a topic and it's partitions
 controller.fetchTables = (req, res, next) => {
+  const { currentUser } = req.body;
   try {
     //opening db then selecting all table names from master metadata table
     open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
@@ -110,10 +140,12 @@ controller.fetchTables = (req, res, next) => {
         db.all(
           "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
         ).then((result) => {
-          console.log('these are the table rows', result);
-          res.locals.result = result;
+          res.locals.result = result
+            .filter((el) => el.name.includes(`_${currentUser}_`))
+            .map((el) => {
+              return { name: el.name.replace(`_${currentUser}_`, '') };
+            });
           next();
-          // res.json(result);
         });
       }
     );
@@ -121,17 +153,20 @@ controller.fetchTables = (req, res, next) => {
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.fetchTables',
       status: 500,
-      message: { err: `An error occurred inside a middleware named controller.fetchTables: ${err}`},
-    }
+      message: {
+        err: `An error occurred inside a middleware named controller.fetchTables: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
 
 //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
+
 controller.createTable = async (req, res, next) => {
   try {
-    const { bootstrap } = req.body;
-    //if there is no server given, we send an error page
+    const { bootstrap, currentUser } = req.body;
+    //if there is no server given, we send an error status
     if (!bootstrap.length) res.sendStatus(403);
     //sanitizing for sql
     const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -175,7 +210,9 @@ controller.createTable = async (req, res, next) => {
       open({ filename: '/tmp/database.db', driver: sqlite3.Database })
         .then((db) => {
           db.exec(
-            `CREATE TABLE ${bootstrapSanitized} (topic varchar(255), ${partitionString});`
+            `CREATE TABLE '${bootstrapSanitized.concat(
+              `_${currentUser}_`
+            )}' (topic varchar(255), ${partitionString});`
           );
           return db;
         })
@@ -192,29 +229,33 @@ controller.createTable = async (req, res, next) => {
             valueString = valueString.slice(0, valueString.length - 1);
             colString = colString.slice(0, colString.length - 1);
             db.exec(
-              `INSERT INTO ${bootstrapSanitized} (${colString}) VALUES (${valueString});`
+              `INSERT INTO '${bootstrapSanitized.concat(
+                `_${currentUser}_`
+              )}' (${colString}) VALUES (${valueString});`
             );
           });
         })
         .then(() => {
           admin.disconnect();
-          next();
+          return next();
         });
     });
   } catch (err) {
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.createTable',
       status: 500,
-      message: { err: `An error occurred inside a middleware named controller.createTable: ${err}`},
-    }
+      message: {
+        err: `An error occurred inside a middleware named controller.createTable: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
-  
+
 //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
 controller.refresh = (req, res, next) => {
   try {
-    const { bootstrap, topic } = req.body;
+    const { bootstrap, topic, currentUser } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
       brokers: [`${bootstrap}`],
@@ -241,14 +282,18 @@ controller.refresh = (req, res, next) => {
         })
           .then((db) => {
             db.exec(
-              `UPDATE ${bootstrapSanitized} SET ${setString} WHERE topic='${topic}';`
+              `UPDATE '${bootstrapSanitized.concat(
+                `_${currentUser}_`
+              )}' SET ${setString} WHERE topic='${topic}';`
             );
             return db;
           })
           //here we grab topic data from sqldb (after updated)
           .then((db) => {
             db.all(
-              `SELECT * FROM ${bootstrapSanitized} WHERE topic='${topic}'`
+              `SELECT * FROM '${bootstrapSanitized.concat(
+                `_${currentUser}_`
+              )}' WHERE topic='${topic}'`
             ).then((result) => {
               //new arr which holds the correctly formated data for d3
               const arr: { time: number; value: number }[] = [];
@@ -261,7 +306,8 @@ controller.refresh = (req, res, next) => {
                   });
                 }
               });
-              res.json(arr);
+              res.locals.result = arr;
+              return next();
             });
           });
       });
@@ -269,18 +315,20 @@ controller.refresh = (req, res, next) => {
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.refresh',
       status: 500,
-      message: { err: `An error occurred inside a middleware named controller.refresh: ${err}`},
-    }
+      message: {
+        err: `An error occurred inside a middleware named controller.refresh: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
 
-controller.fetchConsumers = async (req, res, next)  => {
+controller.fetchConsumers = async (req, res, next) => {
   try {
-    const {bootstrap} = req.body;
+    const { bootstrap } = req.body;
 
-    //if there is no server, send an error page
-    if(!bootstrap.length) res.sendStatus(403);
+    //if there is no server, send an error status
+    if (!bootstrap.length) res.sendStatus(403);
 
     //create a new instance of kafka
     const instance = new kafka.Kafka({
@@ -298,38 +346,68 @@ controller.fetchConsumers = async (req, res, next)  => {
     const consumerGroupNames: string[] = [];
 
     interface Item {
-      groupId: string, 
-      protocolType: string,
+      groupId: string;
+      protocolType: string;
     }
-    
-    //fetch consumerGroupNames from within the results variable
-    results.groups.forEach( (item: Item) => {
-      consumerGroupNames.push(item.groupId);
-    })
-    // console.log(consumerGroupNames);
-    //declare a variable consumergroups that holds each consumer group
-    const groupsDescribed = consumerGroupNames.map((consumerGroup: string) => admin.describeGroups([consumerGroup]));
-    
-    const resolved = await Promise.all(groupsDescribed);
-    
-    const cloned = JSON.parse(JSON.stringify(resolved));
-    
-    resolved.forEach( (consumerGroup: kafka.GroupDescriptions, index: number) => {
-      consumerGroup.groups[0].members.forEach( (member, memberIndex) => {
 
-        cloned[index].groups[0].members[memberIndex].stringifiedAssignment = member.memberAssignment.toString();
-        cloned[index].groups[0].members[memberIndex].stringifiedMetadata = member.memberMetadata.toString();
-      });
-    })
-    // console.log(cloned[0].groups[0].members[0]);
+    //fetch consumerGroupNames from within the results variable
+    results.groups.forEach((item: Item) => {
+      consumerGroupNames.push(item.groupId);
+    });
+    //declare a variable consumergroups that holds each consumer group
+    const groupsDescribed = consumerGroupNames.map((consumerGroup: string) =>
+      admin.describeGroups([consumerGroup])
+    );
+
+    const resolved = await Promise.all(groupsDescribed);
+
+    interface ConsumerGroup {
+      groups: {
+        errorCode: number;
+        groupId: string;
+        members: {
+          memberId: string;
+          clientId: string;
+          clientHost: string;
+          memberMetadata: Buffer;
+          memberAssignment: Buffer;
+          stringifiedAssignment: string;
+          stringifiedMetadata: string;
+        }[];
+        protocol: string;
+        portocolType: string;
+        state: string;
+      }[];
+    }
+    const cloned: ConsumerGroup[] = JSON.parse(JSON.stringify(resolved));
+
+    resolved.forEach(
+      (consumerGroup: kafka.GroupDescriptions, index: number) => {
+        consumerGroup.groups[0].members.forEach((member, memberIndex) => {
+          if (member.memberId.includes('saamsaLoadBalancer')) {
+            //testing if the consumer is from our loadbalancer, in which case, we need to parse the topic name from the group id, which is saved as saamsaLoadBalancer%%%topic_name
+            const stringifiedMetaData =
+              cloned[index].groups[0].groupId.split('%%%')[1];
+            cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
+              stringifiedMetaData ? stringifiedMetaData : 'topic_not_found';
+            cloned[index].groups[0].groupId = 'saamsaLoadBalancer'; //reseting consumer groupId to consolidate all our loadbalancers into one consumer group for viz
+          } else {
+            cloned[index].groups[0].members[memberIndex].stringifiedMetadata =
+              member.memberMetadata.filter((el) => el > 28).toString(); //filtering out null characters
+          }
+        });
+      }
+    );
     res.locals.consumerGroups = [...cloned];
-    next();
-  } catch(err) {
+    return next();
+  } catch (err) {
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.fetchConsumers',
       status: 500,
-      message: { err: `An error occurred inside a middleware named controller.fetchConsumers: ${err}`},
-    }
+      message: {
+        err: `An error occurred inside a middleware named controller.fetchConsumers: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
