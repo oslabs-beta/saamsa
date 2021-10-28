@@ -23,7 +23,7 @@ function createServer(): express.Application {
   app.post(
     '/login',
     userController.verifyUser,
-    cookieController.setCookie,
+    // cookieController.setCookie,
     sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).json(res.locals.user);
@@ -43,7 +43,7 @@ function createServer(): express.Application {
   app.post(
     '/logout',
     sessionController.endSession,
-    cookieController.deleteCookies,
+    // cookieController.deleteCookies,
     (req, res) => {
       res.sendStatus(200);
     }
