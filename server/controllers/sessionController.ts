@@ -6,11 +6,11 @@ const sessionController: Record<string, MiddlewareFunction> = {};
 // start session -- add user from cookie to sessions database to persist user information
 sessionController.startSession = async (req, res, next) => {
   try {
-    const session = await Session.findOne({ cookieId: res.locals.user });
+    const session = await Session.findOne({ username: res.locals.user });
 
     if (!session) {
       const newSession = {
-        cookieId: res.locals.user,
+        username: res.locals.user,
       };
 
       await Session.create(newSession);
@@ -31,7 +31,7 @@ sessionController.endSession = async (req, res, next) => {
     try {
       const user = req.body;
       console.log(user);
-      await Session.findOneAndDelete({ cookieId: user });
+      await Session.remove({});
       res.locals.user = user;
       next();
     } catch (err) {
@@ -48,20 +48,17 @@ sessionController.endSession = async (req, res, next) => {
 // check if user is logged in -- if user in cookie matches an existing document in database
 sessionController.isLoggedIn = async (req, res, next) => {
     try {
-      const { user } = req.cookies;
-  
-      if (user) {
-        const cookieCheck = await Session.findOne({ cookieId: user });
-        if (cookieCheck) {
-          res.locals.user = user;
+        const session = await Session.find();
+        if (session) {
+          res.locals.user = session;
+          console.log(session);
           return next();
         } throw Error('User session does not exist in DB');
       }
-      throw Error('User session does not exist in DB');
-    } catch (err) {
+      catch (err) {
       const defaultErr = {
         log: 'Error handler caught an error at sessionController.isLoggedIn',
-        status: 200,
+        status: 500,
         message: { err: `An error occurred at the sessionController.isLoggedIn middleware : ${err}` },
       };
       return next(defaultErr);

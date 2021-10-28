@@ -22,24 +22,7 @@ const App = (): JSX.Element => {
     Array<{ time: number; value: number }>
   >([]);
 
-  // check / fetch fresh cookies from browser 
-
-    // if(!freshCookies) {
-    //   (async () => {
-    //     const res = await (await fetch('http://localhost:3001/sessions')).json();
-    //     getCookies(true);
-    //     if (res !== '') {
-    //       const username: string = res;
-    //       changeLoginStatus(true);
-    //       changeUser(username);
-    //     }
-    //   }
-    //   )();
-    // }
-  
-
-
-  // login button function
+    // login button function
   const loginButton = () => {
     
     // username is input value in usernmae field 
@@ -138,6 +121,23 @@ const App = (): JSX.Element => {
     setRendering(false);
   }, []);
   if (!rendering) {
+
+    // check / fetch fresh cookies from browser 
+
+    if(!freshCookies) {
+      (async () => {
+        try{
+        const res = await (await fetch('http://localhost:3001/sessions')).json();
+        getCookies(true);
+        if (res !== []) {
+          const username: string = res;
+          changeLoginStatus(true);
+          changeUser(username);
+        }
+      } catch Err{ }
+      )();
+    }
+
     if (loginStatus === false) {
       return (
         <div key='loginPage'>

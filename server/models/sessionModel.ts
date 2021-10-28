@@ -1,11 +1,11 @@
 import { Schema, model } from 'mongoose';
 
 interface Sessions {
-    cookieId: string;
+    username: string;
     createdAt: Date;
 }
 const sessionSchema: Schema<Sessions> = new Schema({
-    cookieId: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     createdAt: { type: Date, expires: '10m', default: new Date() }
   });
   
