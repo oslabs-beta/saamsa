@@ -148,7 +148,7 @@ const App = (): JSX.Element => {
           />
         </div>
       );
-    } else if (loginStatus === true) {
+       } else if (loginStatus === true) {
       return (
         <div key='selector'>
           <Selector

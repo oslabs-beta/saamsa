@@ -6,6 +6,7 @@ import router from './routers/kafkaRouter';
 import cookieParser from 'cookie-parser';
 
 function createServer(): express.Application {
+
   const app = express();
 
   app.use(cookieParser());
@@ -62,8 +63,8 @@ function createServer(): express.Application {
   app.use('*', (req, res) => {
     res.sendStatus(404);
   });
-  app.use(
-    (
+
+  app.use((
       err: express.ErrorRequestHandler,
       req: express.Request,
       res: express.Response,
@@ -79,6 +80,7 @@ function createServer(): express.Application {
       return res.status(errorObj.status).json(errorObj.message);
     }
   );
+
   return app;
 }
 

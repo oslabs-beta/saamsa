@@ -6,6 +6,7 @@ import MiddlewareFunction from '../types';
 const controller: Record<string, MiddlewareFunction> = {};
 
 controller.updateTables = (req, res, next) => {
+  try{
   console.log('did i make it to update tables?');
   const { bootstrap } = req.body;
   const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -54,8 +55,16 @@ controller.updateTables = (req, res, next) => {
     );
   });
   admin.disconnect();
-  next();
-}
+  return next();
+      } catch (err) {
+        const defaultErr = {
+          log: 'Express error handler caught an error in controller.updateTables middleware',
+          status: 500,
+          message: { err: `An error occurred inside a middleware named controller.updateTables : ${err}` },
+        }
+        return next(defaultErr);
+      }
+    };
 
 //fetches all topics for a given broker (taken from frontend broker selection)
 controller.fetchTopics = (req, res, next) => {
@@ -82,11 +91,15 @@ controller.fetchTopics = (req, res, next) => {
           return next();
         })
     );
-  } catch (error) {
-    console.log(error);
-    next(error);
+  } catch (err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error inside controller.fetchTopics',
+      status: 500,
+      message: { err: `An error occurred inside a middleware named controller.fetchTopics: ${err}`},
+    }
+    return next(defaultErr);
   }
-}
+};
 
 //fetches all tables currently in database, each table corresponds to a broker, each entry in that broker-table is a topic and it's partitions
 controller.fetchTables = (req, res, next) => {
@@ -104,11 +117,15 @@ controller.fetchTables = (req, res, next) => {
         });
       }
     );
-  } catch (error) {
-    console.log(error);
-    next(error);
+  } catch (err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error inside controller.fetchTables',
+      status: 500,
+      message: { err: `An error occurred inside a middleware named controller.fetchTables: ${err}`},
+    }
+    return next(defaultErr);
   }
-}
+};
 
 //after verifying broker exists using kafkajs admin, adds each topic and it's partitions and respective offsets to sqlite
 controller.createTable = async (req, res, next) => {
@@ -184,11 +201,15 @@ controller.createTable = async (req, res, next) => {
           next();
         });
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
+  } catch (err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error inside controller.createTable',
+      status: 500,
+      message: { err: `An error occurred inside a middleware named controller.createTable: ${err}`},
+    }
+    return next(defaultErr);
   }
-}
+};
   
 //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
 controller.refresh = (req, res, next) => {
@@ -244,11 +265,15 @@ controller.refresh = (req, res, next) => {
             });
           });
       });
-  } catch (error) {
-    console.log(error);
-    next(error);
+  } catch (err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error inside controller.refresh',
+      status: 500,
+      message: { err: `An error occurred inside a middleware named controller.refresh: ${err}`},
+    }
+    return next(defaultErr);
   }
-}
+};
 
 controller.fetchConsumers = async (req, res, next)  => {
   try {
@@ -287,30 +312,11 @@ controller.fetchConsumers = async (req, res, next)  => {
     
     const resolved = await Promise.all(groupsDescribed);
     
-    // interface ConsumerGroup {
-    //   groups: {
-    //     errorCode: number,
-    //     groupId: string,
-    //     members: {
-    //       memberId: string,
-    //       clientId: string,
-    //       clientHost: string, 
-    //       memberMetadata: Buffer,
-    //       memberAssignment: Buffer,
-    //       stringifiedAssignment: string,
-    //       stringifiedMetadata: string,
-    //     }[], 
-    //     protocol: string, 
-    //     portocolType: string, 
-    //     state: string,
-    //   }[]
-    // }
     const cloned = JSON.parse(JSON.stringify(resolved));
     
     resolved.forEach( (consumerGroup: kafka.GroupDescriptions, index: number) => {
       consumerGroup.groups[0].members.forEach( (member, memberIndex) => {
-        // console.log(member.memberMetadata.toString());
-        // console.log(member.memberAssignment.toString());
+
         cloned[index].groups[0].members[memberIndex].stringifiedAssignment = member.memberAssignment.toString();
         cloned[index].groups[0].members[memberIndex].stringifiedMetadata = member.memberMetadata.toString();
       });
@@ -318,9 +324,14 @@ controller.fetchConsumers = async (req, res, next)  => {
     // console.log(cloned[0].groups[0].members[0]);
     res.locals.consumerGroups = [...cloned];
     next();
-  } catch(error) {
-    next(error);
+  } catch(err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error inside controller.fetchConsumers',
+      status: 500,
+      message: { err: `An error occurred inside a middleware named controller.fetchConsumers: ${err}`},
+    }
+    return next(defaultErr);
   }
-}
+};
 
 export default controller;
