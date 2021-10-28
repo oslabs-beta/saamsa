@@ -126,8 +126,6 @@ const App = (): JSX.Element => {
   React.useEffect(() => {
     setRendering(false);
   }, []);
-  if (!rendering) {
-
     if (signUpStatus === true) {
       return (
         <div key="signUpPage">
@@ -190,10 +188,7 @@ const App = (): JSX.Element => {
         </div>
       </div>
     );
-    } else {
-      return <div key="loadingMessage">Loading, please wait!</div>;
-    }
-  }
+      }
 };
 
 export default App;

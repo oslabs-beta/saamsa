@@ -229,7 +229,8 @@ const Selector = ({
     <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 id='heading'>Saamsa </h1>
-        <div id = 'loggedIn'> Logged in as {currentUser}
+        <div id = 'loggedIn'> 
+        <p className='loggedInAs'>Logged in as {currentUser}</p>
         <button className="logOutBtn" onClick={logOut}> Log Out </button>
         </div>
       </div>
@@ -238,10 +239,11 @@ const Selector = ({
         <div className='newBrokerDiv'>
           <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
-        </div>
-        <button className='Btn' onClick={createTable}>
+          <button className='Btn' onClick={createTable}>
           Submit
         </button>
+        </div>
+       
 
         <div className='brokerSelector'>
           <p className="inputLabels">Current broker: </p>
