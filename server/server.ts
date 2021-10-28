@@ -1,5 +1,7 @@
 import createServer from './createServer';
 import { connect, ConnectOptions } from 'mongoose';
+import { exec } from 'child_process';
+import * as path from 'path';
 const app = createServer();
 
 const MONGO_URI =
@@ -12,6 +14,7 @@ connect(MONGO_URI, {
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(3001, () => {
+      exec(`electron ${path.resolve(__dirname, '../electron/index.js')}`);
       console.log('server listening on port 3001 :)');
     });
   })

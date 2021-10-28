@@ -19,9 +19,6 @@ interface Props {
   consumerList: any;
   setConsumerList: (arg: any) => void;
 }
-interface TableList {
-  name: string;
-}
 const Selector = ({
   currentUser,
   consumerList,
@@ -47,7 +44,7 @@ const Selector = ({
     axios({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
-      url: '/kafka/balanceLoad',
+      url: 'http://localhost:3001/kafka/balanceLoad',
     }).then((response) => {
       console.log(response.status);
     });
@@ -59,7 +56,7 @@ const Selector = ({
     console.log(arg);
     axios({
       method: 'post',
-      url: '/kafka/updateTables',
+      url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
       console.log(response.data);
@@ -101,7 +98,7 @@ const Selector = ({
       //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
-      url: '/kafka/createTable',
+      url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
@@ -116,7 +113,7 @@ const Selector = ({
   const fetchTables = (): void => {
     axios({
       method: 'post',
-      url: '/kafka/fetchTables',
+      url: 'http://localhost:3001/kafka/fetchTables',
       data: { currentUser },
     }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
@@ -153,7 +150,7 @@ const Selector = ({
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
-      url: '/kafka/fetchTopics',
+      url: 'http://localhost:3001/kafka/fetchTopics',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -166,7 +163,7 @@ const Selector = ({
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url: '/kafka/fetchConsumers',
+      url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -185,7 +182,7 @@ const Selector = ({
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
-        url: '/kafka/refresh',
+        url: 'http://localhost:3001/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
