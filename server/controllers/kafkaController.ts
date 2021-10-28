@@ -216,9 +216,7 @@ controller.createTable = async (req, res, next) => {
           );
           return db;
         })
-        .catch((error) => {
-          return next(error);
-        })
+
         .then((db) => {
           Object.keys(offsets).forEach((el) => {
             //below is for generic column names e.g. topic, partition_0, partition_1...
@@ -237,6 +235,9 @@ controller.createTable = async (req, res, next) => {
               )}' (${colString}) VALUES (${valueString});`
             );
           });
+        })
+        .catch((error) => {
+          return next(error);
         })
         .then(() => {
           admin.disconnect();
