@@ -29,7 +29,7 @@ function createServer(): express.Application {
 
   app.use('/kafka', kafkaRouter);
 
-  app.use('/', (req, res) => {
+  app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../index.html'));
   });
   //type of error object

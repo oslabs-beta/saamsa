@@ -19,9 +19,6 @@ interface Props {
   consumerList: any;
   setConsumerList: (arg: any) => void;
 }
-interface TableList {
-  name: string;
-}
 const Selector = ({
   currentUser,
   consumerList,
@@ -136,20 +133,6 @@ const Selector = ({
     }
   };
 
-  if (process.env.NODE_ENV !== 'testing') {
-    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
-    useInterval(() => {
-      if (bootstrap.length) {
-        updateTables(bootstrap);
-        fetchTopics(bootstrap);
-        fetchConsumers(bootstrap);
-        if (topic.length) {
-          changeTopics();
-        }
-      }
-    }, 3000);
-  }
-
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
@@ -210,6 +193,18 @@ const Selector = ({
     React.useEffect(() => {
       fetchTables();
     }, []);
+
+    //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
+    useInterval(() => {
+      if (bootstrap.length) {
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
   }
   return (
     <div id='mainWrapper'>

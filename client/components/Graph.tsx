@@ -513,21 +513,23 @@ const Graph = ({
       })
       .style('fill', '#69b3a2');
   };
-  React.useEffect(() => {
-    //draws new graph when new topic selected
-    renderGraph();
-  }, [topic]);
-  React.useEffect(() => {
-    //updates graph when data changes if graph is rendered
-    if (d3.selectAll('.bar').size() > 0) {
-      updateGraph();
-    }
-  }, [data]);
-  React.useEffect(() => {
-    //removes old node map and redraws it when new topic added or new consumer added
-    d3.selectAll('.charty g').remove();
-    chart();
-  }, [topicList, consumerList]);
+  if (process.env.NODE_ENV !== 'testing') {
+    React.useEffect(() => {
+      //draws new graph when new topic selected
+      renderGraph();
+    }, [topic]);
+    React.useEffect(() => {
+      //updates graph when data changes if graph is rendered
+      if (d3.selectAll('.bar').size() > 0) {
+        updateGraph();
+      }
+    }, [data]);
+    React.useEffect(() => {
+      //removes old node map and redraws it when new topic added or new consumer added
+      d3.selectAll('.charty g').remove();
+      chart();
+    }, [topicList, consumerList]);
+  }
   return <div>{!!data.length && <h2>{topic}</h2>}</div>;
 };
 
