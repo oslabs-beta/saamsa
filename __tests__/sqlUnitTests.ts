@@ -42,6 +42,6 @@ describe('kafka unit tests', () => {
       .post('/kafka/fetchTopics')
       .send({ bootstrap: 'test_test' })
       .expect(200);
-    expect(result.body).toEqual([{ topic: 'lets_get_that_meat' }]);
+    expect(result.body).toEqual(['lets_get_that_meat']);
   });
 });

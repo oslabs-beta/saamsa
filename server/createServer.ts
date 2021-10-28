@@ -27,6 +27,7 @@ function createServer(): express.Application {
     }
   );
 
+  //all kafka related routes like fetching topics, fetching consumers etc
   app.use('/kafka', kafkaRouter);
 
   app.get('/', (req, res) => {
@@ -60,6 +61,7 @@ function createServer(): express.Application {
       return res.status(errorObj.status).json(errorObj.message);
     }
   );
+
   return app;
 }
 

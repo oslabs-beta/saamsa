@@ -20,41 +20,59 @@ const App = (): JSX.Element => {
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
+
+  // login button function
   const loginButton = () => {
+    // username is input value in usernmae field
     const username: string | null = (
       document.querySelector('#username') as HTMLInputElement
     ).value;
+
+    // password is input value in password field
     const password: string | null = (
       document.querySelector('#password') as HTMLInputElement
     ).value;
+
+    // if username or password are empty inputs, display error message
     if (username == '' || password == '') {
       const result =
         'Please fill out the username and password fields to log in';
       changeAttempt(result);
+
+      // if username and password are filled out, send fetch request to backend to see if user/ pw is correct
     } else {
       const user: { username: string; password: string } = {
-        username: username,
-        password: password,
+        username,
+        password,
       };
+
       fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
       })
-        .then((res) => res.json())
-        .then(() => {
-          changeUser(username);
-        })
-        .then(() => {
-          changeLoginStatus(true);
+        // if username or password are empty, have user try again
+        .then((res) => {
+          if (res.status === 401) {
+            // had this be an alert window and reload because signup wasn't working after incorrect entry
+            const result = 'Incorrect username or password. Please try again.';
+            changeAttempt(result);
+            // location.reload();
+          }
+          // otherwise store the user in state and change login status to true
+          else {
+            changeUser(username);
+            changeLoginStatus(true);
+          }
         })
         .catch((err) => {
-          changeAttempt('Incorrect Username or password');
+          changeAttempt('Error logging in. Please try again.');
           console.log(err);
         });
     }
   };
 
+  // Sign Up functionality
   const signUp = () => {
     const username: string | null = (
       document.querySelector('#username') as HTMLInputElement
@@ -81,8 +99,8 @@ const App = (): JSX.Element => {
       })
         .then((res) => {
           if (res.status == 200) {
-            changeLoginStatus(true);
-            changeUser(username);
+            alert('Signup Successful! Please login to proceed.');
+            location.reload();
           }
         })
         .catch((err) => console.log(err));
@@ -91,12 +109,12 @@ const App = (): JSX.Element => {
 
   if (loginStatus === false) {
     return (
-      <div key='loginPageContainer'>
+      <div key='loginPage'>
         <LoginPage
-          key='loginPage'
           loginButton={loginButton}
           signUp={signUp}
           loginAttempt={loginAttempt}
+          // currentUser = {currentUser}
         />
       </div>
     );

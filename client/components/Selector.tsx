@@ -49,7 +49,7 @@ const Selector = ({
       return;
     });
   };
-
+  //update SQL tables
   const updateTables = (arg: string | undefined): void => {
     if (!arg || !arg.length) arg = bootstrap;
     axios({
@@ -76,6 +76,7 @@ const Selector = ({
       </option>
     );
   }
+
   //below creates an array filled with options for the topics of selected bootstrap
   const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
@@ -89,23 +90,21 @@ const Selector = ({
       </option>
     );
   }
+
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
+    //change this to be compatible with  enzyme testing, use event.target.etcetc
     const bootstrap: HTMLInputElement | null =
-      //change this to be compatible with  enzyme testing, use event.target.etcetc
       document.querySelector('#bootstrapInput');
     axios({
       url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
-      .then(() => {
-        fetchTables();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then(() => fetchTables())
+      .catch((error) => console.log(error));
   };
+
   //sends a request to backend to grab all broker-tables from sqldb
   const fetchTables = (): void => {
     axios({
@@ -117,6 +116,7 @@ const Selector = ({
       setServerList(response.data.map((el) => el.name));
     });
   };
+
   //custom function that grabs the selected boostrap server from dropdown and then fetches the appropriate topics from db
   const changeServer = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -142,6 +142,7 @@ const Selector = ({
       if (!_.isEqual(topicList, resultArr)) setTopicList(resultArr);
     });
   };
+
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
@@ -154,6 +155,7 @@ const Selector = ({
         setConsumerList(response.data);
     });
   };
+
   //updates topic state for app, and also sends a request to the backend to update the data with the new chosen topic's partition data
   const changeTopics = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
@@ -184,10 +186,12 @@ const Selector = ({
       setData([]);
     }
   };
+
   if (process.env.NODE_ENV !== 'testing') {
     //geting past tables once component renders
     React.useEffect(() => {
       fetchTables();
+      console.log('literally anything');
     }, []);
 
     //custom react hook to simulate setInterval, but avoids closure issues and uses most up to date state
@@ -202,10 +206,11 @@ const Selector = ({
       }
     }, 3000);
   }
+
   return (
     <div id='mainWrapper'>
       <div className='headingWrapper'>
-        <h1 className='heading'>Saamsa</h1>
+        <h1 className='heading'>Saamsa </h1>
       </div>
 
       <div className='brokersDiv'>
@@ -216,6 +221,7 @@ const Selector = ({
         <button className='submitBtn' onClick={createTable}>
           Submit
         </button>
+
         <div className='or'>OR</div>
 
         <div className='brokerSelector'>
