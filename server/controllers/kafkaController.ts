@@ -137,7 +137,7 @@ controller.fetchTables = (req, res, next) => {
       (db) => {
         db.all(
           "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-        ).then((result) => {
+        ).then((result) => 
           res.locals.result = result
             .filter((el) => el.name.includes(`_${currentUser}_`))
             .map((el) => {
