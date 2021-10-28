@@ -2,6 +2,7 @@ import express from 'express';
 import userController from './controllers/userController';
 import kafkaRouter from './routers/kafkaRouter';
 function createServer(): express.Application {
+
   const app = express();
 
   app.use(express.json());
@@ -31,6 +32,7 @@ function createServer(): express.Application {
     }
   );
 
+  //all kafka related routes like fetching topics, fetching consumers etc
   app.use('/kafka', kafkaRouter);
 
   //type of error object
@@ -42,8 +44,8 @@ function createServer(): express.Application {
   app.use('*', (req, res) => {
     res.sendStatus(404);
   });
-  app.use(
-    (
+
+  app.use((
       err: express.ErrorRequestHandler,
       req: express.Request,
       res: express.Response,
@@ -59,6 +61,7 @@ function createServer(): express.Application {
       return res.status(errorObj.status).json(errorObj.message);
     }
   );
+
   return app;
 }
 
