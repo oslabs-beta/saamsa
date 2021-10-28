@@ -10,8 +10,10 @@ const controller: Record<string, MiddlewareFunction> = {};
 (controller.balanceLoad = (req, res, next) => {
   const { bootstrap, topic, numPartitions } = req.body;
   exec(
-    `java -jar /root/saamsa/loadBalancer.jar
-    ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
+    `java -jar ${path.join(
+      __dirname,
+      '../../../loadBalancer.jar'
+    )} ${bootstrap} ${topic} ${(Number(numPartitions) + 1).toString()}`,
     function (error, stdout) {
       console.log('Output: ' + stdout);
       if (error !== null) {
@@ -137,7 +139,7 @@ controller.fetchTables = (req, res, next) => {
       (db) => {
         db.all(
           "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-        ).then((result) => 
+        ).then((result) => {
           res.locals.result = result
             .filter((el) => el.name.includes(`_${currentUser}_`))
             .map((el) => {
