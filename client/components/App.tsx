@@ -1,16 +1,17 @@
-import * as React from "react";
-import LoginPage from "./LoginPage";
-import SignUpPage from "./SignUpPage";
-import Graph from "./Graph";
-import Selector from "./Selector";
+import * as React from 'react';
+import '../../client/scss/App.scss';
+import LoginPage from './LoginPage';
+import Graph from './Graph';
+import Selector from './Selector';
 import * as d3 from 'd3';
+import SignUpPage from './SignUpPage';
 const App = (): JSX.Element => {
   // defining state variables and functions
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
-    const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  const [consumerList, setConsumerList] = React.useState<any>(null);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>("");
@@ -125,8 +126,6 @@ const App = (): JSX.Element => {
   React.useEffect(() => {
     setRendering(false);
   }, []);
-  if (!rendering) {
-
     if (signUpStatus === true) {
       return (
         <div key="signUpPage">
@@ -167,7 +166,7 @@ const App = (): JSX.Element => {
           consumerList={consumerList}
           setConsumerList={setConsumerList}
         />
-        <div>
+        <div className="graph">
           <Graph
             currentUser={currentUser}
             setData={setData}
@@ -189,10 +188,7 @@ const App = (): JSX.Element => {
         </div>
       </div>
     );
-    } else {
-      return <div key="loadingMessage">Loading, please wait!</div>;
-    }
-  }
+      }
 };
 
 export default App;

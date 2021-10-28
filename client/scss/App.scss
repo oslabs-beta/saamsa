@@ -1,0 +1,22 @@
+@import '_variables';
+// .graph{
+//     height: 1000px;
+//     width: 1000px;
+//     background-color: $saamsaGrey;
+// }
+#graphContainer{
+    background-color: $saamsaGrey;
+    position: absolute;
+    right: 10px;
+    top: 260px;
+    border-radius: 8px;
+    border: 4px solid $saamsaYellow ;
+}
+#chartContainer{
+    background-color: $saamsaGrey;
+    position: absolute;
+    left: 10px;
+    top: 260px;
+    border-radius: 8px;
+    border: 4px solid $saamsaYellow ;
+}

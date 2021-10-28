@@ -131,6 +131,22 @@ const Selector = ({
     }
   };
 
+  if (process.env.NODE_ENV !== 'testing') {
+    useInterval(() => {
+      if (bootstrap.length) {
+        console.log('inside of setinterval bootstrap', bootstrap);
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        console.log(bootstrap);
+        console.log(topic);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
+  }
+
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
@@ -216,37 +232,51 @@ const Selector = ({
     <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 id='heading'>Saamsa </h1>
-        <div id = 'loggedIn'> Logged in as {currentUser}
+        <div id = 'loggedIn'> 
+        <p className='loggedInAs'>Logged in as {currentUser}</p>
         <button className="logOutBtn" onClick={logOut}> Log Out </button>
         </div>
       </div>
  
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-          <label htmlFor='topicInput'>Enter a new broker address</label>
+          <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
-        </div>
-        <button className='Btn' onClick={createTable}>
+          <button className='Btn' onClick={createTable}>
           Submit
         </button>
-
-        <div className='or'>OR</div>
+        </div>
+       
 
         <div className='brokerSelector'>
-          Select your broker:
+          <p className="inputLabels">Current broker: </p>
           <select
+          className="dropDown"
             name='bootstrap'
             id='bootstrap'
             onChange={() => changeServer()}
           >
-            <option className='serverOption'></option>
+            <option className="dropdownOptions"></option>
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
-          Select your topic:
-          <select
+          <p className="inputLabels">Current topic: </p>
+ 
+        {/* const topicListArr: JSX.Element[] = [];
+  for (let i = 0; i < topicList.length; i++) {
+    topicListArr.push(
+      <a
+        key={topicList[i] + i.toString()}
+        className='topicOption'
+        value={topicList[i]}
+      >
+        {topicList[i]}
+      </a>
+    );
+  } */}
+          <select className="dropDown"
             name='topics'
             id='topics'
             onChange={() => {
@@ -257,7 +287,7 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-        <button onClick={balanceLoad}>Balance Load on Topic</button>
+        <button className="loadBalanceBtn" onClick={balanceLoad}>Balance Load on Topic</button>
       </div>
     </div>
   );
