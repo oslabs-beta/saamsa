@@ -14,7 +14,7 @@ module.exports = {
     static: {
       directory: path.resolve(__dirname, './'),
     },
-    proxy: { '/': 'http://localhost:3000' },
+    proxy: { '/': 'http://localhost:3001' },
     compress: true,
     port: 8080,
   },
