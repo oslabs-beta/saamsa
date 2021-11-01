@@ -18,6 +18,7 @@ describe('Selector unit tests', () => {
     data: [],
     topic: 'testTopic',
     consumerList: [],
+    logOut: jest.fn(),
     setConsumerList: jest.fn(),
   };
   it('should populate the server drop down with the server list', () => {

@@ -2,18 +2,18 @@ import * as React from 'react';
 import * as d3 from 'd3';
 import '../../client/scss/Graph.scss';
 import axios from 'axios';
-import * as _ from 'lodash';
+import * as types from '../../types';
 interface Props {
   currentUser: string;
-  setData: (arg: any) => void;
+  setData: (arg: { time: number; value: number }[]) => void;
   topic: string;
   xScale: d3.ScaleLinear<number, number, never>;
   setXScale: (arg: () => d3.ScaleLinear<number, number, never>) => void;
   data: Array<{ time: number; value: number }>;
-  consumerList: any;
+  consumerList: types.consumerListElement[] | null;
   bootstrap: string;
   topicList: string[];
-  setTopic: (arg: any) => void;
+  setTopic: (arg: string) => void;
 }
 const Graph = ({
   currentUser,
@@ -85,6 +85,7 @@ const Graph = ({
         'transform',
         `translate(${margin.left}, ${margin.top})`
       );
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
         arg: d3.Selection<Element, unknown, HTMLElement, unknown>
@@ -93,7 +94,7 @@ const Graph = ({
           [margin.left, margin.top], //new min width and min height after zoom
           [width - margin.right, height - margin.top], //new max width and height after zoom
         ];
-        const zoomed = (event: d3.D3ZoomEvent<any, number>) => {
+        const zoomed = (event: d3.D3ZoomEvent<Element, number>) => {
           xScale.range([0, width].map((d) => event.transform.applyX(d))); //applying transform from user
           const newBarWidth =
             (Math.abs(xScale.range()[1] - xScale.range()[0]) / width) *
@@ -101,9 +102,9 @@ const Graph = ({
           arg
             .selectAll('.bar')
             .attr('width', newBarWidth - 1)
-            .attr('transform', (d: any): string => {
+            .attr('transform', function (d: any): string {
               //updating x-y coords for each bar and width
-              return `translate(${xScale(d!.x0)} ,${yScale(d.length)})`;
+              return `translate(${xScale(d?.x0)} ,${yScale(d.length)})`;
             })
             .attr('height', (d: any) => `${height - yScale(d.length) - 2}`);
           d3.select<any, any>('.xAxis').call(
@@ -155,9 +156,9 @@ const Graph = ({
         .attr('height', height + 10)
         .attr('x', margin.left)
         .attr('y', margin.top)
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
-        .text("Value vs Date Graph");
+        .style('font-size', '16px')
+        .style('text-decoration', 'underline')
+        .text('Value vs Date Graph');
       //making sure that x-axis and y-axis ticks are integers only!
       const xAxisTicks = xScale
         .ticks()
@@ -174,6 +175,7 @@ const Graph = ({
         .tickValues(yAxisTicks)
         .tickFormat(d3.format('d'));
       //appending the bars and x-axis to a new g element which is clippable and references the clip path above so that these two things that are the only thing clipped
+      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       svg
         .append('g')
         .attr('class', 'clippable')
@@ -272,59 +274,44 @@ const Graph = ({
       });
     }
     if (consumerList && consumerList.length) {
-      consumerList.forEach(
-        (consumerGroupArray: {
-          groups: [
-            {
-              groupId: string;
-              members: [
-                {
-                  clientId: string;
-                  memberId: string;
-                  stringifiedMetadata: string;
-                }
-              ];
-            }
-          ];
-        }) => {
-          consumerGroupArray.groups.forEach((consumerGroup) => {
-            if (consumerGroup.members.length) {
-              //below, each saamsaLoadBalancer stream has groupid of saamsaLoadBalancer%%%topic_name -> want to consolidate all of these onto individual node for viz purposes
-              if (
-                !nodes.some(
-                  //only push that node once
-                  (el: { id: string }) => el.id === 'saamsaLoadBalancer'
-                )
+      consumerList.forEach((consumerGroupArray: types.consumerListElement) => {
+        consumerGroupArray.groups.forEach((consumerGroup) => {
+          if (consumerGroup.members.length) {
+            //below, each saamsaLoadBalancer stream has groupid of saamsaLoadBalancer%%%topic_name -> want to consolidate all of these onto individual node for viz purposes
+            if (
+              !nodes.some(
+                //only push that node once
+                (el: { id: string }) => el.id === 'saamsaLoadBalancer'
               )
-                nodes.push({
-                  id: consumerGroup.groupId,
-                  group: 'consumerGroup',
-                });
-              consumerGroup.members.forEach((consumer) => {
-                nodes.push({ id: consumer.memberId, group: 'consumer' });
-                links.push({
-                  source: consumerGroup.groupId,
-                  target: consumer.memberId,
-                  value: 10,
-                });
-                if (
-                  consumer &&
-                  consumer.stringifiedMetadata.length && //stringifiedMetadata is the assigned topic
-                  consumer.stringifiedMetadata !== 'topic_not_found' //for unattached consumers, if so, then do not connect to a topic
-                ) {
-                  links.push({
-                    source: consumer.memberId,
-                    target: consumer.stringifiedMetadata,
-                    value: 4,
-                  });
-                } else {
-                  console.log('topic_not_found');
-                }
+            )
+              nodes.push({
+                id: consumerGroup.groupId,
+                group: 'consumerGroup',
               });
-            }
-          });
-        }
-      );
+            consumerGroup.members.forEach((consumer) => {
+              nodes.push({ id: consumer.memberId, group: 'consumer' });
+              links.push({
+                source: consumerGroup.groupId,
+                target: consumer.memberId,
+                value: 10,
+              });
+              if (
+                consumer &&
+                consumer.stringifiedMetadata.length && //stringifiedMetadata is the assigned topic
+                consumer.stringifiedMetadata !== 'topic_not_found' //for unattached consumers, if so, then do not connect to a topic
+              ) {
+                links.push({
+                  source: consumer.memberId,
+                  target: consumer.stringifiedMetadata,
+                  value: 4,
+                });
+              } else {
+                console.log('topic_not_found');
+              }
+            });
+          }
+        });
+      });
     }
     const svg = d3.select('.charty');
     //the physics behind how the nodes interact with each other

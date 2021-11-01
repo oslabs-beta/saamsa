@@ -4,6 +4,7 @@ import '../../client/scss/Selector.scss';
 import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
+import * as types from '../../types';
 interface Props {
   logOut: () => void;
   currentUser: string;
@@ -17,8 +18,8 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
-  consumerList: any;
-  setConsumerList: (arg: any) => void;
+  consumerList: types.consumerListElement[] | null;
+  setConsumerList: (arg: types.consumerListElement[]) => void;
 }
 const Selector = ({
   logOut,
@@ -47,8 +48,6 @@ const Selector = ({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
       url: 'http://localhost:3001/kafka/balanceLoad',
-    }).then((response) => {
-      return;
     });
   };
   //update SQL tables
@@ -134,12 +133,9 @@ const Selector = ({
   if (process.env.NODE_ENV !== 'testing') {
     useInterval(() => {
       if (bootstrap.length) {
-        console.log('inside of setinterval bootstrap', bootstrap);
         updateTables(bootstrap);
         fetchTopics(bootstrap);
         fetchConsumers(bootstrap);
-        console.log(bootstrap);
-        console.log(topic);
         if (topic.length) {
           changeTopics();
         }
@@ -229,39 +225,42 @@ const Selector = ({
     <div id='mainWrapper'>
       <div className='headingWrapper'>
         <h1 id='heading'>Saamsa </h1>
-        <div id = 'loggedIn'> 
-        <p className='loggedInAs'>Logged in as {currentUser}</p>
-        <button className="logOutBtn" onClick={logOut}> Log Out </button>
+        <div id='loggedIn'>
+          <p className='loggedInAs'>Logged in as {currentUser}</p>
+          <button className='logOutBtn' onClick={logOut}>
+            Log Out
+          </button>
         </div>
       </div>
- 
+
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-          <label className="inputLabels" htmlFor='topicInput'>Add a new broker: </label>
+          <label className='inputLabels' htmlFor='topicInput'>
+            Add a new broker:
+          </label>
           <input id='bootstrapInput' placeholder='localhost:00000'></input>
-          <button className='Btn' onClick={createTable}>
-          Submit
-        </button>
+          <button className='submitBtn' onClick={createTable}>
+            Submit
+          </button>
         </div>
-       
 
         <div className='brokerSelector'>
-          <p className="inputLabels">Current broker: </p>
+          <p className='inputLabels'>Current broker: </p>
           <select
-          className="dropDown"
+            className='dropDown'
             name='bootstrap'
             id='bootstrap'
             onChange={() => changeServer()}
           >
-            <option className="dropdownOptions"></option>
+            <option className='serverOption'></option>
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
-          <p className="inputLabels">Current topic: </p>
- 
-        {/* const topicListArr: JSX.Element[] = [];
+          <p className='inputLabels'>Current topic: </p>
+
+          {/* const topicListArr: JSX.Element[] = [];
   for (let i = 0; i < topicList.length; i++) {
     topicListArr.push(
       <a
@@ -273,7 +272,8 @@ const Selector = ({
       </a>
     );
   } */}
-          <select className="dropDown"
+          <select
+            className='dropDown'
             name='topics'
             id='topics'
             onChange={() => {
@@ -284,7 +284,9 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-        <button className="loadBalanceBtn" onClick={balanceLoad}>Balance Load on Topic</button>
+        <button className='loadBalanceBtn' onClick={balanceLoad}>
+          Balance Load on Topic
+        </button>
       </div>
     </div>
   );
