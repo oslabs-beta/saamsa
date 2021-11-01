@@ -7,7 +7,7 @@ import { exec } from 'child_process';
 
 const controller: Record<string, types.middlewareFunction> = {};
 
-(controller.balanceLoad = (req, res, next) => {
+controller.balanceLoad = (req, res, next) => {
   const { bootstrap, topic, numPartitions } = req.body;
   exec(
     `java -jar ${path.join(
@@ -22,84 +22,81 @@ const controller: Record<string, types.middlewareFunction> = {};
     }
   );
   return next();
-}),
-  (controller.updateTables = (req, res, next) => {
-    try {
-      const { bootstrap, currentUser } = req.body;
-      const bootstrapSanitized = bootstrap.replace(':', '_'); //sanitizing because of reserved characters in SQL (can circumvent by wrapping table name in quotes)
-      const instance = new kafka.Kafka({
-        clientId: 'saamsa',
-        brokers: [`${bootstrap}`],
-      });
-      const admin = instance.admin();
-      admin.connect();
-      admin.listTopics().then((data) => {
-        open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
-          (db) => {
-            data.forEach((el) => {
-              db.all(
-                `SELECT topic FROM '${bootstrapSanitized.concat(
-                  `_${currentUser}_` //this is to differentiate each bootstrap server for each individual user
-                )}' WHERE topic='${el}';`
-              )
-                .then((result) => {
-                  console.log(result);
-                  if (result.length === 0) {
-                    admin.fetchTopicOffsets(el).then((response) => {
-                      let colString = 'topic, ';
-                      let valString = `'${el}', `;
-                      response.forEach((partition) => {
-                        valString += `${partition.offset},`;
-                        colString += `partition_${partition.partition},`;
-                      });
-                      valString = valString.slice(0, valString.length - 1);
-                      colString = colString.slice(0, colString.length - 1);
-                      try {
-                        db.exec(
-                          `INSERT INTO '${bootstrapSanitized.concat(
-                            `_${currentUser}_`
-                          )}' (${colString}) VALUES (${valString});`
-                        ).catch(() => {
-                          db.exec(
-                            `DROP TABLE '${bootstrapSanitized.concat(
-                              `_${currentUser}_`
-                            )}'`
-                          ).then(() => {
-                            return res.redirect(
-                              307,
-                              'http://saamsa.io/kafka/createTable'
-                            );
-                          });
-                        });
-                      } catch (error) {
-                        return next(error);
-                      }
+};
+controller.updateTables = (req, res, next) => {
+  try {
+    const { bootstrap, currentUser } = req.body;
+    const bootstrapSanitized = bootstrap.replace(':', '_'); //sanitizing because of reserved characters in SQL (can circumvent by wrapping table name in quotes)
+    const instance = new kafka.Kafka({
+      clientId: 'saamsa',
+      brokers: [`${bootstrap}`],
+    });
+    const admin = instance.admin();
+    admin.connect();
+    admin.listTopics().then((data) => {
+      open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
+        (db) => {
+          data.forEach((el) => {
+            db.all(
+              `SELECT topic FROM '${bootstrapSanitized.concat(
+                `_${currentUser}_` //this is to differentiate each bootstrap server for each individual user
+              )}' WHERE topic='${el}';`
+            )
+              .then((result) => {
+                console.log(result);
+                if (result.length === 0) {
+                  admin.fetchTopicOffsets(el).then((response) => {
+                    let colString = 'topic, ';
+                    let valString = `'${el}', `;
+                    response.forEach((partition) => {
+                      valString += `${partition.offset},`;
+                      colString += `partition_${partition.partition},`;
                     });
-                  }
-                })
-                .catch(() => {
-                  return res.redirect(
-                    307,
-                    'http://saamsa.io/kafka/createTable'
-                  );
-                });
-            });
-          }
-        );
-      });
-      admin.disconnect();
-      return next();
-    } catch (err) {
-      const defaultErr = {
-        log: 'Express error handler caught an error in controller.updateTables middleware',
-        status: 500,
-        message: {
-          err: `An error occurred inside a middleware named controller.updateTables : ${err}`,
-        },
-      };
-      return next(defaultErr);
-    }
-  });
+                    valString = valString.slice(0, valString.length - 1);
+                    colString = colString.slice(0, colString.length - 1);
+                    try {
+                      db.exec(
+                        `INSERT INTO '${bootstrapSanitized.concat(
+                          `_${currentUser}_`
+                        )}' (${colString}) VALUES (${valString});`
+                      ).catch(() => {
+                        db.exec(
+                          `DROP TABLE '${bootstrapSanitized.concat(
+                            `_${currentUser}_`
+                          )}'`
+                        ).then(() => {
+                          return res.redirect(
+                            307,
+                            'http://saamsa.io/kafka/createTable'
+                          );
+                        });
+                      });
+                    } catch (error) {
+                      return next(error);
+                    }
+                  });
+                }
+              })
+              .catch(() => {
+                return res.redirect(307, 'http://saamsa.io/kafka/createTable');
+              });
+          });
+        }
+      );
+    });
+    admin.disconnect();
+    return next();
+  } catch (err) {
+    const defaultErr = {
+      log: 'Express error handler caught an error in controller.updateTables middleware',
+      status: 500,
+      message: {
+        err: `An error occurred inside a middleware named controller.updateTables : ${err}`,
+      },
+    };
+    return next(defaultErr);
+  }
+};
 
 //fetches all topics for a given broker (taken from frontend broker selection)
 controller.fetchTopics = (req, res, next) => {
@@ -259,6 +256,7 @@ controller.createTable = async (req, res, next) => {
 
 //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
 controller.refresh = (req, res, next) => {
+  console.log('here');
   try {
     const { bootstrap, topic, currentUser } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -281,6 +279,7 @@ controller.refresh = (req, res, next) => {
       .then(() => {
         //!!important!! slicing off last comma, which will throw a SQL syntax error
         setString = setString.slice(0, setString.length - 1);
+        console.log('here');
         open({
           filename: '/tmp/database.db',
           driver: sqlite3.Database,
@@ -317,6 +316,7 @@ controller.refresh = (req, res, next) => {
           });
       })
       .catch(() => {
+        console.log('here');
         open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
           (db) => {
             db.exec(
@@ -328,6 +328,7 @@ controller.refresh = (req, res, next) => {
         );
       });
   } catch (err) {
+    console.log(err);
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.refresh',
       status: 500,

@@ -18,7 +18,6 @@ function createServer(): express.Application {
   app.get('/sessions', sessionController.isLoggedIn, (req, res) => {
     res.status(200).json(res.locals.user);
   });
-
   //logging in
   app.post(
     '/login',
