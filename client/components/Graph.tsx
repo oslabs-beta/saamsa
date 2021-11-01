@@ -44,21 +44,28 @@ const Graph = ({
     const height = 300 - margin.top - margin.bottom;
     const width = 300 - margin.left - margin.right;
     //calculating max for x and y axis
-    const dataTimeMax: number = data.reduce(
-      (acc, val) => {
-        //checking if value is null -> means partition does not exist
-        if (val.value !== null && val.time > acc.time) return val;
-        else return acc;
-      },
-      { time: 0 }
-    ).time;
-    const dataValueMax: number = data.reduce(
-      (acc, val) => {
-        if (val.value > acc.value) return val;
-        else return acc;
-      },
-      { value: 0 }
-    ).value;
+    let dataTimeMax: number;
+    let dataValueMax: number;
+    try {
+      dataTimeMax = data.reduce(
+        (acc, val) => {
+          //checking if value is null -> means partition does not exist
+          if (val.value !== null && val.time > acc.time) return val;
+          else return acc;
+        },
+        { time: 0 }
+      ).time;
+      dataValueMax = data.reduce(
+        (acc, val) => {
+          if (val.value > acc.value) return val;
+          else return acc;
+        },
+        { value: 0 }
+      ).value;
+    } catch {
+      dataTimeMax = 0;
+      dataValueMax = 0;
+    }
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
@@ -456,21 +463,28 @@ const Graph = ({
       right: 40,
     };
     const height = 300 - margin.top - margin.bottom;
-    const dataTimeMax: number = data.reduce(
-      (acc, val) => {
-        //checking if value is null -> means partition does not exist
-        if (val.value !== null && val.time > acc.time) return val;
-        else return acc;
-      },
-      { time: 0 }
-    ).time;
-    const dataValueMax: number = data.reduce(
-      (acc, val) => {
-        if (val.value > acc.value) return val;
-        else return acc;
-      },
-      { value: 0 }
-    ).value;
+    let dataTimeMax: number;
+    let dataValueMax: number;
+    try {
+      dataTimeMax = data.reduce(
+        (acc, val) => {
+          //checking if value is null -> means partition does not exist
+          if (val.value !== null && val.time > acc.time) return val;
+          else return acc;
+        },
+        { time: 0 }
+      ).time;
+      dataValueMax = data.reduce(
+        (acc, val) => {
+          if (val.value > acc.value) return val;
+          else return acc;
+        },
+        { value: 0 }
+      ).value;
+    } catch (error) {
+      dataValueMax = 0;
+      dataTimeMax = 0;
+    }
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
