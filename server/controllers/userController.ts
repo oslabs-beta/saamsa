@@ -1,10 +1,8 @@
-
 const bcrypt = require('bcryptjs');
 import userModels from '../models/userModels';
-import MiddlewareFunction from '../types';
+import * as types from '../../types';
 
-
-const userController: Record<string, MiddlewareFunction> = {};
+const userController: Record<string, types.middlewareFunction> = {};
 
 userController.createUser = async (req, res, next) => {
   try {
@@ -22,7 +20,9 @@ userController.createUser = async (req, res, next) => {
     const defaultErr = {
       log: 'Express error handler caught an error in userController.createUser middleware',
       status: 500,
-      message: { err: `An error occurred inside a middleware named userController.createUser : ${err}` },
+      message: {
+        err: `An error occurred inside a middleware named userController.createUser : ${err}`,
+      },
     };
     return next(defaultErr);
   }
@@ -35,23 +35,24 @@ userController.verifyUser = async (req, res, next) => {
     let compare;
 
     const user = await userModels.findOne({ username });
-    if(user){
+    if (user) {
       hashedPW = user!.password;
       compare = bcrypt.compareSync(password, hashedPW);
     }
-    if (!compare || !user){
+    if (!compare || !user) {
       throw Error('Incorrect username or password. Please try again.');
+    } else {
+      res.locals.user = username;
     }
-      else{
-        res.locals.user = username;
-      }
     next();
   } catch (err) {
     const defaultErr = {
       log: 'Express error handler caught an error in userController.verifyUser middleware',
       status: 401,
-      message: { err: `An error occurred inside a middleware named userController.verifyUser middleware: ${err}` },
-    }
+      message: {
+        err: `An error occurred inside a middleware named userController.verifyUser middleware: ${err}`,
+      },
+    };
     return next(defaultErr);
   }
 };
