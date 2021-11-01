@@ -43,7 +43,6 @@ controller.updateTables = (req, res, next) => {
               )}' WHERE topic='${el}';`
             )
               .then((result) => {
-                console.log(result);
                 if (result.length === 0) {
                   admin.fetchTopicOffsets(el).then((response) => {
                     let colString = 'topic, ';
@@ -256,7 +255,6 @@ controller.createTable = async (req, res, next) => {
 
 //grabs data from kafka admin for a specific topic, then updates it in sqldb, then reads sqldb and sends it to frontend
 controller.refresh = (req, res, next) => {
-  console.log('here');
   try {
     const { bootstrap, topic, currentUser } = req.body;
     const bootstrapSanitized = bootstrap.replace(':', '_');
@@ -279,7 +277,6 @@ controller.refresh = (req, res, next) => {
       .then(() => {
         //!!important!! slicing off last comma, which will throw a SQL syntax error
         setString = setString.slice(0, setString.length - 1);
-        console.log('here');
         open({
           filename: '/tmp/database.db',
           driver: sqlite3.Database,
@@ -316,7 +313,6 @@ controller.refresh = (req, res, next) => {
           });
       })
       .catch(() => {
-        console.log('here');
         open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
           (db) => {
             db.exec(
