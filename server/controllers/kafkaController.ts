@@ -300,6 +300,7 @@ controller.refresh = (req, res, next) => {
                 `_${currentUser}_`
               )}' WHERE topic='${topic}'`
             )
+
               .then((result) => {
                 //new arr which holds the correctly formated data for d3
                 const arr: { time: number; value: number }[] = [];
