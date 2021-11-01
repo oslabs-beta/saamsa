@@ -1,11 +1,11 @@
 import * as kafka from 'kafkajs';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-import MiddlewareFunction from '../types';
+import * as types from '../../types';
 import * as path from 'path';
 import { exec } from 'child_process';
 
-const controller: Record<string, MiddlewareFunction> = {};
+const controller: Record<string, types.middlewareFunction> = {};
 
 (controller.balanceLoad = (req, res, next) => {
   const { bootstrap, topic, numPartitions } = req.body;
@@ -299,21 +299,34 @@ controller.refresh = (req, res, next) => {
               `SELECT * FROM '${bootstrapSanitized.concat(
                 `_${currentUser}_`
               )}' WHERE topic='${topic}'`
-            ).then((result) => {
-              //new arr which holds the correctly formated data for d3
-              const arr: { time: number; value: number }[] = [];
-              Object.keys(result[0]).forEach((el) => {
-                if (el !== 'topic') {
-                  arr.push({
-                    //slicing off first part of colname and turning into number (for d3) (partition_1 -> 1)
-                    time: Number(el.slice(10)),
-                    value: result[0][el],
-                  });
-                }
+            )
+              .then((result) => {
+                //new arr which holds the correctly formated data for d3
+                const arr: { time: number; value: number }[] = [];
+                Object.keys(result[0]).forEach((el) => {
+                  if (el !== 'topic') {
+                    arr.push({
+                      //slicing off first part of colname and turning into number (for d3) (partition_1 -> 1)
+                      time: Number(el.slice(10)),
+                      value: result[0][el],
+                    });
+                  }
+                });
+                res.locals.result = arr;
+                return next();
+              })
+              .catch(() => {
+                db.exec(
+                  `DROP TABLE '${bootstrapSanitized.concat(
+                    `_${currentUser}_`
+                  )}'`
+                ).then(() => {
+                  return res.redirect(
+                    307,
+                    'http://saamsa.io/kafka/createTable'
+                  );
+                });
               });
-              res.locals.result = arr;
-              return next();
-            });
           });
       });
   } catch (err) {

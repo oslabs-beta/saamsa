@@ -1,6 +1,6 @@
-import MiddlewareFunction from '../types';
+import * as types from '../../types';
 
-const cookieController: Record<string, MiddlewareFunction> = {};
+const cookieController: Record<string, types.middlewareFunction> = {};
 
 // setting cookies
 
