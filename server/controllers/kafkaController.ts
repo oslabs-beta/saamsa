@@ -299,36 +299,33 @@ controller.refresh = (req, res, next) => {
               `SELECT * FROM '${bootstrapSanitized.concat(
                 `_${currentUser}_`
               )}' WHERE topic='${topic}'`
-            )
-
-              .then((result) => {
-                //new arr which holds the correctly formated data for d3
-                const arr: { time: number; value: number }[] = [];
-                Object.keys(result[0]).forEach((el) => {
-                  if (el !== 'topic') {
-                    arr.push({
-                      //slicing off first part of colname and turning into number (for d3) (partition_1 -> 1)
-                      time: Number(el.slice(10)),
-                      value: result[0][el],
-                    });
-                  }
-                });
-                res.locals.result = arr;
-                return next();
-              })
-              .catch(() => {
-                db.exec(
-                  `DROP TABLE '${bootstrapSanitized.concat(
-                    `_${currentUser}_`
-                  )}'`
-                ).then(() => {
-                  return res.redirect(
-                    307,
-                    'http://saamsa.io/kafka/createTable'
-                  );
-                });
+            ).then((result) => {
+              //new arr which holds the correctly formated data for d3
+              const arr: { time: number; value: number }[] = [];
+              Object.keys(result[0]).forEach((el) => {
+                if (el !== 'topic') {
+                  arr.push({
+                    //slicing off first part of colname and turning into number (for d3) (partition_1 -> 1)
+                    time: Number(el.slice(10)),
+                    value: result[0][el],
+                  });
+                }
               });
+              res.locals.result = arr;
+              return next();
+            });
           });
+      })
+      .catch(() => {
+        open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
+          (db) => {
+            db.exec(
+              `DROP TABLE '${bootstrapSanitized.concat(`_${currentUser}_`)}'`
+            ).then(() => {
+              return res.redirect(307, 'http://saamsa.io/kafka/createTable');
+            });
+          }
+        );
       });
   } catch (err) {
     const defaultErr = {
