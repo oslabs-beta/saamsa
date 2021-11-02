@@ -225,9 +225,22 @@ const Selector = ({
 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-          <label className='inputLabels' htmlFor='topicInput'>
-            Add a new broker:{' '}
-          </label>
+          <div id='brokerTooltip'>
+            <label
+              className='inputLabels'
+              id='brokerLabel'
+              htmlFor='topicInput'
+            >
+              Add a new broker{' '}
+              <img src='https://img.icons8.com/ios/50/000000/ask-question.png' />
+              <span className='tooltipSpan'>
+                Enter the address of your publically accessible Kafka broker
+                here. If you don&apos;t have a broker, you can use our demo
+                broker at demo.saamsa.io:29093. You can create topics and add
+                consumers/producers to this broker by visiting demo.saamsa.io
+              </span>
+            </label>
+          </div>
           <input id='bootstrapInput' placeholder='demo.saamsa.io:29093'></input>
           <button className='Btn' onClick={createTable}>
             Submit
