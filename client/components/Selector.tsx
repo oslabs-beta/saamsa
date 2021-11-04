@@ -36,21 +36,6 @@ const Selector = ({
   setBootstrap,
   setConsumerList,
 }: Props): JSX.Element => {
-  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
-  const balanceLoad = (): void => {
-    const numPartitions: number = data.reduce((acc, val) => {
-      //checking if value is null -> means partition does not exist
-      if (val.value !== null && val.time > acc.time) return val;
-      else return acc;
-    }).time;
-    axios({
-      method: 'post',
-      data: { bootstrap, topic, numPartitions },
-      url: 'http://saamsa.io/kafka/balanceLoad',
-    }).then(() => {
-      return;
-    });
-  };
   //update SQL tables
   const updateTables = (arg: string | undefined): void => {
     if (!arg || !arg.length) arg = bootstrap;
@@ -287,9 +272,6 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-        <button className='loadBalanceBtn' onClick={balanceLoad}>
-          Balance Load on Topic
-        </button>
       </div>
     </div>
   );

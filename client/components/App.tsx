@@ -5,13 +5,14 @@ import Graph from './Graph';
 import Selector from './Selector';
 import * as d3 from 'd3';
 import SignUpPage from './SignUpPage';
+import axios from 'axios';
 const App = (): JSX.Element => {
   // defining state variables and functions
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>('');
@@ -25,7 +26,21 @@ const App = (): JSX.Element => {
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
-
+  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
+  const balanceLoad = (): void => {
+    const numPartitions: number = data.reduce((acc, val) => {
+      //checking if value is null -> means partition does not exist
+      if (val.value !== null && val.time > acc.time) return val;
+      else return acc;
+    }).time;
+    axios({
+      method: 'post',
+      data: { bootstrap, topic, numPartitions },
+      url: 'http://saamsa.io/kafka/balanceLoad',
+    }).then(() => {
+      return;
+    });
+  };
   // login button function
   const loginButton = () => {
     // username is input value in usernmae field
@@ -184,29 +199,34 @@ const App = (): JSX.Element => {
             setXScale={setXScale}
             data={data}
           />
-          <svg
-            id='graphContainer'
-            viewBox='0 0 330 300'
-            preserveAspectRatio='xMidYMid meet'
-          >
-            <g className='graphy'></g>
-          </svg>
+          <div id='graphAndLBBtn'>
+            <svg
+              id='graphContainer'
+              viewBox='0 0 330 300'
+              preserveAspectRatio='xMidYMid meet'
+            >
+              <g className='graphy'></g>
+            </svg>
+            <button onClick={balanceLoad} className='loadBalanceBtn'>
+              Balance Load On Topic
+            </button>
+          </div>
+          <div id='legend'>
+            <div className='brokerBlock'></div>
+            <text>broker</text>
+            <div className='consumerBlock'></div>
+            <text>consumer</text>
+            <div className='consumerGroupBlock'></div>
+            <text>consumerGroup</text>
+            <div className='topicBlock'></div>
+            <text>topic</text>
+          </div>
           <svg
             id='chartContainer'
             viewBox='0 0 330 300'
             preserveAspectRatio='xMidYMid meet'
           >
             <g className='charty'></g>
-            <g id='legend'>
-              <div className='brokerBlock'></div>
-              <text>broker</text>
-              <div className='consumerBlock'></div>
-              <text>consumer</text>
-              <div className='consumerGroupBlock'></div>
-              <text>consumerGroup</text>
-              <div className='topicBlock'></div>
-              <text>topic</text>
-            </g>
           </svg>
         </div>
       </div>

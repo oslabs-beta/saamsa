@@ -28,6 +28,21 @@ const Graph = ({
   setTopic,
 }: Props): JSX.Element => {
   //method to render bar graph of current data
+  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
+  const balanceLoad = (): void => {
+    const numPartitions: number = data.reduce((acc, val) => {
+      //checking if value is null -> means partition does not exist
+      if (val.value !== null && val.time > acc.time) return val;
+      else return acc;
+    }).time;
+    axios({
+      method: 'post',
+      data: { bootstrap, topic, numPartitions },
+      url: 'http://saamsa.io/kafka/balanceLoad',
+    }).then(() => {
+      return;
+    });
+  };
   const renderGraph = () => {
     //defining dimensions
     const margin: {

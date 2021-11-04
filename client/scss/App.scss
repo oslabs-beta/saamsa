@@ -32,8 +32,14 @@
 #legend {
   display: flex;
   justify-content: space-around;
+  position: relative;
+  z-index: 99;
+  top: 60vh;
+  left: 3vw;
   div {
     height: 10px;
+    position: relative;
+    top: 7px;
     width: 10px;
   }
   .topicBlock {
@@ -45,7 +51,22 @@
   .consumerBlock {
     background-color: blue;
   }
-  .consuemrGroupBlock {
+  .consumerGroupBlock {
     background-color: green;
   }
+}
+.loadBalanceBtn {
+  margin-top: 10px;
+  border-radius: 4px;
+  background-color: $saamsaYellow;
+  border: 1px solid black;
+  height: 30px;
+  font-size: 15px;
+  font-family: $buttonTitle;
+  color: $saamsaBlack;
+  width: 200px;
+  position: relative;
+  top: 63vh;
+  right: -72vw;
+  z-index: 1;
 }
