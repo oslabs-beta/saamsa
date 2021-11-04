@@ -216,7 +216,7 @@ const Graph = ({
         .text('Partition Index')
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
-        .attr('y', 20); // Relative to the x axis.
+        .attr('y', 30); // Relative to the x axis.
       //appending y-axis directly to graph, cause we don't want it to be clipped
       svg
         .append('g')
@@ -229,7 +229,7 @@ const Graph = ({
         .text('Offsets for each partition')
         .attr('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
-        .attr('x', -75)
+        .attr('x', -width / 2)
         .attr('y', -25); // Relative to the y axis.
       //adding an invisible rectangle to svg so that anywhere within graph area you can zoom, as zoom only works on filled elements
       svg
