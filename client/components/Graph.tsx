@@ -547,7 +547,7 @@ const Graph = ({
       chart();
     }, [topicList, consumerList]);
   }
-  return <div>{!!data.length && <h2>{topic}</h2>}</div>;
+  return <div></div>;
 };
 
 export default Graph;

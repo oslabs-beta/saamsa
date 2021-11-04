@@ -11,7 +11,7 @@ const App = (): JSX.Element => {
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
   const [consumerList, setConsumerList] = React.useState<any>(null);
-  const [loginStatus, changeLoginStatus] = React.useState<boolean>(true);
+  const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>('');
@@ -186,14 +186,14 @@ const App = (): JSX.Element => {
           />
           <svg
             id='graphContainer'
-            viewBox='0 0 300 300'
+            viewBox='0 0 330 300'
             preserveAspectRatio='xMidYMid meet'
           >
             <g className='graphy'></g>
           </svg>
           <svg
             id='chartContainer'
-            viewBox='0 0 300 300'
+            viewBox='0 0 330 300'
             preserveAspectRatio='xMidYMid meet'
           >
             <g className='charty'></g>
