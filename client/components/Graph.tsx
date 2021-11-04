@@ -28,21 +28,7 @@ const Graph = ({
   setTopic,
 }: Props): JSX.Element => {
   //method to render bar graph of current data
-  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
-  const balanceLoad = (): void => {
-    const numPartitions: number = data.reduce((acc, val) => {
-      //checking if value is null -> means partition does not exist
-      if (val.value !== null && val.time > acc.time) return val;
-      else return acc;
-    }).time;
-    axios({
-      method: 'post',
-      data: { bootstrap, topic, numPartitions },
-      url: 'http://saamsa.io/kafka/balanceLoad',
-    }).then(() => {
-      return;
-    });
-  };
+
   const renderGraph = () => {
     //defining dimensions
     const margin: {
@@ -105,7 +91,7 @@ const Graph = ({
         .attr('height', height + margin.top + margin.bottom);
       d3.select('.graphy').attr(
         'transform',
-        `translate(${margin.left}, ${margin.top})`
+        `translate(${margin.left / 2}, ${margin.top / 2 - 5})`
       );
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
@@ -228,8 +214,9 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Partition Index')
-        .attr('x', width - 100)
-        .attr('y', 37); // Relative to the x axis.
+        .attr('text-anchor', 'middle')
+        .attr('x', width / 2)
+        .attr('y', 20); // Relative to the x axis.
       //appending y-axis directly to graph, cause we don't want it to be clipped
       svg
         .append('g')
@@ -240,6 +227,7 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Offsets for each partition')
+        .attr('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
         .attr('x', -75)
         .attr('y', -25); // Relative to the y axis.
