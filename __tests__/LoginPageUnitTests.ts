@@ -8,10 +8,9 @@ configure({ adapter: new Adapter() });
 describe('LoginPage unit tests', () => {
   describe('user signup', () => {
     const props = {
-      loginStatus: false,
       loginAttempt: null,
       loginButton: jest.fn(),
-      signUp: jest.fn(),
+      signUpButton: jest.fn(),
     };
     let wrapper;
     it('renders username and password input field and signup, login, forgot password buttons', () => {
@@ -21,8 +20,8 @@ describe('LoginPage unit tests', () => {
     });
     it('calls correct functions upon signup and login', () => {
       wrapper = shallow(LoginPage(props));
-      wrapper.find('#signUpBtn').simulate('click');
-      expect(props.signUp).toHaveBeenCalled();
+      wrapper.find('#signUpButton').simulate('click');
+      expect(props.signUpButton).toHaveBeenCalled();
       wrapper.find('#loginBtn').simulate('click');
       expect(props.loginButton).toHaveBeenCalled();
     });
@@ -34,7 +33,7 @@ describe('LoginPage unit tests', () => {
       wrapper
         .find('#password')
         .simulate('change', { target: { value: 'bobo' } });
-      wrapper.find('#signUpBtn').simulate('click');
+      wrapper.find('#signUpButton').simulate('click');
       const message = wrapper.find('#loginAttemptMessage');
       expect(message.html()).not.toBeNull();
     });

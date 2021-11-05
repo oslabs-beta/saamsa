@@ -32,7 +32,6 @@ sessionController.startSession = async (req, res, next) => {
 sessionController.endSession = async (req, res, next) => {
   try {
     const user = req.body;
-    console.log(user);
     await Session.remove({});
     res.locals.user = user;
     next();
@@ -54,7 +53,6 @@ sessionController.isLoggedIn = async (req, res, next) => {
     const session = await Session.find();
     if (session) {
       res.locals.user = session;
-      console.log(session);
       return next();
     }
     throw Error('User session does not exist in DB');

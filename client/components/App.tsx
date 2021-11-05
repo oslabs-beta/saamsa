@@ -6,23 +6,23 @@ import Selector from './Selector';
 import * as d3 from 'd3';
 import SignUpPage from './SignUpPage';
 import axios from 'axios';
+import * as types from '../../types';
 const App = (): JSX.Element => {
   // defining state variables and functions
   const [xScale, setXScale] = React.useState<
     d3.ScaleLinear<number, number, never>
   >(d3.scaleLinear().range([0, 0]).domain([0, 0]));
-  const [consumerList, setConsumerList] = React.useState<any>(null);
+  const [consumerList, setConsumerList] = React.useState<
+    types.consumerListElement[] | null
+  >(null);
   const [loginStatus, changeLoginStatus] = React.useState<boolean>(false);
   const [loginAttempt, changeAttempt] = React.useState<string | null>(null);
   const [signUpStatus, changeSignUpStatus] = React.useState<boolean>(false);
   const [currentUser, changeUser] = React.useState<string>('');
-  const [rendering, setRendering] = React.useState<boolean>(false);
   const [topic, setTopic] = React.useState<string>('');
   const [topicList, setTopicList] = React.useState<string[]>([]);
   const [bootstrap, setBootstrap] = React.useState<string>('');
   const [serverList, setServerList] = React.useState<string[]>([]);
-
-  //graph rendering state ->
   const [data, setData] = React.useState<
     Array<{ time: number; value: number }>
   >([]);
@@ -65,7 +65,7 @@ const App = (): JSX.Element => {
         password,
       };
 
-      fetch('http://saamsa.io/login', {
+      fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -110,7 +110,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('http://saamsa.io/signup', {
+      fetch('http://localhost:3001/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -129,7 +129,7 @@ const App = (): JSX.Element => {
   };
 
   const logOut = async () => {
-    fetch('http://saamsa.io/logout'),
+    fetch('http://localhost:3001/logout'),
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,16 +139,13 @@ const App = (): JSX.Element => {
     changeLoginStatus(false);
     changeAttempt(null);
     setData([]);
-    setTopicList([]);
-    setConsumerList([]);
-    setServerList([]);
+    setConsumerList(null);
     setTopic('');
     setBootstrap('');
+    setServerList([]);
+    setTopicList([]);
   };
 
-  React.useEffect(() => {
-    setRendering(false);
-  }, []);
   if (signUpStatus === true) {
     return (
       <div key='signUpPage'>

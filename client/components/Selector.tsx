@@ -4,6 +4,7 @@ import '../../client/scss/Selector.scss';
 import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
+import * as types from '../../types';
 interface Props {
   logOut: () => void;
   currentUser: string;
@@ -17,8 +18,8 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
-  consumerList: any;
-  setConsumerList: (arg: any) => void;
+  consumerList: types.consumerListElement[] | null;
+  setConsumerList: (arg: types.consumerListElement[]) => void;
 }
 const Selector = ({
   logOut,
@@ -36,6 +37,22 @@ const Selector = ({
   setBootstrap,
   setConsumerList,
 }: Props): JSX.Element => {
+<<<<<<< HEAD
+=======
+  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
+  const balanceLoad = (): void => {
+    const numPartitions: number = data.reduce((acc, val) => {
+      //checking if value is null -> means partition does not exist
+      if (val.value !== null && val.time > acc.time) return val;
+      else return acc;
+    }).time;
+    axios({
+      method: 'post',
+      data: { bootstrap, topic, numPartitions },
+      url: 'http://localhost:3001/kafka/balanceLoad',
+    });
+  };
+>>>>>>> dev
   //update SQL tables
   const updateTables = (arg: string | undefined): void => {
     if (!arg || !arg.length) arg = bootstrap;
@@ -117,6 +134,22 @@ const Selector = ({
     }
   };
 
+<<<<<<< HEAD
+=======
+  if (process.env.NODE_ENV !== 'testing') {
+    useInterval(() => {
+      if (bootstrap.length) {
+        updateTables(bootstrap);
+        fetchTopics(bootstrap);
+        fetchConsumers(bootstrap);
+        if (topic.length) {
+          changeTopics();
+        }
+      }
+    }, 3000);
+  }
+
+>>>>>>> dev
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
@@ -202,14 +235,19 @@ const Selector = ({
         <div id='loggedIn'>
           <p className='loggedInAs'>Logged in as {currentUser}</p>
           <button className='logOutBtn' onClick={logOut}>
+<<<<<<< HEAD
             {' '}
             Log Out{' '}
+=======
+            Log Out
+>>>>>>> dev
           </button>
         </div>
       </div>
 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
+<<<<<<< HEAD
           <div id='brokerTooltip'>
             <label
               className='inputLabels'
@@ -228,6 +266,13 @@ const Selector = ({
           </div>
           <input id='bootstrapInput' placeholder='demo.saamsa.io:29093'></input>
           <button className='Btn' onClick={createTable}>
+=======
+          <label className='inputLabels' htmlFor='topicInput'>
+            Add a new broker:
+          </label>
+          <input id='bootstrapInput' placeholder='localhost:00000'></input>
+          <button className='submitBtn' onClick={createTable}>
+>>>>>>> dev
             Submit
           </button>
         </div>
@@ -240,7 +285,11 @@ const Selector = ({
             id='bootstrap'
             onChange={() => changeServer()}
           >
+<<<<<<< HEAD
             <option className='dropdownOptions'></option>
+=======
+            <option className='serverOption'></option>
+>>>>>>> dev
             {serverListArr}
           </select>
         </div>
@@ -272,6 +321,12 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
+<<<<<<< HEAD
+=======
+        <button className='loadBalanceBtn' onClick={balanceLoad}>
+          Balance Load on Topic
+        </button>
+>>>>>>> dev
       </div>
     </div>
   );
