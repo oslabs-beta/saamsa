@@ -2,21 +2,16 @@
   "name": "saamsa",
   "version": "1.0.0",
   "description": "an easy to use Kafka consumer/topic visualizer and topic replicator/load-balancer",
-  "main": "./build/electron/index.js",
+  "main": "./dist/electron/index.js",
   "scripts": {
-    "webpack": "tsc client/index.tsx --declaration --outDir ./tsOutput --module es2015 --jsx react --moduleResolution node && webpack && tsc ./server/server.ts ./server/createServer.ts --moduleResolution node --outDir ./tsOutput/ --esModuleInterop true",
-    "start": "tsc ./index.ts --moduleResolution node --outDir ./tsOutput/electron --esModuleInterop true && nodemon ./tsOutput/server/server.js",
+    "webpack": "tsc client/index.tsx --declaration --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./server/server.ts ./server/createServer.ts --moduleResolution node --outDir ./dist/ --esModuleInterop true",
+    "start": "tsc ./index.ts --moduleResolution node --outDir ./dist/electron --esModuleInterop true && nodemon ./dist/server/server.js",
     "test": "NODE_ENV=testing jest GraphUnitTests SelectorUnitTests LoginPageUnitTests && NODE_ENV=testing jest --env=node serverUnitTests sqlUnitTests",
     "both": "npm run webpack && npm run start",
     "build": "tsc -p ./ && webpack",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-builder"
   },
-  "files": [
-    "*.js",
-    "build",
-    "*.html"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oslabs-beta/saamsa.git"
@@ -96,10 +91,14 @@
     "webpack-dev-server": "^4.3.0"
   },
   "build": {
+    "directories": {
+      "output": "out"
+    },
     "asar": "false",
     "files": [
       "build",
-      "index.html"
+      "index.html",
+      "dist"
     ]
   },
   "config": {
