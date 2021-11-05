@@ -6,18 +6,26 @@
 // }
 
 #graphContainer {
+  @media (max-width: 800px) {
+    top: 101vh;
+    right: 20vw;
+  }
   background-color: $saamsaGrey;
   position: absolute;
-  right: 10px;
-  top: 260px;
+  right: 1vw;
+  top: 36vh;
   border-radius: 8px;
   border: 4px solid $saamsaYellow;
 }
 #chartContainer {
+  @media (max-width: 800px) {
+    left: 20vw;
+    top: 38vh;
+  }
   background-color: $saamsaGrey;
   position: absolute;
-  left: 10px;
-  top: 260px;
+  left: 1vw;
+  top: 36vh;
   border-radius: 8px;
   border: 4px solid $saamsaYellow;
   display: flex;
@@ -30,17 +38,21 @@
 }
 
 #legend {
+  @media (max-width: 800px) {
+    left: 30vw;
+  }
+  min-width: 250px;
   display: flex;
   justify-content: space-around;
   position: relative;
   z-index: 99;
   width: 38vw;
-  top: 62vh;
+  top: 53vh;
   left: 3vw;
   div {
     height: 10px;
     position: relative;
-    top: 7px;
+    top: 3.5px;
     width: 10px;
   }
   .topicBlock {
@@ -55,8 +67,15 @@
   .consumerGroupBlock {
     background-color: green;
   }
+  text {
+    font-size: 11px;
+  }
 }
 .loadBalanceBtn {
+  @media (max-width: 800px) {
+    top: 123vh;
+    right: -38vw;
+  }
   margin-top: 10px;
   border-radius: 4px;
   background-color: $saamsaYellow;
@@ -67,7 +86,7 @@
   color: $saamsaBlack;
   width: 200px;
   position: relative;
-  top: 65vh;
-  right: -72vw;
+  top: 56vh;
+  right: -67vw;
   z-index: 1;
 }

@@ -39,8 +39,11 @@ h2 {
 // }
 svg {
   width: 42vw;
-  height: 60vh;
+  height: 46vh;
   background-color: rgb(109, 165, 162);
+  @media (max-width: 800px) {
+    width: 60vw;
+  }
 }
 .node text {
   display: none;

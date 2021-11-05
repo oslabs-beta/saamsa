@@ -242,6 +242,7 @@ controller.createTable = async (req, res, next) => {
         });
     });
   } catch (err) {
+    console.log(err);
     const defaultErr = {
       log: 'Express error handler caught an error inside controller.createTable',
       status: 500,
