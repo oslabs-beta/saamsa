@@ -36,7 +36,7 @@ const App = (): JSX.Element => {
     axios({
       method: 'post',
       data: { bootstrap, topic, numPartitions },
-      url: 'http://saamsa.io/kafka/balanceLoad',
+      url: 'http://localhost:3001/kafka/balanceLoad',
     }).then(() => {
       return;
     });

@@ -4,7 +4,6 @@ import '../../client/scss/Selector.scss';
 import * as d3 from 'd3';
 import * as _ from 'lodash';
 import useInterval from './useInterval';
-import * as types from '../../types';
 interface Props {
   logOut: () => void;
   currentUser: string;
@@ -18,8 +17,8 @@ interface Props {
   setTopicList: (arg: string[]) => void;
   bootstrap: string;
   setBootstrap: (arg: string) => void;
-  consumerList: types.consumerListElement[] | null;
-  setConsumerList: (arg: types.consumerListElement[]) => void;
+  consumerList: any;
+  setConsumerList: (arg: any) => void;
 }
 const Selector = ({
   logOut,
@@ -37,28 +36,12 @@ const Selector = ({
   setBootstrap,
   setConsumerList,
 }: Props): JSX.Element => {
-<<<<<<< HEAD
-=======
-  //function that sends a request to backend to replicate and rebalance load on selected topic using custom Kafka Streams, does not expect a response
-  const balanceLoad = (): void => {
-    const numPartitions: number = data.reduce((acc, val) => {
-      //checking if value is null -> means partition does not exist
-      if (val.value !== null && val.time > acc.time) return val;
-      else return acc;
-    }).time;
-    axios({
-      method: 'post',
-      data: { bootstrap, topic, numPartitions },
-      url: 'http://localhost:3001/kafka/balanceLoad',
-    });
-  };
->>>>>>> dev
   //update SQL tables
   const updateTables = (arg: string | undefined): void => {
     if (!arg || !arg.length) arg = bootstrap;
     axios({
       method: 'post',
-      url: 'http://saamsa.io/kafka/updateTables',
+      url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
       const temp: { topic: string }[] = [...response.data];
@@ -102,7 +85,7 @@ const Selector = ({
     const bootstrap: HTMLInputElement | null =
       document.querySelector('#bootstrapInput');
     axios({
-      url: 'http://saamsa.io/kafka/createTable',
+      url: 'http://localhost:3001/kafka/createTable',
       method: 'post',
       data: { bootstrap: bootstrap?.value, currentUser },
     }) //if successful, we then repopulate all of our tables, as db has been updated
@@ -114,7 +97,7 @@ const Selector = ({
   const fetchTables = (): void => {
     axios({
       method: 'post',
-      url: 'http://saamsa.io/kafka/fetchTables',
+      url: 'http://localhost:3001/kafka/fetchTables',
       data: { currentUser },
     }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
@@ -134,26 +117,10 @@ const Selector = ({
     }
   };
 
-<<<<<<< HEAD
-=======
-  if (process.env.NODE_ENV !== 'testing') {
-    useInterval(() => {
-      if (bootstrap.length) {
-        updateTables(bootstrap);
-        fetchTopics(bootstrap);
-        fetchConsumers(bootstrap);
-        if (topic.length) {
-          changeTopics();
-        }
-      }
-    }, 3000);
-  }
-
->>>>>>> dev
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
-      url: 'http://saamsa.io/kafka/fetchTopics',
+      url: 'http://localhost:3001/kafka/fetchTopics',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -168,7 +135,7 @@ const Selector = ({
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url: 'http://saamsa.io/kafka/fetchConsumers',
+      url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -188,7 +155,7 @@ const Selector = ({
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
-        url: 'http://saamsa.io/kafka/refresh',
+        url: 'http://localhost:3001/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
@@ -235,19 +202,14 @@ const Selector = ({
         <div id='loggedIn'>
           <p className='loggedInAs'>Logged in as {currentUser}</p>
           <button className='logOutBtn' onClick={logOut}>
-<<<<<<< HEAD
             {' '}
             Log Out{' '}
-=======
-            Log Out
->>>>>>> dev
           </button>
         </div>
       </div>
 
       <div className='brokersDiv'>
         <div className='newBrokerDiv'>
-<<<<<<< HEAD
           <div id='brokerTooltip'>
             <label
               className='inputLabels'
@@ -266,13 +228,6 @@ const Selector = ({
           </div>
           <input id='bootstrapInput' placeholder='demo.saamsa.io:29093'></input>
           <button className='Btn' onClick={createTable}>
-=======
-          <label className='inputLabels' htmlFor='topicInput'>
-            Add a new broker:
-          </label>
-          <input id='bootstrapInput' placeholder='localhost:00000'></input>
-          <button className='submitBtn' onClick={createTable}>
->>>>>>> dev
             Submit
           </button>
         </div>
@@ -285,30 +240,13 @@ const Selector = ({
             id='bootstrap'
             onChange={() => changeServer()}
           >
-<<<<<<< HEAD
             <option className='dropdownOptions'></option>
-=======
-            <option className='serverOption'></option>
->>>>>>> dev
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
           <p className='inputLabels'>Current topic: </p>
-
-          {/* const topicListArr: JSX.Element[] = [];
-  for (let i = 0; i < topicList.length; i++) {
-    topicListArr.push(
-      <a
-        key={topicList[i] + i.toString()}
-        className='topicOption'
-        value={topicList[i]}
-      >
-        {topicList[i]}
-      </a>
-    );
-  } */}
           <select
             className='dropDown'
             name='topics'
@@ -321,12 +259,6 @@ const Selector = ({
             {topicListArr}
           </select>
         </div>
-<<<<<<< HEAD
-=======
-        <button className='loadBalanceBtn' onClick={balanceLoad}>
-          Balance Load on Topic
-        </button>
->>>>>>> dev
       </div>
     </div>
   );
