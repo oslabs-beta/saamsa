@@ -11,6 +11,7 @@ describe('LoginPage unit tests', () => {
       loginStatus: false,
       loginAttempt: null,
       loginButton: jest.fn(),
+      signUpButton: jest.fn(),
       signUp: jest.fn(),
     };
     let wrapper;
@@ -19,24 +20,10 @@ describe('LoginPage unit tests', () => {
       expect(wrapper.find('input').length).toBe(2);
       expect(wrapper.find('button').length).toBe(3);
     });
-    it('calls correct functions upon signup and login', () => {
+    it('calls correct functions upon login', () => {
       wrapper = shallow(LoginPage(props));
-      wrapper.find('#signUpBtn').simulate('click');
-      expect(props.signUp).toHaveBeenCalled();
       wrapper.find('#loginBtn').simulate('click');
       expect(props.loginButton).toHaveBeenCalled();
-    });
-    it('should show a loginAttempt message upon incorrect signup', () => {
-      wrapper = shallow(LoginPage(props));
-      wrapper
-        .find('#username')
-        .simulate('change', { target: { value: 'weewee' } });
-      wrapper
-        .find('#password')
-        .simulate('change', { target: { value: 'bobo' } });
-      wrapper.find('#signUpBtn').simulate('click');
-      const message = wrapper.find('#loginAttemptMessage');
-      expect(message.html()).not.toBeNull();
     });
   });
 });

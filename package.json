@@ -6,7 +6,7 @@
   "scripts": {
     "webpack": "tsc client/index.tsx --declaration --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./server/server.ts ./server/createServer.ts --moduleResolution node --outDir ./dist/ --esModuleInterop true",
     "start": "tsc ./index.ts --moduleResolution node --outDir ./dist/electron --esModuleInterop true && nodemon ./dist/server/server.js",
-    "test": "NODE_ENV=testing jest GraphUnitTests SelectorUnitTests LoginPageUnitTests && NODE_ENV=testing jest --env=node serverUnitTests sqlUnitTests",
+    "test": "NODE_ENV=testing jest SignUpPageUnitTests GraphUnitTests SelectorUnitTests LoginPageUnitTests && NODE_ENV=testing jest --env=node serverUnitTests sqlUnitTests",
     "both": "npm run webpack && npm run start",
     "build": "tsc -p ./ && webpack",
     "package": "electron-forge package",

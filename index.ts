@@ -23,7 +23,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  childProcess.fork(path.join(__dirname, '../server/server.js'));
+  // const serverProcess = childProcess.fork(path.join(__dirname, '../server/server.js'));
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

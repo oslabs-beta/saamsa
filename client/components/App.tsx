@@ -35,10 +35,25 @@ const App = (): JSX.Element => {
     }).time;
     axios({
       method: 'post',
-      data: { bootstrap, topic, numPartitions },
+      data: { bootstrap, topic, numPartitions, currentUser },
       url: 'http://localhost:3001/kafka/balanceLoad',
     }).then(() => {
-      return;
+      axios({
+        method: 'POST',
+        url: 'http://localhost:3001/kafka/refresh',
+        data: { topic: `${topic}_balanced`, bootstrap, currentUser },
+      })
+        .then((response: { data: [{ value: number; time: number }] }) => {
+          return response;
+        })
+        .then((response) => {
+          d3.selectAll('.bar').remove();
+          setData(response.data);
+          setTopic(`${topic}_balanced`);
+          const input = document.querySelector('#topics') as HTMLSelectElement;
+          input.value = `${topic}_balanced`;
+          //checking if user selected blank topic (if so, graph should disappear)
+        });
     });
   };
   // login button function

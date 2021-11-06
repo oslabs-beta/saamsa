@@ -82,15 +82,37 @@ const Selector = ({
   //custom function that sends a post request to backend to try grab data from broker at user-inputted host:port
   const createTable = (): void => {
     //change this to be compatible with  enzyme testing, use event.target.etcetc
-    const bootstrap: HTMLInputElement | null =
+    const newBootstrap: HTMLInputElement | null =
       document.querySelector('#bootstrapInput');
-    axios({
-      url: 'http://localhost:3001/kafka/createTable',
-      method: 'post',
-      data: { bootstrap: bootstrap?.value, currentUser },
-    }) //if successful, we then repopulate all of our tables, as db has been updated
-      .then(() => fetchTables())
-      .catch((error) => console.log(error));
+    //checking to make sure that the server isnt already in the list before sending the request to the backend
+    if (!serverList.includes(`${newBootstrap?.value.replace(':', '_')}`)) {
+      axios({
+        url: 'http://localhost:3001/kafka/createTable',
+        method: 'post',
+        data: { bootstrap: newBootstrap?.value, currentUser },
+      }) //if successful, we then repopulate all of our tables, as db has been updated
+        .then(() => fetchTables())
+        .then(() => {
+          if (newBootstrap) {
+            serverList.push(newBootstrap.value.replace(':', '_'));
+            setServerList(serverList);
+            //for UX, adding new option to the broker dropdown, then adding it to the dropdown then selecting it so it feels nicer for the user
+            const input = document.querySelector(
+              '#bootstrap'
+            ) as HTMLSelectElement;
+            // const option = document.createElement('option');
+            // option.className = 'serverOption';
+            // option.value = newBootstrap.value.replace(':', '_');
+            // option.innerHTML = newBootstrap.value.replace(':', '_');
+            // input.appendChild(option);
+            setTimeout(() => {
+              input.value = newBootstrap.value.replace(':', '_');
+              setBootstrap(newBootstrap.value);
+            }, 1000);
+          }
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   //sends a request to backend to grab all broker-tables from sqldb
@@ -111,9 +133,14 @@ const Selector = ({
     const newBootstrap: HTMLSelectElement | null = document.querySelector(
       '#bootstrap option:checked'
     );
-    if (newBootstrap) {
+    if (newBootstrap?.value.length) {
       fetchTopics(newBootstrap.value);
       setBootstrap(newBootstrap.value.replace('_', ':'));
+    } else {
+      setConsumerList([]);
+      setBootstrap('');
+      setTopicList([]);
+      setTopic('');
     }
   };
 
@@ -227,7 +254,22 @@ const Selector = ({
             </label>
           </div>
           <input id='bootstrapInput' placeholder='demo.saamsa.io:29093'></input>
-          <button className='Btn' onClick={createTable}>
+          <button
+            id='createTableBtn'
+            className='Btn'
+            onClick={() => {
+              //disabling button for five seconds so user cannot double create entries in table
+              const button = document.querySelector(
+                '#createTableBtn'
+              ) as HTMLButtonElement;
+              button.disabled = true;
+              setTimeout(() => {
+                button.disabled = false;
+              }, 5000);
+
+              createTable();
+            }}
+          >
             Submit
           </button>
         </div>
@@ -240,26 +282,13 @@ const Selector = ({
             id='bootstrap'
             onChange={() => changeServer()}
           >
-            <option className='dropdownOptions'></option>
+            <option className='serverOption'></option>
             {serverListArr}
           </select>
         </div>
 
         <div className='topicSelector'>
           <p className='inputLabels'>Current topic: </p>
-
-          {/* const topicListArr: JSX.Element[] = [];
-  for (let i = 0; i < topicList.length; i++) {
-    topicListArr.push(
-      <a
-        key={topicList[i] + i.toString()}
-        className='topicOption'
-        value={topicList[i]}
-      >
-        {topicList[i]}
-      </a>
-    );
-  } */}
           <select
             className='dropDown'
             name='topics'

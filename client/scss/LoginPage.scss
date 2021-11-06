@@ -105,6 +105,11 @@ body {
   color: $saamsaBlack;
   width: 200px;
 }
+#loginBtn:hover {
+  cursor: pointer;
+  color: white;
+  background-color: gray;
+}
 #noAccount {
   font-size: 10px;
   font-family: $buttonTitle;
@@ -126,6 +131,7 @@ body {
   font-family: $buttonTitle;
   color: $saamsaBlack;
 }
-#signupBtn:hover {
+#signUpButton:hover {
   cursor: pointer;
+  background-color: $saamsaYellow;
 }

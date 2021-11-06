@@ -91,7 +91,7 @@ const Graph = ({
         .attr('height', height + margin.top + margin.bottom);
       d3.select('.graphy').attr(
         'transform',
-        `translate(${margin.left / 2}, ${margin.top / 2 - 5})`
+        `translate(${margin.left / 2}, ${margin.top / 2 + 10})`
       );
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
@@ -263,7 +263,7 @@ const Graph = ({
       .attr('height', height + margin.top + margin.bottom);
     d3.select('.charty').attr(
       'transform',
-      `translate(${margin.left}, ${margin.top})`
+      `translate(${margin.left * 1.5 - 5}, ${margin.top / 2})`
     );
     const colorDict: { [key: string]: string } = {
       broker: 'red',

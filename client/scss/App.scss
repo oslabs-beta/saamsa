@@ -71,10 +71,15 @@
     font-size: 11px;
   }
 }
+.loadBalanceBtn:hover {
+  cursor: pointer;
+  background-color: gray;
+  color: white;
+}
 .loadBalanceBtn {
   @media (max-width: 800px) {
     top: 123vh;
-    right: -38vw;
+    right: -34vw;
   }
   margin-top: 10px;
   border-radius: 4px;

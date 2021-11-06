@@ -19,6 +19,7 @@ describe('Selector unit tests', () => {
     topic: 'testTopic',
     consumerList: [],
     setConsumerList: jest.fn(),
+    logOut: jest.fn(),
   };
   it('should populate the server drop down with the server list', () => {
     const wrapper = shallow(Selector(props));
@@ -34,8 +35,8 @@ describe('Selector unit tests', () => {
   it('should have an input field for user to input new server', () => {
     const wrapper = shallow(Selector(props));
     const input = wrapper.find('input');
-    expect(input.props().placeholder).toBe('localhost:00000');
-    const submitBtn = wrapper.find('.submitBtn');
+    expect(input.props().placeholder).toBe('demo.saamsa.io:29093');
+    const submitBtn = wrapper.find('#createTableBtn');
     expect(typeof submitBtn.props().onClick).toBe('function');
   });
 });
