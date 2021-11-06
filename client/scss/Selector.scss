@@ -118,17 +118,6 @@
   width: 150px;
 }
 
-.logOutBtn {
-  margin-top: 10px;
-  border-radius: 4px;
-  background-color: $saamsaGrey;
-  border: 1px solid black;
-  height: 30px;
-  font-size: 15px;
-  font-family: $buttonTitle;
-  color: $saamsaBlack;
-  width: 90px;
-}
 .logOutBtn:hover {
   cursor: pointer;
   background-color: #ffcc61;
