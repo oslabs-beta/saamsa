@@ -6,10 +6,9 @@ const cookieController: Record<string, types.middlewareFunction> = {};
 
 cookieController.setCookie = (req, res, next) => {
   try {
-    res.header('Access-Control-Allow-Origin', 'http://saamsa.io');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     const expirationTime = 600000; // 600000 miliseconds or 10 minutes
     const user = res.locals.user;
-    console.log('user in setCookie controller', user);
     res.cookie('user', user, {
       maxAge: expirationTime,
       httpOnly: true,

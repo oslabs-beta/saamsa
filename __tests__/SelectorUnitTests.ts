@@ -18,8 +18,8 @@ describe('Selector unit tests', () => {
     data: [],
     topic: 'testTopic',
     consumerList: [],
-    setConsumerList: jest.fn(),
     logOut: jest.fn(),
+    setConsumerList: jest.fn(),
   };
   it('should populate the server drop down with the server list', () => {
     const wrapper = shallow(Selector(props));

@@ -2,7 +2,7 @@
   "name": "saamsa",
   "version": "1.0.0",
   "description": "an easy to use Kafka consumer/topic visualizer and topic replicator/load-balancer",
-  "main": "./dist/electron/index.js",
+  "main": "./dist/server/server.js",
   "scripts": {
     "webpack": "tsc client/index.tsx --declaration --outDir ./dist --module es2015 --jsx react --moduleResolution node && webpack && tsc ./server/server.ts ./server/createServer.ts --moduleResolution node --outDir ./dist/ --esModuleInterop true",
     "start": "tsc ./index.ts --moduleResolution node --outDir ./dist/electron --esModuleInterop true && nodemon ./dist/server/server.js",

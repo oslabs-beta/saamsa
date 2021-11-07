@@ -41,7 +41,7 @@ const Selector = ({
     if (!arg || !arg.length) arg = bootstrap;
     axios({
       method: 'post',
-      url: 'http://saamsa.io/kafka/updateTables',
+      url: 'http://localhost:3001/kafka/updateTables',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
       const temp: { topic: string }[] = [...response.data];
@@ -119,7 +119,7 @@ const Selector = ({
   const fetchTables = (): void => {
     axios({
       method: 'post',
-      url: 'http://saamsa.io/kafka/fetchTables',
+      url: 'http://localhost:3001/kafka/fetchTables',
       data: { currentUser },
     }).then((response: { data: { name: string }[] }) => {
       //updating state to force rerender, so option appears on dropdown of bootstrap servers
@@ -147,7 +147,7 @@ const Selector = ({
   //sends a request to backend to grab topics for passed in bootstrap server
   const fetchTopics = (arg: string) => {
     axios({
-      url: 'http://saamsa.io/kafka/fetchTopics',
+      url: 'http://localhost:3001/kafka/fetchTopics',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -162,7 +162,7 @@ const Selector = ({
   //method that sends request to backend to grab all consumers of passed in bootstrap server
   const fetchConsumers = (arg: string) => {
     axios({
-      url: 'http://saamsa.io/kafka/fetchConsumers',
+      url: 'http://localhost:3001/kafka/fetchConsumers',
       method: 'post',
       data: { bootstrap: arg, currentUser },
     }).then((response) => {
@@ -182,7 +182,7 @@ const Selector = ({
       //making initial request so we instantly update the data
       axios({
         method: 'POST',
-        url: 'http://saamsa.io/kafka/refresh',
+        url: 'http://localhost:3001/kafka/refresh',
         data: { topic: newTopic?.value, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {

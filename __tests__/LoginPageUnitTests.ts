@@ -8,7 +8,6 @@ configure({ adapter: new Adapter() });
 describe('LoginPage unit tests', () => {
   describe('user signup', () => {
     const props = {
-      loginStatus: false,
       loginAttempt: null,
       loginButton: jest.fn(),
       signUpButton: jest.fn(),
