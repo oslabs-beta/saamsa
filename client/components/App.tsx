@@ -36,11 +36,11 @@ const App = (): JSX.Element => {
     axios({
       method: 'post',
       data: { bootstrap, topic, numPartitions, currentUser },
-      url: 'http://localhost:3001/kafka/balanceLoad',
+      url: 'http://saamsa.io/kafka/balanceLoad',
     }).then(() => {
       axios({
         method: 'POST',
-        url: 'http://localhost:3001/kafka/refresh',
+        url: 'http://saamsa.io/kafka/refresh',
         data: { topic: `${topic}_balanced`, bootstrap, currentUser },
       })
         .then((response: { data: [{ value: number; time: number }] }) => {
@@ -80,7 +80,7 @@ const App = (): JSX.Element => {
         password,
       };
 
-      fetch('http://localhost:3001/login', {
+      fetch('http://saamsa.io/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -125,7 +125,7 @@ const App = (): JSX.Element => {
         username: username,
         password: password,
       };
-      fetch('http://localhost:3001/signup', {
+      fetch('http://saamsa.io/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
@@ -144,7 +144,7 @@ const App = (): JSX.Element => {
   };
 
   const logOut = async () => {
-    fetch('http://localhost:3001/logout'),
+    fetch('http://saamsa.io/logout'),
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -390,7 +390,7 @@ const Graph = ({
         //making initial request so we instantly update the data
         axios({
           method: 'POST',
-          url: 'http://localhost:3001/kafka/refresh',
+          url: 'http://saamsa.io/kafka/refresh',
           data: { topic: selectedText, bootstrap, currentUser },
         })
           .then((response: { data: [{ value: number; time: number }] }) => {

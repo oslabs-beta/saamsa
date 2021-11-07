@@ -23,9 +23,9 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  const serverProcess = childProcess.fork(
-    path.join(__dirname, '../server/server.js')
-  );
+  // const serverProcess = childProcess.fork(
+  //   path.join(__dirname, '../server/server.js')
+  // );
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -34,6 +34,6 @@ app.whenReady().then(async () => {
   //closes process if window closed and not on MacOS (keeps in dock for Mac though, as expected for Mac UX)
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
-    serverProcess.kill(0);
+    // serverProcess.kill(0);
   });
 });
