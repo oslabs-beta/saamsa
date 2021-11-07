@@ -163,19 +163,19 @@ controller.fetchTables = (req, res, next) => {
 controller.createTable = async (req, res, next) => {
   try {
     const { bootstrap, currentUser } = req.body;
+    const bootstrapSanitized = bootstrap.replace(':', '_');
     //if there is no server given, we send an error status
     if (!bootstrap.length) res.sendStatus(403);
     open({ filename: '/tmp/database.db', driver: sqlite3.Database }).then(
       (db) => {
-        db.all(`SELECT * FROM ${bootstrapSanitized}_${currentUser}_}`).then(
-          (result) => {
-            if (result[0]) return next({ log: 'table already exists' });
-          }
-        );
+        db.all(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '${bootstrapSanitized}_${currentUser}_'`
+        ).then((result) => {
+          if (result[0]) return next({ log: 'table already exists' });
+        });
       }
     );
     //sanitizing for sql
-    const bootstrapSanitized = bootstrap.replace(':', '_');
     const instance = new kafka.Kafka({
       clientId: 'testing2',
       brokers: [`${bootstrap}`], //must be unsanitized form

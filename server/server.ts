@@ -14,7 +14,7 @@ connect(MONGO_URI, {
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(3001, () => {
-      exec(`electron ${path.join(__dirname, '../electron/index.js')}`);
+      // exec(`electron ${path.join(__dirname, '../electron/index.js')}`);
       console.log('server listening on port 3001 :)');
     });
   })
