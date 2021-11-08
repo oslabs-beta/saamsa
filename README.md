@@ -43,7 +43,7 @@ Saamsa has the following features:
 
 **Getting started with Saamsa is easy:**
 
-1. Download [the app](http://saamsa.io/download) or visit [the web application](http://saamsa.io)
+1. Download [the app for MacOS](http://saamsa.io/download) or visit [the web application](http://saamsa.io)
 2. Sign up if you are a new user. Otherwise, log in.
 3. To add a new broker address, add the location in the input field and click _Submit_.
 4. To use an already submitted broker address, Click on the dropdown next to _Select broker_ and choose the preferred broker.
@@ -59,7 +59,7 @@ Saamsa has the following features:
 
 ## Demo Testing App
 
-We have created a demo testing app for you to understand how Saamsa works with an application that :
+We have created a demo testing app for you to understand how Saamsa works with an application that:
 
 - Uses Kafka as its message broker
 - Creates consumers that read data upon button click
@@ -82,7 +82,7 @@ To use our Demo app, all you have to do is:
 
 ## Installation
 
-To use our [Web Application](http://saamsa.io) / [Desktop Application](http://saamsa.io/download{:target="_blank"}), please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
+To use our [Web Application](http://saamsa.io) / [Desktop Application for MacOS](http://saamsa.io/download{:target="_blank"}), please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
 
 ## Feature Roadmap
 
