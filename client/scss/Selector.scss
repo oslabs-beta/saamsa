@@ -79,6 +79,7 @@
   @media (max-width: 800px) {
     left: 26vw;
     width: 50vw;
+    top: 30vh;
   }
   margin-top: 10px;
   display: flex;
@@ -87,7 +88,7 @@
   align-items: center;
   position: absolute;
   top: 28vh;
-  left: 2.5vw;
+  left: 8vw;
   width: 33vw;
   z-index: 1;
   text-align: center;
@@ -131,7 +132,7 @@
   }
   margin-top: 10px;
   display: flex;
-  width: 33vw;
+  width: 31vw;
   flex-direction: row;
   gap: 10px;
   align-items: center;
