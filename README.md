@@ -43,7 +43,7 @@ Saamsa has the following features:
 
 **Getting started with Saamsa is easy:**
 
-1. Download the app<http://saamsa.io/download> or visit the web application <http://saamsa.io>
+1. Download [the app](http://saamsa.io/download) or visit [the web application](http://saamsa.io)
 2. Sign up if you are a new user. Otherwise, log in.
 3. To add a new broker address, add the location in the input field and click _Submit_.
 4. To use an already submitted broker address, Click on the dropdown next to _Select broker_ and choose the preferred broker.
@@ -62,10 +62,10 @@ Saamsa has the following features:
 We have created a demo testing app for you to understand how Saamsa works with an application that :
 
 - Uses Kafka as its message broker
-- Creates Consumers that read data upon button click
-- Created Producers that produce massive amounts of data upon button click
+- Creates consumers that read data upon button click
+- Created producers that produce massive amounts of data upon button click
 
-To use our Demo app, all you have to do is :
+To use our Demo app, all you have to do is:
 
 ### Remotely
 
@@ -82,7 +82,7 @@ To use our Demo app, all you have to do is :
 
 ## Installation
 
-To use our [Web Application](http://saamsa.io) / [Desktop Application](http://saamsa.io/download), please follow steps 1 - 6 of Getting started with Saamsa , which can be found above.
+To use our [Web Application](http://saamsa.io) / [Desktop Application](http://saamsa.io/download{:target="_blank"}), please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
 
 ## Feature Roadmap
 
@@ -102,7 +102,8 @@ The development team intends to continue improving Saamsa and adding more featur
 
 If you'd like to support the active development of Saamsa:
 
-- Add a GitHub Star to the project
-- Tweet about the project on your Twitter
+- Add a GitHub Star to the project.
+- Tweet about the project on your Twitter.
 - Write a review or tutorial on Medium, Dev.to or personal blog.
+- Contribute to this project by raising a new issue or making a PR to solve an issue.
 <hr>
