@@ -2,6 +2,7 @@ import createServer from './createServer';
 import { connect, ConnectOptions } from 'mongoose';
 import { exec } from 'child_process';
 import * as path from 'path';
+import express from 'express';
 import https from 'https';
 import fs from 'fs';
 const app = createServer();
@@ -30,9 +31,16 @@ connect(MONGO_URI, {
   .then(() => {
     console.log('Connected to MongoDB');
     const httpsServer = https.createServer(credentials, app);
+    const httpServer = express();
+    httpServer.use('*', (req, res) => {
+      res.redirect('https://saamsa.io');
+    });
+    httpServer.listen(80, () => {
+      console.log('http server listening on port 80 :)');
+    });
     httpsServer.listen(443, () => {
       // exec(`electron ${path.join(__dirname, '../electron/index.js')}`);
-      console.log('server listening on port 443 :)');
+      console.log('https server listening on port 443 :)');
     });
   })
   .catch((err: Error) =>
