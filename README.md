@@ -82,7 +82,7 @@ To use our Demo app, all you have to do is:
 
 ## Installation
 
-To use our <a href='http://saamsa.io' target="_blank">Web Application</a>/<a href='http://saamsa.io/download' target="_blank">Desktop Application for MacOS</a>, please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
+To use our <a href='http://saamsa.io' target="_blank">Web Application</a>/<a href='http://saamsa.io/download' onclick="return ! window.open(this.href);">Desktop Application for MacOS</a>, please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
 
 ## Feature Roadmap
 
