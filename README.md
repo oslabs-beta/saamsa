@@ -3,13 +3,14 @@
 Saamsa is an easy-to-use web & desktop application built to work with Kafka that:
 
 - Displays consumer-level load on an individual broker
-- Displays producer-level load on the topic level
+- Displays previous producer-level load on the topic level via topic-message-offsets
 - Allows you as the developer to see what consumer is consuming what data, which groups they belong to, and if any sticky or stale consumers need to be remedied.
 - Allows you to see how your data is stored on topics and if your data rate is causing batching issues, leading to an imbalance of messages on individual partitions
-- Allows you as the developer to circumvent the black box nature of Kafka and really get the behind-the-scenes of their implementation of the Kafka system and assess if everything is behaving as expected
-- Allows you to visualize load balancing on Kafka brokers and to customize if necessary.
-
-The second aspect of Saamsa dives further into Kafka than data visualization. It allows for single replication with exactly-once written commits and continuous real-time load balancing on a single topic on the same broker. This ensures data integrity and efficient read/write operations for maximal performance. All of this is done simply with a click of a button to make the developer experience with Kafka as smooth as possible! This functionality is achieved through a custom Kafka streams API implementation which gets attached to the provided topic. It replicates the data in real-time as an independent consumer and producer to the Kafka topic, ensuring no interference with native consumers and producers.
+- Allows you as the developer to circumvent the black box nature of Kafka and really get the behind-the-scenes of your implementation of the Kafka system and assess if everything is behaving as expected
+- Allows you to visualize load balancing on multiple Kafka brokers and to remedy any unbalanced loads on any topics.
+- Allows for single replication with exactly-once written commits and continuous real-time load balancing on a single topic on the same broker. This ensures data integrity and efficient read/write operations for maximal performance.
+- This functionality is achieved through a custom Kafka streams API implementation which gets attached to the provided topic.
+- It replicates the data in real-time as an independent consumer and producer to the Kafka topic, ensuring no interference with native consumers and producers.
 
 ## Table of Contents
 
@@ -36,24 +37,24 @@ Saamsa has the following features:
 - An intuitive GUI.
 - Insights into brokers, consumers, topics, offsets, partition indices
 - Graphs to visualize & monitor load balancing on a topic level
-- Button to customize load balancing on a topic level
+- Ability to rebalance message-offset load on a topic
 
 ## How it works
 
 **Getting started with Saamsa is easy:**
 
-1. Download the app<ADD LINK> or visit the web application <ADD LINK>
+1. Download the app<http://saamsa.io/download> or visit the web application <http://saamsa.io>
 2. Sign up if you are a new user. Otherwise, log in.
-3. To add a new broker address, add the url in the input field and click _Submit_.
+3. To add a new broker address, add the location in the input field and click _Submit_.
 4. To use an already submitted broker address, Click on the dropdown next to _Select broker_ and choose the preferred broker.
 5. _Select a topic_ from the dropdown.
-6. You can now see a graphical visualizer of your Saamsa topic on the selected broker.
+6. You can now see a graphical visualization of your Saamsa topic on the selected broker.
 
 **To customize load balancing:**
 
 1. Select the broker and the topic who's load balancing you want to customize.
 2. Click on the "customize load balancing" button to customize load balancing for the selected topic.
-3. Choose the topic with the name of the original topic name followed by "\_balanced" (_example: "topicOne_balanced_).
+3. The display will automatically change to display this balanced topic after a second or two.
 4. You can now see load balancing customized on the selected topic.
 
 ## Demo Testing App
@@ -62,23 +63,30 @@ We have created a demo testing app for you to understand how Saamsa works with a
 
 - Uses Kafka as its message broker
 - Creates Consumers that read data upon button click
-- Created producers that produce massive amounts of data upon button click
+- Created Producers that produce massive amounts of data upon button click
 
 To use our Demo app, all you have to do is :
 
-1. Install Docker Desktop
-2. Go to Docker and use the following docker images[Saamsa Demo Application] (https://github.com/Saamsa/SaamsaTestingApp)
-3. Run "bash docker compose up -d"
-   This opens up a local Kafka instance at localhost:29092, accessible via Saamsa.
-   The controls for this instance : Topic, consumer, and producer creation, are now available at localhost:3000.
+### Remotely
+
+1. Navigate to <http://demo.saamsa.io>.
+2. This is a publically available Kafka/Zookeeper instance with controls to produce data, consume data, and create topics.
+
+### Locally
+
+1. Clone this repo.
+2. Install Docker Desktop.
+3. From the cloned repo's directory, run `$ docker compose up -d`
+   This opens up a local Kafka/Zookeepr instance at localhost:29092, localhost:2181.
+   A GUI for easily producing data, consuming data, and creating topics for this broker is available at localhost:3000.
 
 ## Installation
 
-To use our [Web Application](http://saamsa.io) / [Desktop Application](wwww.google.com), please follow steps 1 - 6 of Getting started with Saamsa , which can be found above.
+To use our [Web Application](http://saamsa.io) / [Desktop Application](http://saamsa.io/download), please follow steps 1 - 6 of Getting started with Saamsa , which can be found above.
 
 ## Feature Roadmap
 
-The development team intends to continue improving saamsa and adding more features.
+The development team intends to continue improving Saamsa and adding more features.
 [Head to our roadmap](https://github.com/oslabs-beta/saamsa/issues) to see our upcoming planned features.
 
 ## Contributors
