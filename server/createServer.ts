@@ -14,6 +14,9 @@ function createServer(): express.Application {
   app.use(express.urlencoded({ extended: true }));
   app.use('/build', express.static(path.join(__dirname, '../../build')));
 
+  app.get('/download', (req, res) => {
+    res.download(path.join(__dirname, './saamsa.1.0.0.dmg'));
+  });
   // make sure no one is logged in before
   app.get('/sessions', sessionController.isLoggedIn, (req, res) => {
     res.status(200).json(res.locals.user);
