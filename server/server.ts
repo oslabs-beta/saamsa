@@ -6,17 +6,14 @@ import https from 'https';
 import fs from 'fs';
 const app = createServer();
 const privateKey = fs.readFileSync(
-  '/etc/letsencrypt/live/yourdomain.com/privkey.pem',
+  '/etc/letsencrypt/live/saamsa.io/privkey.pem',
   'utf8'
 );
 const certificate = fs.readFileSync(
-  '/etc/letsencrypt/live/yourdomain.com/cert.pem',
+  '/etc/letsencrypt/live/saamsa.io/cert.pem',
   'utf8'
 );
-const ca = fs.readFileSync(
-  '/etc/letsencrypt/live/yourdomain.com/chain.pem',
-  'utf8'
-);
+const ca = fs.readFileSync('/etc/letsencrypt/live/saamsa.io/chain.pem', 'utf8');
 const credentials = {
   key: privateKey,
   cert: certificate,
