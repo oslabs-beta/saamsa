@@ -43,7 +43,7 @@ Saamsa has the following features:
 
 **Getting started with Saamsa is easy:**
 
-1. Download <a href='http://saamsa.io/download' target='_blank'>the app for MacOS</a> or visit <a href='http://saamsa.io' target='_blank'>the web application</a>
+1. Download <a href='https://saamsa.io/download' target='_blank'>the app for MacOS</a> or visit <a href='https://saamsa.io' target='_blank'>the web application</a>
 2. Sign up if you are a new user. Otherwise, log in.
 3. To add a new broker address, add the location in the input field and click _Submit_.
 4. To use an already submitted broker address, Click on the dropdown next to _Select broker_ and choose the preferred broker.
@@ -69,7 +69,7 @@ To use our Demo app, all you have to do is:
 
 ### Remotely
 
-1. Navigate to <a href='http://saamsa.io' target='_blank'>saamsa.io</a>
+1. Navigate to <a href='https://demo.saamsa.io' target='_blank'>demo.saamsa.io</a>
 2. This is a publically available Kafka/Zookeeper instance with controls to produce data, consume data, and create topics.
 
 ### Locally
@@ -82,7 +82,7 @@ To use our Demo app, all you have to do is:
 
 ## Installation
 
-To use our <a href='http://saamsa.io' target="_blank">Web Application</a>/<a href='http://saamsa.io/download' onclick="return ! window.open(this.href);">Desktop Application for MacOS</a>, please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
+To use our <a href='https://saamsa.io' target="_blank">Web Application</a>/<a href='https://saamsa.io/download' onclick="return ! window.open(this.href);">Desktop Application for MacOS</a>, please follow steps 1 - 6 of Getting started with Saamsa, which can be found above.
 
 ## Feature Roadmap
 
@@ -97,7 +97,7 @@ The development team intends to continue improving Saamsa and adding more featur
 <br>
 [Janilya Baizack](https://github.com/janilya) - [LinkedIn](https://www.linkedin.com/in/janilya/)
 <br>
-[Kasthuri Menon](https://github.com/kasthurimenon) - [LinkedIn](www.linkedin.com/in/kasthurimenon)
+[Kasthuri Menon](https://github.com/kasthurimenon) - [LinkedIn](https://www.linkedin.com/in/kasthurimenon)
 <br>
 
 If you'd like to support the active development of Saamsa:
