@@ -12,13 +12,13 @@ body {
   font-family: $TextFont;
 }
 
-h2{
+h2 {
   font-size: 15px;
   font-family: $fontTitle;
   position: absolute;
   right: 165px;
   top: 275px;
-  z-index:1;
+  z-index: 1;
 }
 // #mainContainer{
 //   height: 600px;
@@ -38,9 +38,12 @@ h2{
 
 // }
 svg {
-  width: 350px;
-  height: 350px;
+  width: 42vw;
+  height: 46vh;
   background-color: rgb(109, 165, 162);
+  @media (max-width: 800px) {
+    width: 60vw;
+  }
 }
 .node text {
   display: none;

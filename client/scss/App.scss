@@ -4,19 +4,94 @@
 //     width: 1000px;
 //     background-color: $saamsaGrey;
 // }
-#graphContainer{
-    background-color: $saamsaGrey;
-    position: absolute;
-    right: 10px;
-    top: 260px;
-    border-radius: 8px;
-    border: 4px solid $saamsaYellow ;
+
+#graphContainer {
+  @media (max-width: 800px) {
+    top: 101vh;
+    right: 20vw;
+  }
+  background-color: $saamsaGrey;
+  position: absolute;
+  right: 1vw;
+  top: 36vh;
+  border-radius: 8px;
+  border: 4px solid $saamsaYellow;
 }
-#chartContainer{
-    background-color: $saamsaGrey;
-    position: absolute;
-    left: 10px;
-    top: 260px;
-    border-radius: 8px;
-    border: 4px solid $saamsaYellow ;
+#chartContainer {
+  @media (max-width: 800px) {
+    left: 20vw;
+    top: 38vh;
+  }
+  background-color: $saamsaGrey;
+  position: absolute;
+  left: 1vw;
+  top: 36vh;
+  border-radius: 8px;
+  border: 4px solid $saamsaYellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  .charty {
+    height: 200px;
+    width: 200px;
+  }
+}
+
+#legend {
+  @media (max-width: 800px) {
+    left: 30vw;
+  }
+  min-width: 250px;
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+  z-index: 99;
+  width: 38vw;
+  top: 53vh;
+  left: 3vw;
+  div {
+    height: 10px;
+    position: relative;
+    top: 3.5px;
+    width: 10px;
+  }
+  .topicBlock {
+    background-color: yellow;
+  }
+  .brokerBlock {
+    background-color: red;
+  }
+  .consumerBlock {
+    background-color: blue;
+  }
+  .consumerGroupBlock {
+    background-color: green;
+  }
+  text {
+    font-size: 11px;
+  }
+}
+.loadBalanceBtn:hover {
+  cursor: pointer;
+  background-color: gray;
+  color: white;
+}
+.loadBalanceBtn {
+  @media (max-width: 800px) {
+    top: 123vh;
+    right: -34vw;
+  }
+  margin-top: 10px;
+  border-radius: 4px;
+  background-color: $saamsaYellow;
+  border: 1px solid black;
+  height: 30px;
+  font-size: 15px;
+  font-family: $buttonTitle;
+  color: $saamsaBlack;
+  width: 200px;
+  position: relative;
+  top: 56vh;
+  right: -67vw;
+  z-index: 1;
 }

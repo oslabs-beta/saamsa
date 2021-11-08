@@ -28,6 +28,7 @@ const Graph = ({
   setTopic,
 }: Props): JSX.Element => {
   //method to render bar graph of current data
+
   const renderGraph = () => {
     //defining dimensions
     const margin: {
@@ -44,21 +45,28 @@ const Graph = ({
     const height = 300 - margin.top - margin.bottom;
     const width = 300 - margin.left - margin.right;
     //calculating max for x and y axis
-    const dataTimeMax: number = data.reduce(
-      (acc, val) => {
-        //checking if value is null -> means partition does not exist
-        if (val.value !== null && val.time > acc.time) return val;
-        else return acc;
-      },
-      { time: 0 }
-    ).time;
-    const dataValueMax: number = data.reduce(
-      (acc, val) => {
-        if (val.value > acc.value) return val;
-        else return acc;
-      },
-      { value: 0 }
-    ).value;
+    let dataTimeMax: number;
+    let dataValueMax: number;
+    try {
+      dataTimeMax = data.reduce(
+        (acc, val) => {
+          //checking if value is null -> means partition does not exist
+          if (val.value !== null && val.time > acc.time) return val;
+          else return acc;
+        },
+        { time: 0 }
+      ).time;
+      dataValueMax = data.reduce(
+        (acc, val) => {
+          if (val.value > acc.value) return val;
+          else return acc;
+        },
+        { value: 0 }
+      ).value;
+    } catch {
+      dataTimeMax = 0;
+      dataValueMax = 0;
+    }
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
@@ -83,7 +91,7 @@ const Graph = ({
         .attr('height', height + margin.top + margin.bottom);
       d3.select('.graphy').attr(
         'transform',
-        `translate(${margin.left}, ${margin.top})`
+        `translate(${margin.left / 2}, ${margin.top / 2 + 10})`
       );
       //zoom function which grabs the new length of window, then resizes bars and x-axis
       const zoom = (
@@ -155,9 +163,9 @@ const Graph = ({
         .attr('height', height + 10)
         .attr('x', margin.left)
         .attr('y', margin.top)
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
-        .text("Value vs Date Graph");
+        .style('font-size', '16px')
+        .style('text-decoration', 'underline')
+        .text('Value vs Date Graph');
       //making sure that x-axis and y-axis ticks are integers only!
       const xAxisTicks = xScale
         .ticks()
@@ -206,8 +214,9 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Partition Index')
-        .attr('x', width - 100)
-        .attr('y', 37); // Relative to the x axis.
+        .attr('text-anchor', 'middle')
+        .attr('x', width / 2)
+        .attr('y', 30); // Relative to the x axis.
       //appending y-axis directly to graph, cause we don't want it to be clipped
       svg
         .append('g')
@@ -218,8 +227,9 @@ const Graph = ({
         .append('text')
         .attr('class', 'axis-label')
         .text('Offsets for each partition')
+        .attr('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
-        .attr('x', -75)
+        .attr('x', -width / 2)
         .attr('y', -25); // Relative to the y axis.
       //adding an invisible rectangle to svg so that anywhere within graph area you can zoom, as zoom only works on filled elements
       svg
@@ -253,7 +263,7 @@ const Graph = ({
       .attr('height', height + margin.top + margin.bottom);
     d3.select('.charty').attr(
       'transform',
-      `translate(${margin.left}, ${margin.top})`
+      `translate(${margin.left * 1.5 - 5}, ${margin.top / 2})`
     );
     const colorDict: { [key: string]: string } = {
       broker: 'red',
@@ -359,7 +369,7 @@ const Graph = ({
     const circles = node
       .append('circle')
       .attr('class', (d: any) => d.group)
-      .attr('r', 5)
+      .attr('r', 7)
       .attr('fill', (d: any) => {
         return colorDict[d.group];
       });
@@ -456,21 +466,28 @@ const Graph = ({
       right: 40,
     };
     const height = 300 - margin.top - margin.bottom;
-    const dataTimeMax: number = data.reduce(
-      (acc, val) => {
-        //checking if value is null -> means partition does not exist
-        if (val.value !== null && val.time > acc.time) return val;
-        else return acc;
-      },
-      { time: 0 }
-    ).time;
-    const dataValueMax: number = data.reduce(
-      (acc, val) => {
-        if (val.value > acc.value) return val;
-        else return acc;
-      },
-      { value: 0 }
-    ).value;
+    let dataTimeMax: number;
+    let dataValueMax: number;
+    try {
+      dataTimeMax = data.reduce(
+        (acc, val) => {
+          //checking if value is null -> means partition does not exist
+          if (val.value !== null && val.time > acc.time) return val;
+          else return acc;
+        },
+        { time: 0 }
+      ).time;
+      dataValueMax = data.reduce(
+        (acc, val) => {
+          if (val.value > acc.value) return val;
+          else return acc;
+        },
+        { value: 0 }
+      ).value;
+    } catch (error) {
+      dataValueMax = 0;
+      dataTimeMax = 0;
+    }
     //defining the limits for the binning function (each partition should have its own group)
     const newArr: number[] = [];
     for (let i = 0; i <= dataTimeMax; i++) {
@@ -533,7 +550,7 @@ const Graph = ({
       chart();
     }, [topicList, consumerList]);
   }
-  return <div>{!!data.length && <h2>{topic}</h2>}</div>;
+  return <div></div>;
 };
 
 export default Graph;

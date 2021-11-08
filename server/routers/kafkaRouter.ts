@@ -17,9 +17,14 @@ router.use(
 router.use('/fetchTopics', kafkaController.fetchTopics, (req, res) => {
   res.status(200).json(res.locals.result);
 });
-router.use('/balanceLoad', kafkaController.balanceLoad, (req, res) => {
-  res.sendStatus(200);
-});
+router.use(
+  '/balanceLoad',
+  kafkaController.balanceLoad,
+  kafkaController.refresh,
+  (req, res) => {
+    res.status(200).json(res.locals.result);
+  }
+);
 
 router.use('/fetchTables', kafkaController.fetchTables, (req, res) => {
   res.status(200);

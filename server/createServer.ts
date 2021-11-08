@@ -14,17 +14,16 @@ function createServer(): express.Application {
   app.use(express.urlencoded({ extended: true }));
   app.use('/build', express.static(path.join(__dirname, '../../build')));
 
-  // make sure no one is logged in before 
-  app.get('/sessions',
-  sessionController.isLoggedIn,(req, res) => {
+  // make sure no one is logged in before
+  app.get('/sessions', sessionController.isLoggedIn, (req, res) => {
     res.status(200).json(res.locals.user);
   });
-
   //logging in
-  app.post('/login',
-  userController.verifyUser,
-  cookieController.setCookie,
-  sessionController.startSession,
+  app.post(
+    '/login',
+    userController.verifyUser,
+    // cookieController.setCookie,
+    // sessionController.startSession,
     (req: express.Request, res: express.Response) => {
       res.status(200).json(res.locals.user);
     }
@@ -33,19 +32,21 @@ function createServer(): express.Application {
   //signing up
   app.post(
     '/signup',
-    userController.createUser, 
+    userController.createUser,
     (req: express.Request, res: express.Response) => {
       res.status(200).send(res.locals.user);
     }
   );
 
   // logging out
-  app.post('/logout', 
-  sessionController.endSession,
-  cookieController.deleteCookies,
-  (req, res) => {
-    res.sendStatus(200);
-  });
+  app.post(
+    '/logout',
+    // sessionController.endSession,
+    // cookieController.deleteCookies,
+    (req, res) => {
+      res.sendStatus(200);
+    }
+  );
 
   app.use('/kafka', router);
 

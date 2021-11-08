@@ -1,9 +1,7 @@
 import * as express from 'express';
 
-type MiddlewareFunction = (
+export type middlewareFunction = (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction,
+  next: express.NextFunction
 ) => void;
-
-export default MiddlewareFunction;
