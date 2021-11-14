@@ -40,7 +40,7 @@
 #legend {
   @media (max-width: 800px) {
     left: 30vw;
-    top: 61vh;
+    top: 54vh;
   }
   min-width: 250px;
   display: flex;
@@ -79,7 +79,7 @@
 }
 .loadBalanceBtn {
   @media (max-width: 800px) {
-    top: 127vh;
+    top: 123vh;
     right: -34vw;
   }
   margin-top: 10px;
@@ -92,7 +92,7 @@
   color: $saamsaBlack;
   width: 200px;
   position: relative;
-  top: 61vh;
-  right: -70vw;
+  top: 57vh;
+  right: -68vw;
   z-index: 1;
 }
